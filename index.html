@@ -83,17 +83,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display"
 <script>
 window._AMapSecurityConfig={securityJsCode:'830b90a26c3b039ba69daccced906ba1'};
 </script>
-<script src="https://webapi.amap.com/maps?v=2.0&key=45cbf43f4675e9b9377fa955a6b1e996&plugin=AMap.Geocoder,AMap.Driving"></script>
+<script src="https://webapi.amap.com/maps?v=2.0&key=45cbf43f4675e9b9377fa955a6b1e996&plugin=AMap.Driving"></script>
 
 <script>
-var places=[
-  {name:"晶悦府",addr:"杭州市拱墅区上塘街道长滨街82号和旭晶悦府",desc:"出发",tag:"start"},
-  {name:"城北万象城",addr:"杭州市余杭区良渚街道城北万象城",desc:"区域型商业精装",tag:"mall"},
-  {name:"杭州恒隆广场",addr:"杭州市拱墅区武林广场恒隆广场",desc:"高端商业设计+午餐",tag:"mall"},
-  {name:"杭州万象城",addr:"杭州市上城区钱江新城富春路701号杭州万象城",desc:"大型商业室内体系",tag:"mall"},
-  {name:"天目里",addr:"杭州市西湖区天目山路天目里398号",desc:"清水混凝土·复合空间",tag:"mall"},
-  {name:"返回晶悦府",addr:"杭州市拱墅区上塘街道长滨街82号和旭晶悦府",desc:"返回",tag:"end"}
-];
 
 var weather={"MAY 8":{icon:"☁️",desc:"阴有微雨",hi:22,lo:14,wind:"东南风3级"}};
 
@@ -106,23 +98,15 @@ var spotsData=[
   [{tag:"tip",name:"晚餐",desc:"天目里解决再回"}]
 ];
 
-var stops=[];var coordsLoaded=0;
+var stops=[
+  {d:"MAY 8",name:"晶悦府",lat:30.337044,lng:120.164353,title:"出发",tag:"start",spots:spotsData[0]},
+  {d:"MAY 8",name:"城北万象城",lat:30.354266,lng:120.108245,title:"区域型商业精装",tag:"mall",spots:spotsData[1]},
+  {d:"MAY 8",name:"杭州恒隆广场",lat:30.270725,lng:120.160449,title:"高端商业设计+午餐",tag:"mall",spots:spotsData[2]},
+  {d:"MAY 8",name:"杭州万象城",lat:30.2538,lng:120.2105,title:"大型商业室内体系",tag:"mall",spots:spotsData[3]},
+  {d:"MAY 8",name:"天目里",lat:30.2705,lng:120.0968,title:"清水混凝土·复合空间",tag:"mall",spots:spotsData[4]},
+  {d:"MAY 8",name:"返回晶悦府",lat:30.337044,lng:120.164353,title:"返回",tag:"end",spots:spotsData[5]}
+];
 
-function initMap(){
-  var geocoder=new AMap.Geocoder({city:'杭州',radius:1000});
-  places.forEach(function(p,i){
-    geocoder.getLocation(p.addr,function(status,result){
-      var lat=30.28,lng=120.17;
-      if(status==='complete'&&result.geocodes&&result.geocodes.length>0){
-        var loc=result.geocodes[0];
-        lat=loc.getLat();lng=loc.getLng();
-      }
-      stops[i]={d:"MAY 8",name:p.name,lat:lat,lng:lng,title:p.desc,tag:p.tag,spots:spotsData[i]};
-      coordsLoaded++;
-      if(coordsLoaded===places.length)drawMap();
-    });
-  });
-}
 
 function drawMap(){
   var map=new AMap.Map('map',{zoom:11,center:[120.17,30.28],mapStyle:'amap://styles/whitesmoke'});
@@ -158,7 +142,7 @@ function drawMap(){
     m.on('click',function(){
       map.setZoomAndCenter(15,[s.lng,s.lat],false,400);
       var iw=new AMap.InfoWindow({
-        content:'<div style="font-size:13px;line-height:1.5;padding:10px"><div style="font-size:11px;color:#aeaeb2;font-weight:600">'+s.d+'</div><div style="font-size:17px;font-weight:700;margin:2px 0">'+s.title+'</div>'+(w?'<div style="background:#f0f7ff;border-radius:8px;padding:6px 10px;font-size:12px;margin-bottom:6px">'+w.icon+' '+w.desc+' '+w.hi+'°/'+w.lo+'° · '+w.wind+'</div>':'')+'<div style="font-size:12px;color:#86868b;margin-bottom:6px">📍 '+places[i].addr+'</div>'+spotsHtml+'</div>',
+        content:'<div style="font-size:13px;line-height:1.5;padding:10px"><div style="font-size:11px;color:#aeaeb2;font-weight:600">'+s.d+'</div><div style="font-size:17px;font-weight:700;margin:2px 0">'+s.title+'</div>'+(w?'<div style="background:#f0f7ff;border-radius:8px;padding:6px 10px;font-size:12px;margin-bottom:6px">'+w.icon+' '+w.desc+' '+w.hi+'°/'+w.lo+'° · '+w.wind+'</div>':'')+'<div style="font-size:12px;color:#86868b;margin-bottom:6px">📍 '+s.name+'</div>'+spotsHtml+'</div>',
         offset:new AMap.Pixel(0,-38),autoMove:false,closeWhenClickMap:true
       });
       iw.open(map,[s.lng,s.lat]);
@@ -182,7 +166,9 @@ function drawMap(){
   });
 }
 
-window.onload=function(){setTimeout(function(){initMap();},500);};
+window.onload=function(){
+  drawMap();
+};
 </script>
 
 <script>
