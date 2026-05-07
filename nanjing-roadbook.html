@@ -83,7 +83,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display"
 <script>
 window._AMapSecurityConfig={securityJsCode:'830b90a26c3b039ba69daccced906ba1'};
 </script>
-<script src="https://webapi.amap.com/maps?v=2.0&key=45cbf43f4675e9b9377fa955a6b1e996&plugin=AMap.Geocoder"></script>
+<script src="https://webapi.amap.com/maps?v=2.0&key=45cbf43f4675e9b9377fa955a6b1e996"></script>
 
 <script>
 var weather={
@@ -92,36 +92,17 @@ var weather={
   "MAY10":{icon:"☀️",desc:"晴",hi:29,lo:14,wind:"南风3级"}
 };
 
-var places=[
-  // DAY 1
-  {d:"MAY 8",name:"南京南站",addr:"南京市雨花台区南京南站",title:"到达南京",tag:"arrival",brief:"高铁抵达，打车至酒店约20分钟",spots:[{tag:"tip",name:"交通",desc:"打车到安达仕约30元"}]},
-  {d:"MAY 8",name:"南京安达仕酒店",addr:"南京市建邺区白龙江东街108号南京安达仕酒店",title:"入住",tag:"hotel",brief:"河西核心区，豪华精选品牌",spots:[{tag:"must",name:"大堂设计",desc:"酒店室内设计风格"},{tag:"tip",name:"周边",desc:"河西商圈，可步行至元通地铁站"}]},
-  {d:"MAY 8",name:"德基广场",addr:"南京市玄武区中山路18号德基广场",title:"高端商业考察",tag:"mall",brief:"德基广场二期，奢侈品旗舰聚集地",spots:[{tag:"must",name:"精装细节",desc:"墙面/天花/地面材质做法"},{tag:"must",name:"灯光设计",desc:"公区灯光氛围营造"},{tag:"tip",name:"品牌",desc:"LV全国旗舰店、CHANEL等"}]},
-  {d:"MAY 8",name:"颐和路",addr:"南京市鼓楼区颐和路",title:"民国建筑漫步",tag:"culture",brief:"民国公馆一条街，梧桐大道",spots:[{tag:"must",name:"建筑",desc:"民国别墅群/使馆旧址"},{tag:"tip",name:"日落",desc:"傍晚时分光影最好"}]},
-  // DAY 2
-  {d:"MAY 9",name:"明孝陵",addr:"南京市玄武区紫金山明孝陵",title:"世界文化遗产",tag:"culture",brief:"明太祖朱元璋陵寝，600年历史",spots:[{tag:"must",name:"神道石象路",desc:"600m神道石刻"},{tag:"must",name:"建筑格局",desc:"下马坊-大金门-方城明楼"},{tag:"tip",name:"时间",desc:"建议2-3小时"}]},
-  {d:"MAY 9",name:"中山陵",addr:"南京市玄武区紫金山中山陵",title:"民国纪念建筑",tag:"culture",brief:"中山陵，392级台阶俯瞰南京",spots:[{tag:"must",name:"设计",desc:"吕彦直设计中西合璧"},{tag:"tip",name:"时间",desc:"约1-1.5小时"}]},
-  {d:"MAY 9",name:"南京博物院",addr:"南京市玄武区中山东路321号南京博物院",title:"历史文化",tag:"culture",brief:"中国三大博物馆之一",spots:[{tag:"must",name:"历史馆",desc:"江苏古代文明"},{tag:"must",name:"数字馆",desc:"沉浸式数字体验"},{tag:"tip",name:"预约",desc:"免费需提前预约"}]},
-  {d:"MAY 9",name:"中山码头",addr:"南京市鼓楼区中山北路643号中山码头",title:"长江日落",tag:"scenic",brief:"轮渡2元看长江日落",spots:[{tag:"tip",name:"轮渡",desc:"中山码头-浦口码头"},{tag:"food",name:"晚餐",desc:"码头附近或回新街口"}]},
-  // DAY 3
-  {d:"MAY10",name:"南京南站",addr:"南京市雨花台区南京南站",title:"返回杭州",tag:"departure",brief:"高铁回杭州",spots:[{tag:"tip",name:"交通",desc:"地铁1号线/打车30分钟"}]}
+var stops=[
+  {d:"MAY 8",name:"南京南站",lat:31.973021,lng:118.791592,title:"到达南京",tag:"arrival",brief:"高铁抵达，打车至酒店约20分钟",spots:[{tag:"tip",name:"交通",desc:"打车到安达仕约30元"}]},
+  {d:"MAY 8",name:"南京安达仕酒店",lat:32.001,lng:118.723,title:"入住",tag:"hotel",brief:"河西核心区，豪华精选品牌",spots:[{tag:"must",name:"大堂设计",desc:"酒店室内设计风格"},{tag:"tip",name:"周边",desc:"河西商圈，可步行至元通地铁站"}]},
+  {d:"MAY 8",name:"德基广场",lat:32.043,lng:118.785,title:"高端商业考察",tag:"mall",brief:"德基广场二期，奢侈品旗舰聚集地",spots:[{tag:"must",name:"精装细节",desc:"墙面/天花/地面材质做法"},{tag:"must",name:"灯光设计",desc:"公区灯光氛围营造"},{tag:"tip",name:"品牌",desc:"LV全国旗舰店、CHANEL等"}]},
+  {d:"MAY 8",name:"颐和路",lat:32.065292,lng:118.761401,title:"民国建筑漫步",tag:"culture",brief:"民国公馆一条街，梧桐大道",spots:[{tag:"must",name:"建筑",desc:"民国别墅群/使馆旧址"},{tag:"tip",name:"日落",desc:"傍晚时分光影最好"}]},
+  {d:"MAY 9",name:"明孝陵",lat:32.045,lng:118.850,title:"世界文化遗产",tag:"culture",brief:"明太祖朱元璋陵寝，600年历史",spots:[{tag:"must",name:"神道石象路",desc:"600m神道石刻"},{tag:"must",name:"建筑格局",desc:"下马坊-大金门-方城明楼"},{tag:"tip",name:"时间",desc:"建议2-3小时"}]},
+  {d:"MAY 9",name:"中山陵",lat:32.063,lng:118.854,title:"民国纪念建筑",tag:"culture",brief:"中山陵，392级台阶俯瞰南京",spots:[{tag:"must",name:"设计",desc:"吕彦直设计中西合璧"},{tag:"tip",name:"时间",desc:"约1-1.5小时"}]},
+  {d:"MAY 9",name:"南京博物院",lat:32.040,lng:118.832,title:"历史文化",tag:"culture",brief:"中国三大博物馆之一",spots:[{tag:"must",name:"历史馆",desc:"江苏古代文明"},{tag:"must",name:"数字馆",desc:"沉浸式数字体验"},{tag:"tip",name:"预约",desc:"免费需提前预约"}]},
+  {d:"MAY 9",name:"中山码头",lat:32.090029,lng:118.729121,title:"长江日落",tag:"scenic",brief:"轮渡2元看长江日落",spots:[{tag:"tip",name:"轮渡",desc:"中山码头-浦口码头"},{tag:"food",name:"晚餐",desc:"码头附近或回新街口"}]},
+  {d:"MAY10",name:"南京南站",lat:31.973021,lng:118.791592,title:"返回杭州",tag:"departure",brief:"高铁回杭州",spots:[{tag:"tip",name:"交通",desc:"地铁1号线/打车30分钟"}]}
 ];
-
-var stops=[];var coordsLoaded=0;
-var geocoder=new AMap.Geocoder({city:'南京',radius:1000});
-
-places.forEach(function(p,i){
-  geocoder.getLocation(p.addr,function(status,result){
-    var lat=32.06,lng=118.80;
-    if(status==='complete'&&result.geocodes&&result.geocodes.length>0){
-      var loc=result.geocodes[0];
-      lat=loc.getLat();lng=loc.getLng();
-    }
-    stops[i]={d:p.d,name:p.name,lat:lat,lng:lng,title:p.title,tag:p.tag,brief:p.brief,spots:p.spots};
-    coordsLoaded++;
-    if(coordsLoaded===places.length)drawMap();
-  });
-});
 
 function drawMap(){
   var map=new AMap.Map('map',{zoom:11,center:[118.78,32.06],mapStyle:'amap://styles/whitesmoke'});
