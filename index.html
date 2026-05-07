@@ -79,23 +79,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display"
   <div id="rb-body"></div>
 </div>
 
-<!-- 高德地图 JS API -->
+<!-- 高德地图 JS API v2 -->
 <script>
-const AMAP_KEY='uguEzcgs7bGNgkGLSGPWdtdU';
-const AMAP_SECRET='Yar09231013';
-window._AMapSecurityConfig={securityJsCode:AMAP_SECRET};
+window._AMapSecurityConfig={securityJsCode:'830b90a26c3b039ba69daccced906ba1'};
 </script>
-<script src="https://webapi.amap.com/maps?v=2.0&key=uguEzcgs7bGNgkGLSGPWdtdU&plugin=AMap.Geocoder,AMap.Driving"></script>
+<script src="https://webapi.amap.com/maps?v=2.0&key=45cbf43f4675e9b9377fa955a6b1e996&plugin=AMap.Geocoder,AMap.Driving"></script>
 
 <script>
-// 搜索地址 + 等待地图加载完成后初始化
 var places=[
-  {name:"晶悦府",addr:"杭州市拱墅区晶悦府",desc:"出发",tag:"start"},
+  {name:"晶悦府",addr:"杭州市拱墅区上塘街道长滨街82号和旭晶悦府",desc:"出发",tag:"start"},
   {name:"城北万象城",addr:"杭州市余杭区良渚街道城北万象城",desc:"区域型商业精装",tag:"mall"},
   {name:"杭州恒隆广场",addr:"杭州市拱墅区武林广场恒隆广场",desc:"高端商业设计+午餐",tag:"mall"},
   {name:"杭州万象城",addr:"杭州市上城区钱江新城富春路701号杭州万象城",desc:"大型商业室内体系",tag:"mall"},
-  {name:"天目里",addr:"杭州市西湖区天目山路天目里",desc:"清水混凝土·复合空间",tag:"mall"},
-  {name:"返回晶悦府",addr:"杭州市拱墅区晶悦府",desc:"返回",tag:"end"}
+  {name:"天目里",addr:"杭州市西湖区天目山路天目里398号",desc:"清水混凝土·复合空间",tag:"mall"},
+  {name:"返回晶悦府",addr:"杭州市拱墅区上塘街道长滨街82号和旭晶悦府",desc:"返回",tag:"end"}
 ];
 
 var weather={"MAY 8":{icon:"☁️",desc:"阴有微雨",hi:22,lo:14,wind:"东南风3级"}};
@@ -111,7 +108,6 @@ var spotsData=[
 
 var stops=[];var coordsLoaded=0;
 
-// 用高德地理编码搜坐标
 function initMap(){
   var geocoder=new AMap.Geocoder({city:'杭州',radius:1000});
   places.forEach(function(p,i){
@@ -167,7 +163,6 @@ function drawMap(){
       });
       iw.open(map,[s.lng,s.lat]);
     });
-
     markers.push(m);
   });
 
@@ -187,15 +182,10 @@ function drawMap(){
   });
 }
 
-// 等地图API加载
-window.onload=function(){
-  // 高德JS API加载完成后自动调用 onAMapInited
-  setTimeout(function(){initMap();},500);
-};
+window.onload=function(){setTimeout(function(){initMap();},500);};
 </script>
 
 <script>
-// 路书
 document.getElementById('rb-open').onclick=function(){
   document.getElementById('rb-body').innerHTML=[{
     d:"MAY 8",city:"晶悦府→4个商场→返回",km:"全程约50km",weather:weather["MAY 8"],
