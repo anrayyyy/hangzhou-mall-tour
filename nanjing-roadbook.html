@@ -115,31 +115,45 @@ function drawMap(){
   var dayColors={arrival:'#4caf50',hotel:'#e65100',mall:'#1976d2',culture:'#7b1fa2',scenic:'#00838f',departure:'#4caf50'};
   var dayEmojis={arrival:'🚄',hotel:'🏨',mall:'🏬',culture:'🏛️',scenic:'⛴️',departure:'🚄'};
 
-  // 按天画驾车路线
-  var dayGroups={};
-  stops.forEach(function(s){
-    if(!dayGroups[s.d])dayGroups[s.d]=[];
-    dayGroups[s.d].push(s);
-  });
-  var dayColors=[{color:'#b8860b',style:'solid'},{color:'#7b1fa2',style:'dashed'},{color:'#4caf50',style:'dotted'}];
-  var dayIdx=0;
-  Object.keys(dayGroups).forEach(function(d){
-    var g=dayGroups[d];
-    if(g.length<2){dayIdx++;return;}
-    var color=dayColors[dayIdx].color;
-    var style=dayColors[dayIdx].style;
-    dayIdx++;
-    var driving=new AMap.Driving({policy:AMap.DrivingPolicy.LEAST_TIME});
-    var waypts=[];
-    for(var k=1;k<g.length-1;k++)waypts.push([g[k].lng,g[k].lat]);
-    driving.search([g[0].lng,g[0].lat],[g[g.length-1].lng,g[g.length-1].lat],
-      {waypoints:waypts},function(s,r){
-        if(s==='complete'&&r.routes&&r.routes[0]){
-          var path=r.routes[0].steps.map(function(step){return step.path;}).flat();
-          new AMap.Polyline({path:path,strokeColor:color,strokeWeight:4,strokeStyle:style,strokeOpacity:.7,map:map});
-        }
+  // 图例
+  (function(){
+    var lEl=document.createElement('div');
+    lEl.style.cssText='background:rgba(255,255,255,.95);border-radius:10px;padding:8px 12px;font-size:12px;line-height:2;box-shadow:0 2px 12px rgba(0,0,0,.12);position:absolute;top:70px;left:10px;z-index:99';
+    lEl.innerHTML='<div style="font-weight:700;margin-bottom:2px;font-size:13px">🚗 交通图例</div><span style="color:#ff3b30;font-weight:700">━━</span> 🚕 打车<br><span style="color:#007aff;font-weight:700">━━</span> 🚇 地铁<br><span style="color:#34c759;font-weight:700">━━</span> 🚌 公交<br><span style="border-top:3px dashed #aeaeb2;width:22px;display:inline-block;margin-right:2px"></span> 🚶 步行';
+    document.getElementById("map-wrap").appendChild(lEl);
+  })();
+
+  // 按交通方式分颜色画路线 + 标签
+  var transportStyles={taxi:{color:'#ff3b30',weight:5,dash:[]},metro:{color:'#007aff',weight:5,dash:[]},bus:{color:'#34c759',weight:5,dash:[]},walk:{color:'#aeaeb2',weight:3,dash:[8,6]}};
+  var transportLabels={taxi:'🚕 打车',metro:'🚇 地铁',bus:'🚌 公交',walk:'🚶 步行'};
+
+  function drawSeg(stopsArr,tModes){
+    tModes.forEach(function(seg){
+      var s1=stopsArr[seg.f],s2=stopsArr[seg.t];
+      if(!s1||!s2)return;
+      var st=transportStyles[seg.m]||transportStyles.taxi;
+      var midLng=(s1.lng+s2.lng)/2,midLat=(s1.lat+s2.lat)/2;
+      new AMap.Polyline({path:[[s1.lng,s1.lat],[s2.lng,s2.lat]],strokeColor:st.color,strokeWeight:st.weight,strokeStyle:'solid',strokeOpacity:.8,map:map});
+      new AMap.Marker({
+        position:[midLng,midLat],
+        content:'<div style="background:rgba(255,255,255,.92);padding:1px 6px;border-radius:8px;font-size:11px;font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.1);white-space:nowrap">'+transportLabels[seg.m]+'</div>',
+        offset:new AMap.Pixel(-20,-10),zIndex:80
       });
-  });
+    });
+  }
+
+  // Day1: 🚕→🚇→🚇→🚇
+  drawSeg(stops.filter(function(s){return s.d==='MAY 8';}),[
+    {f:0,t:1,m:'taxi'},{f:1,t:2,m:'metro'},{f:2,t:3,m:'metro'},{f:3,t:4,m:'metro'}
+  ]);
+  // Day2: 🚇→🚌→🚌→🚌→🚇
+  drawSeg(stops.filter(function(s){return s.d==='MAY 9';}),[
+    {f:0,t:1,m:'metro'},{f:1,t:2,m:'bus'},{f:2,t:3,m:'bus'},{f:3,t:4,m:'bus'},{f:4,t:5,m:'metro'}
+  ]);
+  // Day3: 🚇
+  drawSeg(stops.filter(function(s){return s.d==='MAY10';}),[
+    {f:0,t:1,m:'metro'}
+  ]);
 
   stops.forEach(function(s,i){
     var c=dayColors[s.tag]||'#007aff',e=dayEmojis[s.tag]||'📍';
