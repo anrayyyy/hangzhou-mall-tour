@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>杭州商场考察 · 室内设计 · 2026.5.8</title>
 <meta name="description" content="晶悦府→城北万象城→恒隆广场→杭州万象城→天目里">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--white:#fff;--bd:#e8e8ed;--text:#1d1d1f;--text2:#86868b;--text3:#aeaeb2;--accent:#007aff;--bg:#f5f5f7;--red:#ff3b30;--orange:#ff9500;--green:#34c759;--blue:#007aff;--purple:#af52de}
@@ -20,14 +19,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display"
 .tl-item .tl-type{font-size:10px;color:var(--text3);margin-top:2px}
 #map-wrap{position:relative;overflow:hidden}
 #map{height:100vh;width:100%}
-.leaflet-popup-content-wrapper{border-radius:12px!important;box-shadow:0 4px 20px rgba(0,0,0,.15)!important}
-.leaflet-popup-content{margin:12px 14px!important;font-size:13px!important;line-height:1.5!important;max-width:280px}
-.wmk{background:rgba(255,255,255,.92);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-radius:8px;padding:4px 8px;box-shadow:0 1px 6px rgba(0,0,0,.1);text-align:center;font-size:12px;line-height:1.4;pointer-events:none}
-.wmk-row{display:flex;align-items:center;gap:2px;justify-content:center}
-.wmk .thi{font-weight:700;color:var(--text)}
-.wmk .tlo{color:var(--text2)}
-.wmk-date{font-size:9px;color:var(--text3)}
-.iw{font-size:13px;line-height:1.5}
+.amap-info-content{border-radius:12px!important;padding:0!important;box-shadow:0 4px 20px rgba(0,0,0,.15)!important}
+.amap-info-sharp{display:none!important}
+.iw{font-size:13px;line-height:1.5;padding:10px}
 .iw-date{font-size:11px;color:var(--text3);font-weight:600}
 .iw-title{font-size:17px;font-weight:700;margin:2px 0}
 .iw-brief{font-size:13px;color:var(--text2);margin-bottom:6px;white-space:pre-line}
@@ -41,11 +35,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display"
 .iw-spot-tag{display:inline-block;font-size:9px;padding:1px 5px;border-radius:4px;margin-right:4px;font-weight:600}
 .iw-spot-tag.food{background:rgba(255,59,48,.08);color:var(--red)}
 .iw-spot-tag.tip{background:rgba(0,122,255,.08);color:var(--blue)}
-.iw-spot-tag.warn{background:rgba(255,149,0,.08);color:var(--orange)}
 .iw-spot-tag.must{background:rgba(52,199,89,.08);color:var(--green)}
 #rb-btn{position:fixed;top:16px;right:16px;z-index:200;left:auto}
 .rb-trigger{background:rgba(255,255,255,.92);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-radius:980px;padding:8px 16px;font-size:14px;font-weight:600;color:var(--accent);box-shadow:0 1px 8px rgba(0,0,0,.12);cursor:pointer;border:none;letter-spacing:-.01em}
-.rb-trigger:active{transform:scale(.96)}
 #rb-overlay{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:300;opacity:0;pointer-events:none;transition:opacity .3s}
 #rb-overlay.show{opacity:1;pointer-events:auto}
 #rb-panel{position:fixed;top:0;left:0;bottom:0;width:360px;max-width:85vw;background:var(--white);z-index:301;transform:translateX(-100%);transition:transform .35s cubic-bezier(.22,1,.36,1);overflow-y:auto;box-shadow:2px 0 20px rgba(0,0,0,.12)}
@@ -55,30 +47,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display"
 #rb-close{width:30px;height:30px;border-radius:50%;border:none;background:var(--bg);font-size:16px;cursor:pointer}
 #rb-body{padding:16px 20px 40px}
 .rb-day{margin-bottom:24px}
-.rb-day-head{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.rb-day-head,.rb-day-head2{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
 .rb-day-date{font-size:11px;font-weight:600;color:var(--text3)}
 .rb-day-city{font-size:16px;font-weight:700}
 .rb-day-km{font-size:12px;color:var(--text2)}
 .rb-day-weather{font-size:12px;color:var(--text2);margin:4px 0 8px}
 .rb-entry{display:grid;grid-template-columns:48px 1fr;gap:8px;padding:6px 0;border-bottom:1px solid var(--bd)}
-.rb-entry:last-child{border-bottom:none}
-.rb-time{font-size:11px;font-weight:600;color:var(--accent);padding-top:1px}
+.rb-time{font-size:11px;font-weight:600;color:var(--accent)}
 .rb-action{font-size:13px;font-weight:500}
 .rb-note{font-size:11px;color:var(--text2);margin-top:1px}
 .rb-entry.drive .rb-time{color:var(--text3)}
 .rb-entry.key .rb-time{color:var(--green)}
 .rb-spots{margin-top:8px;padding-top:8px;border-top:1px solid var(--bd)}
-.rb-spots-title{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:4px}
 .rb-spot-item{padding:4px 0;font-size:13px}
 @media(max-width:767px){
   #app{grid-template-columns:1fr}
   #timeline{position:fixed;left:0;right:0;bottom:0;width:100%;height:80vh;z-index:500;border-radius:18px 18px 0 0;border-right:none;box-shadow:0 -4px 20px rgba(0,0,0,.08);padding:24px 0 20px;transform:translateY(calc(80vh - 64px));transition:transform .38s cubic-bezier(.32,0,.15,1)}
   #timeline[data-state="half"]{transform:translateY(calc(80vh - 50vh))}
   #timeline[data-state="full"]{transform:translateY(0)}
-  .leaflet-popup{display:none!important}
 }
-.mk-wrap{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;border:2.5px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.18)}
-.mk-start{background:#4caf50}.mk-mall{background:#1976d2}.mk-lunch{background:#f57c00}.mk-end{background:#4caf50}.mk-art{background:#7b1fa2}
 </style>
 </head>
 <body>
@@ -94,100 +81,152 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display"
   <div id="rb-header"><span>📖 文字路书</span><button id="rb-close">✕</button></div>
   <div id="rb-body"></div>
 </div>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
+const AMAP_KEY='uguEzcgs7bGNgkGLSGPWdtdU';
+const AMAP_SECRET='Yar09231013';
+window._AMapSecurityConfig={securityJsCode:AMAP_SECRET};
+const sc=document.createElement('script');
+sc.src=`https://webapi.amap.com/maps?v=2.0&key=${AMAP_KEY}&plugin=AMap.Driving,AMap.AutoComplete`;
+document.head.appendChild(sc);
+
 // 数据
-const weather = {"MAY 8":{icon:"☁️",desc:"阴有微雨",hi:22,lo:14,wind:"东南风3级",rain:0.1,note:"降水概率27%，带把伞"}};
-const stops=[
-  {d:"MAY 8",name:"晶悦府",lat:30.3550,lng:120.1710,title:"出发",type:"start",brief:"城北出发，建议打车或自驾",spots:[{tag:"tip",name:"建议",desc:"检查车况、带卷尺"}]},
-  {d:"MAY 8",name:"城北万象城",lat:30.3543,lng:120.1085,title:"区域型商业精装",type:"star",brief:"华润城北新作，2023年开业，约15万㎡",spots:[{tag:"must",name:"中庭动线",desc:"垂直交通与公共空间组织"},{tag:"must",name:"材料搭配",desc:"石材/金属/玻璃应用"},{tag:"must",name:"门头统装",desc:"店铺门头标准化设计"},{tag:"tip",name:"卫生间",desc:"精装标准与母婴室"},{tag:"tip",name:"导视系统",desc:"标识设计信息层级"}]},
-  {d:"MAY 8",name:"恒隆广场·杭州",lat:30.2707,lng:120.1604,title:"高端商业设计+午餐",type:"star",brief:"恒隆旗舰，武林商圈核心",spots:[{tag:"must",name:"奢侈品标准",desc:"高端商业室内设计细节"},{tag:"must",name:"灯光氛围",desc:"灯光设计营造空间感"},{tag:"must",name:"材质细节",desc:"天花/地面材质与衔接"},{tag:"tip",name:"动线布局",desc:"扶梯电梯垂直组织"},{tag:"food",name:"午餐",desc:"恒隆内或武林商圈"}]},
-  {d:"MAY 8",name:"杭州万象城",lat:30.2542,lng:120.2110,title:"大型商业室内体系",type:"star",brief:"钱江新城标杆，约27万㎡",spots:[{tag:"must",name:"设计体系",desc:"大型商业室内系统性"},{tag:"must",name:"施工工艺",desc:"材料选型与施工细节"},{tag:"must",name:"中庭采光",desc:"自然光与空间感"},{tag:"tip",name:"材质过渡",desc:"公共区与商业区衔接"}]},
-  {d:"MAY 8",name:"天目里",lat:30.2687,lng:120.0953,title:"清水混凝土·复合空间",type:"star",brief:"皮亚诺设计，江南布衣总部",spots:[{tag:"must",name:"清水混凝土",desc:"施工工艺与质感"},{tag:"must",name:"复合空间",desc:"办公/商业/文化组织"},{tag:"tip",name:"下沉庭院",desc:"庭院与屋顶景观"},{tag:"tip",name:"建筑对话",desc:"商铺与建筑空间关系"}]},
-  {d:"MAY 8",name:"返回晶悦府",lat:30.3550,lng:120.1710,title:"返回",type:"end",brief:"城西→城北，约30-40分钟",spots:[{tag:"tip",name:"晚餐",desc:"天目里解决再回"}]}
-];
-const roadbook=[{d:"MAY 8",city:"晶悦府→4个商场→返回",km:"全程约50km",weather:weather["MAY 8"],entries:[{time:"09:00",cls:"key",action:"🏠 晶悦府出发",note:"自驾/打车"},{time:"09:30",cls:"",action:"城北万象城·考察",note:"动线/材料/门头"},{time:"11:00",cls:"drive",action:"🚗 前往恒隆广场",note:"约20分钟"},{time:"11:30",cls:"key",action:"恒隆广场·考察+午餐",note:"精装/灯光/材质"},{time:"13:30",cls:"drive",action:"🚗 去杭州万象城",note:"约20分钟"},{time:"14:00",cls:"",action:"杭州万象城·考察",note:"设计体系/施工/中庭"},{time:"15:45",cls:"drive",action:"🚗 前往天目里",note:"约15分钟"},{time:"16:30",cls:"key",action:"天目里·考察",note:"清水混凝土/复合空间"},{time:"18:00",cls:"",action:"晚餐(天目里)",note:"茑屋咖啡或美食区"},{time:"18:30",cls:"key",action:"🏠 返回晶悦府",note:"约30分钟"}]}];
+const weather={"MAY 8":{icon:"☁️",desc:"阴有微雨",hi:22,lo:14,wind:"东南风3级",rain:0.1,note:"降水概率27%，带把伞"}};
 
-// Leaflet 地图
-const map = L.map('map',{zoomControl:true,attributionControl:false}).setView([30.28,120.17],11);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{maxZoom:19,attribution:'© OSM © CARTO'}).addTo(map);
-
+// 用高德地理编码API搜精确坐标
+const placeNames=["晶悦府","城北万象城","杭州恒隆广场","杭州万象城","天目里","晶悦府"];
+const stops=[];
 const iconConf=[{t:'start',c:'#4caf50',e:'🏠'},{t:'mall',c:'#1976d2',e:'🏬'},{t:'lunch',c:'#f57c00',e:'🍽️'},{t:'mall',c:'#1976d2',e:'🏬'},{t:'art',c:'#7b1fa2',e:'🎨'},{t:'end',c:'#4caf50',e:'🏠'}];
-const markers=[];
+const spotData=[
+  [{tag:"tip",name:"建议",desc:"检查车况、带卷尺"}],
+  [{tag:"must",name:"中庭动线",desc:"垂直交通与公共空间组织"},{tag:"must",name:"材料搭配",desc:"石材/金属/玻璃应用"},{tag:"must",name:"门头统装",desc:"店铺门头标准化设计"},{tag:"tip",name:"卫生间",desc:"精装标准与母婴室"},{tag:"tip",name:"导视系统",desc:"标识设计信息层级"}],
+  [{tag:"must",name:"奢侈品标准",desc:"高端商业室内设计细节"},{tag:"must",name:"灯光氛围",desc:"灯光设计营造空间感"},{tag:"must",name:"材质细节",desc:"天花/地面材质与衔接"},{tag:"tip",name:"动线布局",desc:"扶梯电梯垂直组织"},{tag:"food",name:"午餐",desc:"恒隆内或武林商圈"}],
+  [{tag:"must",name:"设计体系",desc:"大型商业室内系统性"},{tag:"must",name:"施工工艺",desc:"材料选型与施工细节"},{tag:"must",name:"中庭采光",desc:"自然光与空间感"},{tag:"tip",name:"材质过渡",desc:"公共区与商业区衔接"}],
+  [{tag:"must",name:"清水混凝土",desc:"施工工艺与质感"},{tag:"must",name:"复合空间",desc:"办公/商业/文化组织"},{tag:"tip",name:"下沉庭院",desc:"庭院与屋顶景观"},{tag:"tip",name:"建筑对话",desc:"商铺与建筑空间关系"}],
+  [{tag:"tip",name:"晚餐",desc:"天目里解决再回"}]
+];
+const titles=["出发","区域型商业精装","高端商业设计+午餐","大型商业室内体系","清水混凝土·复合空间","返回"];
+const briefs=["城北出发，建议打车或自驾","华润城北新作，2023年开业，约15万㎡","恒隆旗舰，武林商圈核心","钱江新城标杆，约27万㎡","皮亚诺设计，江南布衣总部","城西→城北，约30-40分钟"];
 
-stops.forEach((s,i)=>{
-  const ic=iconConf[i]||{t:'mall',c:'#007aff',e:'📍'};
-  const m=L.marker([s.lat,s.lng],{
-    icon:L.divIcon({
-      className:'',
-      html:`<div class="mk-wrap mk-${ic.t}" style="background:${ic.c}"><span style="color:#fff;font-size:13px">${ic.e}</span></div>`,
-      iconSize:[32,32],iconAnchor:[16,16],popupAnchor:[0,-20]
-    })
-  }).addTo(map);
-
-  const w=weather[s.d];
-  if(w){
-    L.marker([s.lat,s.lng],{
-      icon:L.divIcon({
-        className:'',
-        html:`<div class="wmk"><div class="wmk-row"><span>${w.icon}</span><span class="thi">${w.hi}°</span>/<span class="tlo">${w.lo}°</span></div><div class="wmk-date">${s.d}</div></div>`,
-        iconSize:[80,36],iconAnchor:[40,-30]
-      }),interactive:false
-    }).addTo(map);
-  }
+sc.onload=()=>{
+  // 创建搜索实例批量查坐标
+  const ac=new AMap.AutoComplete({city:'杭州'});
+  let loaded=0;
   
-  const spotsHtml=(s.spots||[]).map(sp=>
-    `<div class="iw-spot"><div class="iw-spot-icon">${sp.tag==='food'?'🍽️':sp.tag==='tip'?'💡':sp.tag==='warn'?'⚠️':'⭐'}</div><div class="iw-spot-body"><div class="iw-spot-name"><span class="iw-spot-tag ${sp.tag}">${sp.tag}</span>${sp.name}</div><div class="iw-spot-desc">${sp.desc}</div></div></div>`
-  ).join('');
+  placeNames.forEach((name,i)=>{
+    ac.search(name,(status,result)=>{
+      if(status==='complete'&&result.tips&&result.tips.length>0){
+        const loc=result.tips[0].location;
+        stops[i]={d:"MAY 8",name:placeNames[i],lat:loc.lat,lng:loc.lng,title:titles[i],brief:briefs[i],spots:spotData[i]};
+      } else {
+        // 兜底坐标
+        stops[i]={d:"MAY 8",name:placeNames[i],lat:30.3,lng:120.15,title:titles[i],brief:briefs[i],spots:spotData[i]};
+      }
+      loaded++;
+      if(loaded===placeNames.length) initMap();
+    });
+  });
+};
+
+function initMap(){
+  const map=new AMap.Map('map',{zoom:11,center:[120.17,30.28],mapStyle:'amap://styles/whitesmoke'});
   
-  m.bindPopup(`<div class="iw"><div class="iw-date">${s.d}</div><div class="iw-title">${s.title}</div>${w?`<div class="iw-weather">${w.icon} ${w.desc} ${w.hi}°/${w.lo}° · ${w.wind}${w.rain>0?` 降水${w.rain}mm`:''}${w.note?`<br><i>${w.note}</i>`:''}</div>`:''}<div class="iw-brief">${s.brief}</div>${spotsHtml}</div>`,{maxWidth:300});
-  markers.push(m);
-});
+  // 搜索驾车路线
+  const driving=new AMap.Driving({policy:AMap.DrivingPolicy.LEAST_TIME});
+  const waypoints=[];
+  for(let i=1;i<stops.length-1;i++) waypoints.push(stops[i]);
+  const start=stops[0],end=stops[stops.length-1];
+  
+  driving.search([start.lng,start.lat],[end.lng,end.lat],{waypoints:waypoints.map(w=>[w.lng,w.lat])},(s,r)=>{
+    if(s==='complete'){
+      const path=r.routes[0].steps.map(s=>s.path).flat();
+      new AMap.Polyline({path,strokeColor:'#007aff',strokeWeight:4,strokeOpacity:.7,map});
+    }
+  });
+  
+  const markers=[];
+  const times=['09:00','09:30','11:30','14:00','16:30','18:30'];
 
-// 折线路线（安全，不依赖外部API）
-const coords=stops.filter(s=>s.lat).map(s=>[s.lat,s.lng]);
-L.polyline(coords,{color:'#007aff',weight:3,opacity:0.5,dashArray:'8 6'}).addTo(map);
-const bounds=L.latLngBounds(coords);
-map.fitBounds(bounds,{padding:[50,50],maxZoom:13});
+  stops.forEach((s,i)=>{
+    const ic=iconConf[i]||{t:'mall',c:'#007aff',e:'📍'};
+    const name=s.name||placeNames[i];
+    
+    const m=new AMap.Marker({
+      position:[s.lng||120.15,s.lat||30.3],
+      content:`<div style="width:32px;height:32px;border-radius:50%;background:${ic.c};display:flex;align-items:center;justify-content:center;border:2.5px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.18)"><span style="color:#fff;font-size:13px">${ic.e}</span></div>`,
+      offset:new AMap.Pixel(-16,-16),
+      map
+    });
 
-// 尝试OSRM路线（静默失败用折线兜底）
-fetch(`https://router.project-osrm.org/route/v1/driving/${coords.map(c=>c[1]+','+c[0]).join(';')}?overview=full&geometries=geojson`)
-.then(r=>r.json()).then(d=>{
-  if(d.routes?.[0]){
-    map.eachLayer(l=>{if(l instanceof L.Polyline&&l.options.dashArray)map.removeLayer(l);});
-    L.geoJSON(d.routes[0].geometry,{style:{color:'#007aff',weight:4,opacity:0.7}}).addTo(map);
-  }
-}).catch(()=>{});
-
-// 时间轴
-const tl=document.getElementById('timeline');
-const times=['09:00','09:30','11:30','14:00','16:30','18:30'];
-stops.forEach((s,i)=>{
-  const d=document.createElement('div');d.className='tl-item';d.dataset.idx=i;
-  d.innerHTML=`<div class="tl-date">${s.d}</div><div class="tl-name">${s.name}</div><div class="tl-time">${times[i]||''}</div><div class="tl-type">${s.title}</div>`;
-  d.onclick=()=>{selectCity(i);};
-  tl.appendChild(d);
-});
-
-function selectCity(i){
-  const s=stops[i];
-  map.setView([s.lat,s.lng],13,{animate:true,duration:.4});
-  markers[i].openPopup();
-  document.querySelectorAll('.tl-item').forEach(el=>el.classList.remove('active'));
-  document.querySelector(`[data-idx="${i}"]`)?.classList.add('active');
-  if(window.innerWidth<=767)document.getElementById('timeline').dataset.state='half';
+    const spotsHtml=(s.spots||[]).map(sp=>
+      `<div class="iw-spot"><div class="iw-spot-icon">${sp.tag==='food'?'🍽️':sp.tag==='tip'?'💡':'⭐'}</div><div class="iw-spot-body"><div class="iw-spot-name"><span class="iw-spot-tag ${sp.tag}">${sp.tag}</span>${sp.name}</div><div class="iw-spot-desc">${sp.desc}</div></div></div>`
+    ).join('');
+    
+    const w=weather[s.d];
+    m.on('click',()=>{
+      map.setZoomAndCenter(13,[s.lng,s.lat],false,400);
+      const iw=new AMap.InfoWindow({
+        content:`<div class="iw"><div class="iw-date">${s.d}</div><div class="iw-title">${s.title||''}</div>${w?`<div class="iw-weather">${w.icon} ${w.desc} ${w.hi}°/${w.lo}° · ${w.wind}</div>`:''}<div class="iw-brief">${s.brief||''}</div>${spotsHtml}</div>`,
+        offset:new AMap.Pixel(0,-38),
+        autoMove:false,
+        closeWhenClickMap:true
+      });
+      iw.open(map,[s.lng,s.lat]);
+    });
+    
+    // 天气标签
+    if(w){
+      new AMap.Marker({
+        position:[s.lng,s.lat],
+        content:`<div style="background:rgba(255,255,255,.92);border-radius:8px;padding:4px 8px;box-shadow:0 1px 6px rgba(0,0,0,.1);text-align:center;font-size:12px;line-height:1.4;pointer-events:none"><div style="display:flex;align-items:center;gap:2px;justify-content:center"><span>${w.icon}</span><span style="font-weight:700">${w.hi}°</span>/<span style="color:var(--text2)">${w.lo}°</span></div><div style="font-size:9px;color:var(--text3)">${s.d}</div></div>`,
+        offset:new AMap.Pixel(-32,-48),
+        map
+      });
+    }
+    
+    markers.push(m);
+  });
+  
+  // 时间轴
+  const tl=document.getElementById('timeline');
+  stops.forEach((s,i)=>{
+    const d=document.createElement('div');d.className='tl-item';d.dataset.idx=i;
+    d.innerHTML=`<div class="tl-date">${s.d}</div><div class="tl-name">${s.name||placeNames[i]}</div><div class="tl-time">${times[i]||''}</div><div class="tl-type">${titles[i]}</div>`;
+    d.onclick=()=>{
+      markers[i].emit('click');
+      document.querySelectorAll('.tl-item').forEach(el=>el.classList.remove('active'));
+      d.classList.add('active');
+      if(window.innerWidth<=767)document.getElementById('timeline').dataset.state='half';
+    };
+    tl.appendChild(d);
+  });
 }
 
-// 路书面板
+// 路书（等地图加载后再绑事件）
+sc.onload2=()=>{
 document.getElementById('rb-open').onclick=()=>{
+  const roadbook=[{
+    d:"MAY 8",city:"晶悦府→4个商场→返回",km:"全程约50km",weather:weather["MAY 8"],
+    entries:[
+      {time:"09:00",cls:"key",action:"🏠 晶悦府出发",note:"自驾/打车"},
+      {time:"09:30",cls:"",action:"城北万象城·考察",note:"动线/材料/门头"},
+      {time:"11:00",cls:"drive",action:"🚗 前往恒隆广场",note:"约20分钟"},
+      {time:"11:30",cls:"key",action:"恒隆广场·考察+午餐",note:"精装/灯光/材质"},
+      {time:"13:30",cls:"drive",action:"🚗 去杭州万象城",note:"约20分钟"},
+      {time:"14:00",cls:"",action:"杭州万象城·考察",note:"设计体系/施工/中庭"},
+      {time:"15:45",cls:"drive",action:"🚗 前往天目里",note:"约15分钟"},
+      {time:"16:30",cls:"key",action:"天目里·考察",note:"清水混凝土/复合空间"},
+      {time:"18:00",cls:"",action:"晚餐(天目里)",note:"茑屋咖啡或美食区"},
+      {time:"18:30",cls:"key",action:"🏠 返回晶悦府",note:"约30分钟"}
+    ]
+  }];
   const body=document.getElementById('rb-body');
   body.innerHTML=roadbook.map(day=>{
     const entries=day.entries.map(e=>`<div class="rb-entry ${e.cls||''}"><div class="rb-time">${e.time}</div><div class="rb-entry-right"><div class="rb-action">${e.action}</div>${e.note?`<div class="rb-note">${e.note}</div>`:''}</div></div>`).join('');
-    const allSpots=(stops.find(s=>s.d===day.d)?.spots||[]).map(sp=>`<div class="rb-spot-item">${sp.tag==='food'?'🍽️':sp.tag==='must'?'⭐':sp.tag==='tip'?'💡':'📍'}<b>${sp.name}</b><div class="rb-note">${sp.desc}</div></div>`).join('');
-    return `<div class="rb-day"><div class="rb-day-head"><span class="rb-day-date">${day.d}</span><span class="rb-day-city">${day.city}</span><span class="rb-day-km">${day.km}</span></div>${day.weather?`<div class="rb-day-weather">${day.weather.icon} ${day.weather.desc} ${day.weather.hi}°/${day.weather.lo}°</div>`:''}<div class="rb-entries">${entries}</div>${allSpots?`<div class="rb-spots">${allSpots}</div>`:''}</div>`;
+    return `<div class="rb-day"><div class="rb-day-head2"><span class="rb-day-date">${day.d}</span><span class="rb-day-city">${day.city}</span><span class="rb-day-km">${day.km}</span></div><div class="rb-day-weather">${day.weather.icon} ${day.weather.desc} ${day.weather.hi}°/${day.weather.lo}°</div><div class="rb-entries">${entries}</div></div>`;
   }).join('');
   document.getElementById('rb-panel').classList.add('show');
   document.getElementById('rb-overlay').classList.add('show');
+};
 };
 document.getElementById('rb-close').onclick=()=>{closeRB();};
 document.getElementById('rb-overlay').onclick=()=>{closeRB();};
