@@ -4,8 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>杭州商场考察 · 室内设计 · 2026.5.8</title>
-<meta name="description" content="晶悦府→城北万象城→恒隆广场→杭州万象城→天目里">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--white:#fff;--bd:#e8e8ed;--text:#1d1d1f;--text2:#86868b;--text3:#aeaeb2;--accent:#007aff;--bg:#f5f5f7}
@@ -20,13 +18,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display"
 .tl-item .tl-type{font-size:10px;color:var(--text3);margin-top:2px}
 #map-wrap{position:relative;overflow:hidden}
 #map{height:100vh;width:100%}
-.leaflet-popup-content-wrapper{border-radius:12px!important;box-shadow:0 4px 20px rgba(0,0,0,.15)!important}
-.leaflet-popup-content{margin:12px 14px!important;font-size:13px!important;line-height:1.5!important;max-width:280px}
-.iw{font-size:13px;line-height:1.5}
+.amap-info-content{border-radius:12px!important;padding:0!important;box-shadow:0 4px 20px rgba(0,0,0,.15)!important}
+.amap-info-sharp{display:none!important}
+.amap-info-outer{margin-top:8px}
+.iw{font-size:13px;line-height:1.5;padding:10px}
 .iw-date{font-size:11px;color:#aeaeb2;font-weight:600}
 .iw-title{font-size:17px;font-weight:700;margin:2px 0}
 .iw-brief{font-size:13px;color:#86868b;margin-bottom:6px;white-space:pre-line}
-.iw-weather{background:#f0f7ff;border-radius:8px;padding:6px 10px;font-size:12px;margin-bottom:6px;line-height:1.5}
+.iw-weather{background:#f0f7ff;border-radius:8px;padding:6px 10px;font-size:12px;margin-bottom:6px}
 .iw-spot{display:flex;gap:8px;padding:5px 0;border-top:1px solid #e8e8ed}
 .iw-spot:first-of-type{border-top:none;padding-top:0}
 .iw-spot-icon{width:20px;text-align:center;font-size:14px;flex-shrink:0}
@@ -64,7 +63,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display"
   #timeline{position:fixed;left:0;right:0;bottom:0;width:100%;height:80vh;z-index:500;border-radius:18px 18px 0 0;border-right:none;box-shadow:0 -4px 20px rgba(0,0,0,.08);padding:24px 0 20px;transform:translateY(calc(80vh - 64px));transition:transform .38s cubic-bezier(.32,0,.15,1)}
   #timeline[data-state="half"]{transform:translateY(calc(80vh - 50vh))}
 }
-.mk-wrap{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;border:2.5px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.18)}
 </style>
 </head>
 <body>
@@ -80,72 +78,127 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display"
   <div id="rb-header"><span>📖 文字路书</span><button id="rb-close">✕</button></div>
   <div id="rb-body"></div>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+
+<!-- 高德地图 JS API -->
 <script>
-try{
-const stops=[
-  {d:"MAY 8",name:"晶悦府",lat:30.3620,lng:120.1790,title:"出发",type:"start",brief:"城北出发，建议打车或自驾",spots:[{tag:"tip",name:"建议",desc:"检查车况、带卷尺"}]},
-  {d:"MAY 8",name:"城北万象城",lat:30.3483,lng:120.1025,title:"区域型商业精装",type:"star",brief:"华润城北新作，2023年开业，约15万㎡",spots:[{tag:"must",name:"中庭动线",desc:"垂直交通与公共空间组织"},{tag:"must",name:"材料搭配",desc:"石材/金属/玻璃应用"},{tag:"must",name:"门头统装",desc:"店铺门头标准化设计"},{tag:"tip",name:"卫生间",desc:"精装标准与母婴室"},{tag:"tip",name:"导视系统",desc:"标识设计信息层级"}]},
-  {d:"MAY 8",name:"恒隆广场·杭州",lat:30.2715,lng:120.1593,title:"高端商业设计+午餐",type:"star",brief:"恒隆旗舰，武林商圈核心",spots:[{tag:"must",name:"奢侈品标准",desc:"高端商业室内设计细节"},{tag:"must",name:"灯光氛围",desc:"灯光设计营造空间感"},{tag:"must",name:"材质细节",desc:"天花/地面材质与衔接"},{tag:"tip",name:"动线布局",desc:"扶梯电梯垂直组织"},{tag:"food",name:"午餐",desc:"恒隆内或武林商圈"}]},
-  {d:"MAY 8",name:"杭州万象城",lat:30.2538,lng:120.2105,title:"大型商业室内体系",type:"star",brief:"钱江新城标杆，约27万㎡",spots:[{tag:"must",name:"设计体系",desc:"大型商业室内系统性"},{tag:"must",name:"施工工艺",desc:"材料选型与施工细节"},{tag:"must",name:"中庭采光",desc:"自然光与空间感"},{tag:"tip",name:"材质过渡",desc:"公共区与商业区衔接"}]},
-  {d:"MAY 8",name:"天目里",lat:30.2705,lng:120.0968,title:"清水混凝土·复合空间",type:"star",brief:"皮亚诺设计，江南布衣总部",spots:[{tag:"must",name:"清水混凝土",desc:"施工工艺与质感"},{tag:"must",name:"复合空间",desc:"办公/商业/文化组织"},{tag:"tip",name:"下沉庭院",desc:"庭院与屋顶景观"},{tag:"tip",name:"建筑对话",desc:"商铺与建筑空间关系"}]},
-  {d:"MAY 8",name:"返回晶悦府",lat:30.3620,lng:120.1790,title:"返回",type:"end",brief:"城西→城北，约30-40分钟",spots:[{tag:"tip",name:"晚餐",desc:"天目里解决再回"}]}
+const AMAP_KEY='uguEzcgs7bGNgkGLSGPWdtdU';
+const AMAP_SECRET='Yar09231013';
+window._AMapSecurityConfig={securityJsCode:AMAP_SECRET};
+</script>
+<script src="https://webapi.amap.com/maps?v=2.0&key=uguEzcgs7bGNgkGLSGPWdtdU&plugin=AMap.Geocoder,AMap.Driving"></script>
+
+<script>
+// 搜索地址 + 等待地图加载完成后初始化
+var places=[
+  {name:"晶悦府",addr:"杭州市拱墅区晶悦府",desc:"出发",tag:"start"},
+  {name:"城北万象城",addr:"杭州市余杭区良渚街道城北万象城",desc:"区域型商业精装",tag:"mall"},
+  {name:"杭州恒隆广场",addr:"杭州市拱墅区武林广场恒隆广场",desc:"高端商业设计+午餐",tag:"mall"},
+  {name:"杭州万象城",addr:"杭州市上城区钱江新城富春路701号杭州万象城",desc:"大型商业室内体系",tag:"mall"},
+  {name:"天目里",addr:"杭州市西湖区天目山路天目里",desc:"清水混凝土·复合空间",tag:"mall"},
+  {name:"返回晶悦府",addr:"杭州市拱墅区晶悦府",desc:"返回",tag:"end"}
 ];
-const w={"MAY 8":{icon:"☁️",desc:"阴有微雨",hi:22,lo:14,wind:"东南风3级"}};
-const map=L.map('map',{zoomControl:true,attributionControl:false});
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{maxZoom:19}).addTo(map);
-const coords=stops.map(s=>[s.lat,s.lng]);
-map.fitBounds(L.latLngBounds(coords),{padding:[50,50],maxZoom:13});
 
-const markers=[];const times=['09:00','09:30','11:30','14:00','16:30','18:30'];
-const colors={start:'#4caf50',mall:'#1976d2',lunch:'#f57c00',art:'#7b1fa2',end:'#4caf50'};
-const emojis={start:'🏠',mall:'🏬',lunch:'🍽️',art:'🎨',end:'🏠'};
-const types=['start','mall','lunch','mall','art','end'];
+var weather={"MAY 8":{icon:"☁️",desc:"阴有微雨",hi:22,lo:14,wind:"东南风3级"}};
 
-stops.forEach((s,i)=>{
-  const t=types[i],c=colors[t],e=emojis[t];
-  const marker=L.marker([s.lat,s.lng],{
-    icon:L.divIcon({
-      className:'',
-      html:`<div class="mk-wrap" style="background:${c}"><span style="color:#fff;font-size:13px">${e}</span></div>`,
-      iconSize:[32,32],iconAnchor:[16,16],popupAnchor:[0,-20]
-    })
-  }).addTo(map);
-  const spotsHtml=s.spots.map(sp=>`<div style="display:flex;gap:8px;padding:5px 0;border-top:1px solid #e8e8ed"><div style="width:20px">${sp.tag==='food'?'🍽️':sp.tag==='tip'?'💡':'⭐'}</div><div style="flex:1"><div style="font-weight:600;font-size:13px"><span style="display:inline-block;font-size:9px;padding:1px 5px;border-radius:4px;margin-right:4px;font-weight:600;background:${sp.tag==='food'?'rgba(255,59,48,.08)':sp.tag==='tip'?'rgba(0,122,255,.08)':'rgba(52,199,89,.08)'};color:${sp.tag==='food'?'#ff3b30':sp.tag==='tip'?'#007aff':'#34c759'}">${sp.tag}</span>${sp.name}</div><div style="font-size:11px;color:#86868b;margin-top:1px">${sp.desc}</div></div></div>`).join('');
-  const ww=w[s.d];
-  marker.bindPopup(
-    `<div style="font-size:13px;line-height:1.5">
-      <div style="font-size:11px;color:#aeaeb2;font-weight:600">${s.d}</div>
-      <div style="font-size:17px;font-weight:700;margin:2px 0">${s.title}</div>
-      ${ww?`<div style="background:#f0f7ff;border-radius:8px;padding:6px 10px;font-size:12px;margin-bottom:6px">${ww.icon} ${ww.desc} ${ww.hi}°/${ww.lo}° · ${ww.wind}</div>`:''}
-      <div style="font-size:13px;color:#86868b;margin-bottom:6px">${s.brief}</div>
-      ${spotsHtml}
-    </div>`,{maxWidth:300});
-  markers.push(marker);
-});
+var spotsData=[
+  [{tag:"tip",name:"建议",desc:"检查车况、带卷尺"}],
+  [{tag:"must",name:"中庭动线",desc:"垂直交通与公共空间组织"},{tag:"must",name:"材料搭配",desc:"石材/金属/玻璃应用"},{tag:"must",name:"门头统装",desc:"店铺门头标准化设计"},{tag:"tip",name:"卫生间",desc:"精装标准与母婴室"},{tag:"tip",name:"导视系统",desc:"标识设计信息层级"}],
+  [{tag:"must",name:"奢侈品标准",desc:"高端商业室内设计细节"},{tag:"must",name:"灯光氛围",desc:"灯光设计营造空间感"},{tag:"must",name:"材质细节",desc:"天花/地面材质与衔接"},{tag:"tip",name:"动线布局",desc:"扶梯电梯垂直组织"},{tag:"food",name:"午餐",desc:"恒隆内或武林商圈"}],
+  [{tag:"must",name:"设计体系",desc:"大型商业室内系统性"},{tag:"must",name:"施工工艺",desc:"材料选型与施工细节"},{tag:"must",name:"中庭采光",desc:"自然光与空间感"},{tag:"tip",name:"材质过渡",desc:"公共区与商业区衔接"}],
+  [{tag:"must",name:"清水混凝土",desc:"施工工艺与质感"},{tag:"must",name:"复合空间",desc:"办公/商业/文化组织"},{tag:"tip",name:"下沉庭院",desc:"庭院与屋顶景观"},{tag:"tip",name:"建筑对话",desc:"商铺与建筑空间关系"}],
+  [{tag:"tip",name:"晚餐",desc:"天目里解决再回"}]
+];
 
-// 路线折线
-L.polyline(coords,{color:'#007aff',weight:4,opacity:0.6}).addTo(map);
+var stops=[];var coordsLoaded=0;
 
-// 时间轴
-const tl=document.getElementById('timeline');
-stops.forEach((s,i)=>{
-  const d=document.createElement('div');d.className='tl-item';d.dataset.idx=i;
-  d.innerHTML=`<div class="tl-date">${s.d}</div><div class="tl-name">${s.name}</div><div class="tl-time">${times[i]||''}</div><div class="tl-type">${s.title}</div>`;
-  d.onclick=()=>{
-    map.setView([s.lat,s.lng],13,{animate:true,duration:.4});
-    markers[i].openPopup();
-    document.querySelectorAll('.tl-item').forEach(el=>el.classList.remove('active'));
-    d.classList.add('active');
-    if(window.innerWidth<=767)document.getElementById('timeline').dataset.state='half';
-  };
-  tl.appendChild(d);
-});
+// 用高德地理编码搜坐标
+function initMap(){
+  var geocoder=new AMap.Geocoder({city:'杭州',radius:1000});
+  places.forEach(function(p,i){
+    geocoder.getLocation(p.addr,function(status,result){
+      var lat=30.28,lng=120.17;
+      if(status==='complete'&&result.geocodes&&result.geocodes.length>0){
+        var loc=result.geocodes[0];
+        lat=loc.getLat();lng=loc.getLng();
+      }
+      stops[i]={d:"MAY 8",name:p.name,lat:lat,lng:lng,title:p.desc,tag:p.tag,spots:spotsData[i]};
+      coordsLoaded++;
+      if(coordsLoaded===places.length)drawMap();
+    });
+  });
+}
 
+function drawMap(){
+  var map=new AMap.Map('map',{zoom:11,center:[120.17,30.28],mapStyle:'amap://styles/whitesmoke'});
+  var markers=[];var times=['09:00','09:30','11:30','14:00','16:30','18:30'];
+  var colors={start:'#4caf50',mall:'#1976d2',end:'#4caf50'};
+  var emojis={start:'🏠',mall:'🏬',end:'🏠'};
+
+  // 驾车路线
+  if(stops.length>=2){
+    var driving=new AMap.Driving({policy:AMap.DrivingPolicy.LEAST_TIME});
+    var waypoints=[];
+    for(var i=1;i<stops.length-1;i++)waypoints.push([stops[i].lng,stops[i].lat]);
+    driving.search([stops[0].lng,stops[0].lat],[stops[stops.length-1].lng,stops[stops.length-1].lat],
+      {waypoints:waypoints},function(s,r){
+        if(s==='complete'&&r.routes&&r.routes[0]){
+          var path=r.routes[0].steps.map(function(step){return step.path;}).flat();
+          new AMap.Polyline({path:path,strokeColor:'#007aff',strokeWeight:4,strokeOpacity:.7,map:map});
+        }
+      });
+  }
+
+  stops.forEach(function(s,i){
+    var c=colors[s.tag]||'#007aff',e=emojis[s.tag]||'🏬';
+    var m=new AMap.Marker({
+      position:[s.lng,s.lat],
+      content:'<div style="width:32px;height:32px;border-radius:50%;background:'+c+';display:flex;align-items:center;justify-content:center;border:2.5px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.18)"><span style="color:#fff;font-size:13px">'+e+'</span></div>',
+      offset:new AMap.Pixel(-16,-16),map:map
+    });
+
+    var w=weather[s.d];
+    var spotsHtml=s.spots.map(function(sp){return '<div style="display:flex;gap:8px;padding:5px 0;border-top:1px solid #e8e8ed"><div style="width:20px">'+(sp.tag==='food'?'🍽️':sp.tag==='tip'?'💡':'⭐')+'</div><div style="flex:1"><div style="font-weight:600;font-size:13px"><span style="display:inline-block;font-size:9px;padding:1px 5px;border-radius:4px;margin-right:4px;font-weight:600;background:'+(sp.tag==='food'?'rgba(255,59,48,.08)':sp.tag==='tip'?'rgba(0,122,255,.08)':'rgba(52,199,89,.08)')+';color:'+(sp.tag==='food'?'#ff3b30':sp.tag==='tip'?'#007aff':'#34c759')+'">'+sp.tag+'</span>'+sp.name+'</div><div style="font-size:11px;color:#86868b;margin-top:1px">'+sp.desc+'</div></div></div>';}).join('');
+
+    m.on('click',function(){
+      map.setZoomAndCenter(15,[s.lng,s.lat],false,400);
+      var iw=new AMap.InfoWindow({
+        content:'<div style="font-size:13px;line-height:1.5;padding:10px"><div style="font-size:11px;color:#aeaeb2;font-weight:600">'+s.d+'</div><div style="font-size:17px;font-weight:700;margin:2px 0">'+s.title+'</div>'+(w?'<div style="background:#f0f7ff;border-radius:8px;padding:6px 10px;font-size:12px;margin-bottom:6px">'+w.icon+' '+w.desc+' '+w.hi+'°/'+w.lo+'° · '+w.wind+'</div>':'')+'<div style="font-size:12px;color:#86868b;margin-bottom:6px">📍 '+places[i].addr+'</div>'+spotsHtml+'</div>',
+        offset:new AMap.Pixel(0,-38),autoMove:false,closeWhenClickMap:true
+      });
+      iw.open(map,[s.lng,s.lat]);
+    });
+
+    markers.push(m);
+  });
+
+  // 时间轴
+  var tl=document.getElementById('timeline');
+  stops.forEach(function(s,i){
+    var d=document.createElement('div');d.className='tl-item';d.dataset.idx=i;
+    d.innerHTML='<div class="tl-date">'+s.d+'</div><div class="tl-name">'+s.name+'</div><div class="tl-time">'+(times[i]||'')+'</div><div class="tl-type">'+s.title+'</div>';
+    d.onclick=function(){
+      map.setZoomAndCenter(15,[s.lng,s.lat],false,400);
+      markers[i].emit('click');
+      document.querySelectorAll('.tl-item').forEach(function(el){el.classList.remove('active');});
+      d.classList.add('active');
+      if(window.innerWidth<=767)document.getElementById('timeline').dataset.state='half';
+    };
+    tl.appendChild(d);
+  });
+}
+
+// 等地图API加载
+window.onload=function(){
+  // 高德JS API加载完成后自动调用 onAMapInited
+  setTimeout(function(){initMap();},500);
+};
+</script>
+
+<script>
 // 路书
-document.getElementById('rb-open').onclick=()=>{
+document.getElementById('rb-open').onclick=function(){
   document.getElementById('rb-body').innerHTML=[{
-    d:"MAY 8",city:"晶悦府→4个商场→返回",km:"全程约50km",weather:w["MAY 8"],
+    d:"MAY 8",city:"晶悦府→4个商场→返回",km:"全程约50km",weather:weather["MAY 8"],
     entries:[
       {time:"09:00",cls:"key",action:"🏠 晶悦府出发"},
       {time:"09:30",cls:"",action:"城北万象城·考察",note:"动线/材料/门头"},
@@ -158,20 +211,19 @@ document.getElementById('rb-open').onclick=()=>{
       {time:"18:00",cls:"",action:"晚餐(天目里)"},
       {time:"18:30",cls:"key",action:"🏠 返回晶悦府"}
     ]
-  }].map(day=>{
-    const en=day.entries.map(e=>`<div class="rb-entry ${e.cls||''}"><div class="rb-time">${e.time}</div><div style="flex:1"><div style="font-size:13px;font-weight:500">${e.action}</div>${e.note?`<div style="font-size:11px;color:#86868b">${e.note}</div>`:''}</div></div>`).join('');
-    return `<div class="rb-day"><div class="rb-day-head2"><span class="rb-day-date">${day.d}</span><span class="rb-day-city">${day.city}</span><span class="rb-day-km">${day.km}</span></div><div class="rb-day-weather">${day.weather.icon} ${day.weather.desc} ${day.weather.hi}°/${day.weather.lo}°</div><div style="display:flex;flex-direction:column">${en}</div></div>`;
+  }].map(function(day){
+    var en=day.entries.map(function(e){return '<div class="rb-entry '+(e.cls||'')+'"><div class="rb-time">'+e.time+'</div><div style="flex:1"><div style="font-size:13px;font-weight:500">'+e.action+'</div>'+(e.note?'<div style="font-size:11px;color:#86868b">'+e.note+'</div>':'')+'</div></div>';}).join('');
+    return '<div class="rb-day"><div class="rb-day-head2"><span class="rb-day-date">'+day.d+'</span><span class="rb-day-city">'+day.city+'</span><span class="rb-day-km">'+day.km+'</span></div><div class="rb-day-weather">'+day.weather.icon+' '+day.weather.desc+' '+day.weather.hi+'°/'+day.weather.lo+'°</div><div style="display:flex;flex-direction:column">'+en+'</div></div>';
   }).join('');
   document.getElementById('rb-panel').classList.add('show');
   document.getElementById('rb-overlay').classList.add('show');
 };
-document.getElementById('rb-close').onclick=()=>{closeRB()};
-document.getElementById('rb-overlay').onclick=()=>{closeRB()};
+document.getElementById('rb-close').onclick=function(){closeRB();};
+document.getElementById('rb-overlay').onclick=function(){closeRB();};
 function closeRB(){
   document.getElementById('rb-panel').classList.remove('show');
   document.getElementById('rb-overlay').classList.remove('show');
 }
-}catch(e){document.body.innerHTML='<h2>加载出错: '+e.message+'</h2>'}
 </script>
 </body>
 </html>
