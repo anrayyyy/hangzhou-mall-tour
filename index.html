@@ -86,16 +86,23 @@ const AMAP_KEY='uguEzcgs7bGNgkGLSGPWdtdU';
 const AMAP_SECRET='Yar09231013';
 window._AMapSecurityConfig={securityJsCode:AMAP_SECRET};
 const sc=document.createElement('script');
-sc.src=`https://webapi.amap.com/maps?v=2.0&key=${AMAP_KEY}&plugin=AMap.Driving,AMap.AutoComplete`;
+sc.src=`https://webapi.amap.com/maps?v=2.0&key=${AMAP_KEY}&plugin=AMap.Driving,AMap.Geocoder`;
 document.head.appendChild(sc);
 
 // 数据
 const weather={"MAY 8":{icon:"☁️",desc:"阴有微雨",hi:22,lo:14,wind:"东南风3级",rain:0.1,note:"降水概率27%，带把伞"}};
 
-// 用高德地理编码API搜精确坐标
-const placeNames=["晶悦府","城北万象城","杭州恒隆广场","杭州万象城","天目里","晶悦府"];
+// 用精确地址和高德地理编码来定位
+const addressData=[
+  {name:"晶悦府",addr:"杭州拱墅区晶悦府",desc:"出发",tag:"start"},
+  {name:"城北万象城",addr:"杭州余杭区良渚街道城北万象城",desc:"区域型商业精装",tag:"mall"},
+  {name:"杭州恒隆广场",addr:"杭州拱墅区武林广场恒隆广场",desc:"高端商业设计+午餐",tag:"lunch"},
+  {name:"杭州万象城",addr:"杭州上城区钱江新城富春路701号杭州万象城",desc:"大型商业室内体系",tag:"mall"},
+  {name:"天目里",addr:"杭州西湖区天目山路天目里",desc:"清水混凝土·复合空间",tag:"art"},
+  {name:"返回晶悦府",addr:"杭州拱墅区晶悦府",desc:"返回",tag:"end"}
+];
 const stops=[];
-const iconConf=[{t:'start',c:'#4caf50',e:'🏠'},{t:'mall',c:'#1976d2',e:'🏬'},{t:'lunch',c:'#f57c00',e:'🍽️'},{t:'mall',c:'#1976d2',e:'🏬'},{t:'art',c:'#7b1fa2',e:'🎨'},{t:'end',c:'#4caf50',e:'🏠'}];
+const iconConf={t:{start:'#4caf50',mall:'#1976d2',lunch:'#f57c00',art:'#7b1fa2',end:'#4caf50'}};
 const spotData=[
   [{tag:"tip",name:"建议",desc:"检查车况、带卷尺"}],
   [{tag:"must",name:"中庭动线",desc:"垂直交通与公共空间组织"},{tag:"must",name:"材料搭配",desc:"石材/金属/玻璃应用"},{tag:"must",name:"门头统装",desc:"店铺门头标准化设计"},{tag:"tip",name:"卫生间",desc:"精装标准与母婴室"},{tag:"tip",name:"导视系统",desc:"标识设计信息层级"}],
@@ -104,25 +111,21 @@ const spotData=[
   [{tag:"must",name:"清水混凝土",desc:"施工工艺与质感"},{tag:"must",name:"复合空间",desc:"办公/商业/文化组织"},{tag:"tip",name:"下沉庭院",desc:"庭院与屋顶景观"},{tag:"tip",name:"建筑对话",desc:"商铺与建筑空间关系"}],
   [{tag:"tip",name:"晚餐",desc:"天目里解决再回"}]
 ];
-const titles=["出发","区域型商业精装","高端商业设计+午餐","大型商业室内体系","清水混凝土·复合空间","返回"];
-const briefs=["城北出发，建议打车或自驾","华润城北新作，2023年开业，约15万㎡","恒隆旗舰，武林商圈核心","钱江新城标杆，约27万㎡","皮亚诺设计，江南布衣总部","城西→城北，约30-40分钟"];
 
 sc.onload=()=>{
-  // 创建搜索实例批量查坐标
-  const ac=new AMap.AutoComplete({city:'杭州'});
+  const geocoder=new AMap.Geocoder({city:'杭州',radius:1000});
   let loaded=0;
   
-  placeNames.forEach((name,i)=>{
-    ac.search(name,(status,result)=>{
-      if(status==='complete'&&result.tips&&result.tips.length>0){
-        const loc=result.tips[0].location;
-        stops[i]={d:"MAY 8",name:placeNames[i],lat:loc.lat,lng:loc.lng,title:titles[i],brief:briefs[i],spots:spotData[i]};
+  addressData.forEach((ad,i)=>{
+    geocoder.getLocation(ad.addr,(status,result)=>{
+      if(status==='complete'&&result.geocodes&&result.geocodes.length>0){
+        const loc=result.geocodes[0];
+        stops[i]={d:"MAY 8",name:ad.name,lat:loc.getLat(),lng:loc.getLng(),title:ad.desc,spots:spotData[i],tag:ad.tag};
       } else {
-        // 兜底坐标
-        stops[i]={d:"MAY 8",name:placeNames[i],lat:30.3,lng:120.15,title:titles[i],brief:briefs[i],spots:spotData[i]};
+        stops[i]={d:"MAY 8",name:ad.name,lat:30.3,lng:120.16,title:ad.desc,spots:spotData[i],tag:ad.tag};
       }
       loaded++;
-      if(loaded===placeNames.length) initMap();
+      if(loaded===addressData.length) initMap();
     });
   });
 };
@@ -147,12 +150,12 @@ function initMap(){
   const times=['09:00','09:30','11:30','14:00','16:30','18:30'];
 
   stops.forEach((s,i)=>{
-    const ic=iconConf[i]||{t:'mall',c:'#007aff',e:'📍'};
-    const name=s.name||placeNames[i];
+    const col=iconConf.t[s.tag]||'#007aff';
+    const emoji=s.tag==='start'||s.tag==='end'?'🏠':s.tag==='lunch'?'🍽️':s.tag==='art'?'🎨':'🏬';
     
     const m=new AMap.Marker({
-      position:[s.lng||120.15,s.lat||30.3],
-      content:`<div style="width:32px;height:32px;border-radius:50%;background:${ic.c};display:flex;align-items:center;justify-content:center;border:2.5px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.18)"><span style="color:#fff;font-size:13px">${ic.e}</span></div>`,
+      position:[s.lng||120.17,s.lat||30.28],
+      content:`<div style="width:32px;height:32px;border-radius:50%;background:${col};display:flex;align-items:center;justify-content:center;border:2.5px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.18)"><span style="color:#fff;font-size:13px">${emoji}</span></div>`,
       offset:new AMap.Pixel(-16,-16),
       map
     });
@@ -163,9 +166,9 @@ function initMap(){
     
     const w=weather[s.d];
     m.on('click',()=>{
-      map.setZoomAndCenter(13,[s.lng,s.lat],false,400);
+      map.setZoomAndCenter(15,[s.lng,s.lat],false,400);
       const iw=new AMap.InfoWindow({
-        content:`<div class="iw"><div class="iw-date">${s.d}</div><div class="iw-title">${s.title||''}</div>${w?`<div class="iw-weather">${w.icon} ${w.desc} ${w.hi}°/${w.lo}° · ${w.wind}</div>`:''}<div class="iw-brief">${s.brief||''}</div>${spotsHtml}</div>`,
+        content:`<div class="iw"><div class="iw-date">${s.d}</div><div class="iw-title">${s.title||''}</div>${w?`<div class="iw-weather">${w.icon} ${w.desc} ${w.hi}°/${w.lo}° · ${w.wind}</div>`:''}<div class="iw-brief">${addressData[i].addr}</div>${spotsHtml}</div>`,
         offset:new AMap.Pixel(0,-38),
         autoMove:false,
         closeWhenClickMap:true
@@ -190,7 +193,7 @@ function initMap(){
   const tl=document.getElementById('timeline');
   stops.forEach((s,i)=>{
     const d=document.createElement('div');d.className='tl-item';d.dataset.idx=i;
-    d.innerHTML=`<div class="tl-date">${s.d}</div><div class="tl-name">${s.name||placeNames[i]}</div><div class="tl-time">${times[i]||''}</div><div class="tl-type">${titles[i]}</div>`;
+    d.innerHTML=`<div class="tl-date">${s.d}</div><div class="tl-name">${s.name}</div><div class="tl-time">${times[i]||''}</div><div class="tl-type">${s.title}</div>`;
     d.onclick=()=>{
       markers[i].emit('click');
       document.querySelectorAll('.tl-item').forEach(el=>el.classList.remove('active'));
