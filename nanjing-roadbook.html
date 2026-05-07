@@ -141,7 +141,7 @@ function drawMap(){
         walking.search([s1.lng,s1.lat],[s2.lng,s2.lat],{},genCb(seg,s1,s2));
       }else{
         var city='南京';
-        var policy=seg.m==='metro'?AMap.TransferPolicy.LEAST_TIME:AMap.TransferPolicy.LEAST_TRANSFER;
+        var policy=AMap.TransferPolicy.LEAST_TIME;
         var transfer=new AMap.Transfer({city:city,policy:policy,nightflag:false});
         transfer.search([s1.lng,s1.lat],[s2.lng,s2.lat],{},function(s,r){
           if(s==='complete'&&r.plans&&r.plans.length>0){
