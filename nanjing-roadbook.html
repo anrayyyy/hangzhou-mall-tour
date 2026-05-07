@@ -143,38 +143,34 @@ function drawMap(){
         var city='南京';
         var policy=seg.m==='metro'?AMap.TransferPolicy.LEAST_TIME:AMap.TransferPolicy.LEAST_TRANSFER;
         var transfer=new AMap.Transfer({city:city,policy:policy,nightflag:false});
-        var segM=seg.m==='metro'?1:0; // 1=地铁优先,0=公交优先
         transfer.search([s1.lng,s1.lat],[s2.lng,s2.lat],{},function(s,r){
           if(s==='complete'&&r.plans&&r.plans.length>0){
-            var plan=null;
-            if(seg.m==='metro'){
-              for(var p=0;p<r.plans.length;p++){
-                if(r.plans[p].transit_mode+''==='1'||r.plans[p].has_metro){plan=r.plans[p];break;}
-              }
-            }
-            if(!plan)plan=r.plans[0];
-            var allSegments=[];
+            var plan=r.plans[0];
+            var allPaths=[];
             if(plan.segments){
               plan.segments.forEach(function(sg){
                 if(sg.transit&&sg.transit.lines&&sg.transit.lines.length>0){
-                  var line=sg.transit.lines[0];
-                  if(line.path)allSegments.push({type:seg.m,path:line.path});
-                }else if(sg.walking&&sg.walking.path){
-                  allSegments.push({type:'walk',path:sg.walking.path});
+                  sg.transit.lines.forEach(function(ln){
+                    if(ln.path&&ln.path.length>0){allPaths.push({type:seg.m,path:ln.path});}
+                  });
+                }else if(sg.walking&&sg.walking.steps){
+                  var wp=[];
+                  sg.walking.steps.forEach(function(ws){
+                    if(ws.path)ws.path.forEach(function(p){wp.push(p);});
+                  });
+                  if(wp.length>0)allPaths.push({type:'walk',path:wp});
                 }
               });
             }
-            if(allSegments.length>0){
-              allSegments.forEach(function(ps){
+            if(allPaths.length>0){
+              var midPt=null;
+              allPaths.forEach(function(ps,i){
                 var st=styles[ps.type]||styles.bus;
                 new AMap.Polyline({path:ps.path,strokeColor:st.color,strokeWeight:st.weight,strokeOpacity:.8,map:map});
+                if(i===0&&ps.path&&ps.path.length>0){midPt=ps.path[Math.floor(ps.path.length/2)];}
               });
-              // 添加交通方式标签
-              var anySeg=allSegments[0];
-              if(anySeg&&anySeg.path&&anySeg.path.length>0){
-                var midIdx=Math.floor(anySeg.path.length/2);
-                var pt=anySeg.path[midIdx];
-                new AMap.Marker({position:[pt.lng,pt.lat],content:'<div style="background:rgba(255,255,255,.92);padding:1px 6px;border-radius:8px;font-size:11px;font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.1);white-space:nowrap">'+labels[seg.m]+'</div>',offset:new AMap.Pixel(-20,-10),zIndex:80});
+              if(midPt){
+                new AMap.Marker({position:[midPt.lng,midPt.lat],content:'<div style="background:rgba(255,255,255,.92);padding:1px 6px;border-radius:8px;font-size:11px;font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.1);white-space:nowrap">'+labels[seg.m]+'</div>',offset:new AMap.Pixel(-20,-10),zIndex:80});
               }
             }else{
               drawFallback(s1,s2,seg);
