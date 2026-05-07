@@ -83,7 +83,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display"
 <script>
 window._AMapSecurityConfig={securityJsCode:'830b90a26c3b039ba69daccced906ba1'};
 </script>
-<script src="https://webapi.amap.com/maps?v=2.0&key=45cbf43f4675e9b9377fa955a6b1e996&plugin=AMap.Driving"></script>
+<script src="https://webapi.amap.com/maps?v=2.0&key=45cbf43f4675e9b9377fa955a6b1e996&plugin=AMap.Driving,AMap.Transfer,AMap.Walking"></script>
 
 <script>
 var weather={
@@ -119,39 +119,110 @@ function drawMap(){
   (function(){
     var lEl=document.createElement('div');
     lEl.style.cssText='background:rgba(255,255,255,.95);border-radius:10px;padding:8px 12px;font-size:12px;line-height:2;box-shadow:0 2px 12px rgba(0,0,0,.12);position:absolute;top:70px;left:10px;z-index:99';
-    lEl.innerHTML='<div style="font-weight:700;margin-bottom:2px;font-size:13px">🚗 交通图例</div><span style="color:#ff3b30;font-weight:700">━━</span> 🚕 打车<br><span style="color:#007aff;font-weight:700">━━</span> 🚇 地铁<br><span style="color:#34c759;font-weight:700">━━</span> 🚌 公交<br><span style="border-top:3px dashed #aeaeb2;width:22px;display:inline-block;margin-right:2px"></span> 🚶 步行';
+    lEl.innerHTML='<div style="font-weight:700;margin-bottom:2px;font-size:13px">🚗 交通图例</div><span style="color:#ff3b30;font-weight:700">━━</span> 🚕 打车（高德驾车路线）<br><span style="color:#007aff;font-weight:700">━━</span> 🚇 地铁（高德换乘规划）<br><span style="color:#34c759;font-weight:700">━━</span> 🚌 公交（高德换乘规划）<br><span style="border-top:3px dashed #aeaeb2;width:22px;display:inline-block;margin-right:2px"></span> 🚶 步行（高德步行路线）';
     document.getElementById("map-wrap").appendChild(lEl);
   })();
 
-  // 按交通方式分颜色画路线 + 标签
-  var transportStyles={taxi:{color:'#ff3b30',weight:5,dash:[]},metro:{color:'#007aff',weight:5,dash:[]},bus:{color:'#34c759',weight:5,dash:[]},walk:{color:'#aeaeb2',weight:3,dash:[8,6]}};
-  var transportLabels={taxi:'🚕 打车',metro:'🚇 地铁',bus:'🚌 公交',walk:'🚶 步行'};
+  var styles={taxi:{color:'#ff3b30',weight:4},metro:{color:'#007aff',weight:4},bus:{color:'#34c759',weight:4},walk:{color:'#aeaeb2',weight:3,dash:[8,6]}};
+  var labels={taxi:'🚕 打车',metro:'🚇 地铁',bus:'🚌 公交',walk:'🚶 步行'};
 
-  function drawSeg(stopsArr,tModes){
-    tModes.forEach(function(seg){
+  // 多路线异步画图计数
+  var pendingRoutes=0;
+  function drawSegments(stopsArr,segments){
+    segments.forEach(function(seg,i){
       var s1=stopsArr[seg.f],s2=stopsArr[seg.t];
-      if(!s1||!s2)return;
-      var st=transportStyles[seg.m]||transportStyles.taxi;
-      var midLng=(s1.lng+s2.lng)/2,midLat=(s1.lat+s2.lat)/2;
-      new AMap.Polyline({path:[[s1.lng,s1.lat],[s2.lng,s2.lat]],strokeColor:st.color,strokeWeight:st.weight,strokeStyle:'solid',strokeOpacity:.8,map:map});
-      new AMap.Marker({
-        position:[midLng,midLat],
-        content:'<div style="background:rgba(255,255,255,.92);padding:1px 6px;border-radius:8px;font-size:11px;font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.1);white-space:nowrap">'+transportLabels[seg.m]+'</div>',
-        offset:new AMap.Pixel(-20,-10),zIndex:80
-      });
+      if(!s1||!s2){if(seg.label==null)return;drawFallback(s1,s2,seg);return;}
+      pendingRoutes++;
+      if(seg.m==='taxi'){
+        var driving=new AMap.Driving({policy:AMap.DrivingPolicy.LEAST_TIME});
+        driving.search([s1.lng,s1.lat],[s2.lng,s2.lat],{},genCb(seg,s1,s2));
+      }else if(seg.m==='walk'){
+        var walking=new AMap.Walking();
+        walking.search([s1.lng,s1.lat],[s2.lng,s2.lat],{},genCb(seg,s1,s2));
+      }else{
+        var city='南京';
+        var policy=seg.m==='metro'?AMap.TransferPolicy.LEAST_TIME:AMap.TransferPolicy.LEAST_TRANSFER;
+        var transfer=new AMap.Transfer({city:city,policy:policy,nightflag:false});
+        var segM=seg.m==='metro'?1:0; // 1=地铁优先,0=公交优先
+        transfer.search([s1.lng,s1.lat],[s2.lng,s2.lat],{},function(s,r){
+          if(s==='complete'&&r.plans&&r.plans.length>0){
+            var plan=null;
+            if(seg.m==='metro'){
+              for(var p=0;p<r.plans.length;p++){
+                if(r.plans[p].transit_mode+''==='1'||r.plans[p].has_metro){plan=r.plans[p];break;}
+              }
+            }
+            if(!plan)plan=r.plans[0];
+            var allSegments=[];
+            if(plan.segments){
+              plan.segments.forEach(function(sg){
+                if(sg.transit&&sg.transit.lines&&sg.transit.lines.length>0){
+                  var line=sg.transit.lines[0];
+                  if(line.path)allSegments.push({type:seg.m,path:line.path});
+                }else if(sg.walking&&sg.walking.path){
+                  allSegments.push({type:'walk',path:sg.walking.path});
+                }
+              });
+            }
+            if(allSegments.length>0){
+              allSegments.forEach(function(ps){
+                var st=styles[ps.type]||styles.bus;
+                new AMap.Polyline({path:ps.path,strokeColor:st.color,strokeWeight:st.weight,strokeOpacity:.8,map:map});
+              });
+              // 添加交通方式标签
+              var anySeg=allSegments[0];
+              if(anySeg&&anySeg.path&&anySeg.path.length>0){
+                var midIdx=Math.floor(anySeg.path.length/2);
+                var pt=anySeg.path[midIdx];
+                new AMap.Marker({position:[pt.lng,pt.lat],content:'<div style="background:rgba(255,255,255,.92);padding:1px 6px;border-radius:8px;font-size:11px;font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.1);white-space:nowrap">'+labels[seg.m]+'</div>',offset:new AMap.Pixel(-20,-10),zIndex:80});
+              }
+            }else{
+              drawFallback(s1,s2,seg);
+            }
+          }else{
+            drawFallback(s1,s2,seg);
+          }
+          pendingRoutes--;
+        });
+        return;
+      }
     });
   }
 
+  function genCb(seg,s1,s2){
+    return function(s,r){
+      if(s==='complete'&&r.routes&&r.routes[0]){
+        var path=r.routes[0].steps.map(function(step){return step.path;}).flat();
+        var st=styles[seg.m]||styles.taxi;
+        new AMap.Polyline({path:path,strokeColor:st.color,strokeWeight:st.weight,strokeOpacity:.8,map:map});
+        if(path&&path.length>0){
+          var mid=Math.floor(path.length/2);
+          new AMap.Marker({position:[path[mid].lng,path[mid].lat],content:'<div style="background:rgba(255,255,255,.92);padding:1px 6px;border-radius:8px;font-size:11px;font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.1);white-space:nowrap">'+labels[seg.m]+'</div>',offset:new AMap.Pixel(-20,-10),zIndex:80});
+        }
+      }else{
+        drawFallback(s1,s2,seg);
+      }
+      pendingRoutes--;
+    };
+  }
+
+  function drawFallback(s1,s2,seg){
+    var st=styles[seg.m]||styles.taxi;
+    var midLng=(s1.lng+s2.lng)/2,midLat=(s1.lat+s2.lat)/2;
+    new AMap.Polyline({path:[[s1.lng,s1.lat],[s2.lng,s2.lat]],strokeColor:st.color,strokeWeight:st.weight||4,strokeOpacity:.8,map:map});
+    new AMap.Marker({position:[midLng,midLat],content:'<div style="background:rgba(255,255,255,.92);padding:1px 6px;border-radius:8px;font-size:11px;font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.1);white-space:nowrap">'+labels[seg.m]+'</div>',offset:new AMap.Pixel(-20,-10),zIndex:80});
+  }
+
   // Day1: 🚕→🚇→🚇→🚇
-  drawSeg(stops.filter(function(s){return s.d==='MAY 8';}),[
+  drawSegments(stops.filter(function(s){return s.d==='MAY 8';}),[
     {f:0,t:1,m:'taxi'},{f:1,t:2,m:'metro'},{f:2,t:3,m:'metro'},{f:3,t:4,m:'metro'}
   ]);
   // Day2: 🚇→🚌→🚌→🚌→🚇
-  drawSeg(stops.filter(function(s){return s.d==='MAY 9';}),[
+  drawSegments(stops.filter(function(s){return s.d==='MAY 9';}),[
     {f:0,t:1,m:'metro'},{f:1,t:2,m:'bus'},{f:2,t:3,m:'bus'},{f:3,t:4,m:'bus'},{f:4,t:5,m:'metro'}
   ]);
   // Day3: 🚇
-  drawSeg(stops.filter(function(s){return s.d==='MAY10';}),[
+  drawSegments(stops.filter(function(s){return s.d==='MAY10';}),[
     {f:0,t:1,m:'metro'}
   ]);
 
