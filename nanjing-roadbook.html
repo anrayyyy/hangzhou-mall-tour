@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>南京考察 · 三天两晚 · 2026.5.8-5.10</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--white:#fff;--bd:#e8e8ed;--text:#1d1d1f;--text2:#86868b;--text3:#aeaeb2;--accent:#b8860b;--bg:#f5f5f7}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;overflow:hidden;height:100vh}
+#app{display:grid;grid-template-columns:148px 1fr;height:100vh;overflow:hidden}
+#timeline{width:148px;overflow-y:auto;background:var(--white);border-right:1px solid var(--bd);padding:60px 0 20px}
+.tl-item{padding:10px 12px;cursor:pointer;border-left:3px solid transparent;transition:all .2s}
+.tl-item:hover,.tl-item.active{background:var(--bg);border-left-color:var(--accent)}
+.tl-item .tl-date{font-size:11px;color:var(--text3);font-weight:600}
+.tl-item .tl-name{font-size:13px;font-weight:600;margin:2px 0;color:var(--text)}
+.tl-item .tl-time{font-size:11px;color:var(--text2)}
+.tl-item .tl-type{font-size:10px;color:var(--text3);margin-top:2px}
+#map-wrap{position:relative;overflow:hidden}
+#map{height:100vh;width:100%}
+.amap-info-content{border-radius:12px!important;padding:0!important;box-shadow:0 4px 20px rgba(0,0,0,.15)!important}
+.amap-info-sharp{display:none!important}
+.amap-info-outer{margin-top:8px}
+.iw{font-size:13px;line-height:1.5;padding:10px}
+.iw-date{font-size:11px;color:#aeaeb2;font-weight:600}
+.iw-title{font-size:17px;font-weight:700;margin:2px 0}
+.iw-brief{font-size:13px;color:#86868b;margin-bottom:6px;white-space:pre-line}
+.iw-weather{background:#fff8e1;border-radius:8px;padding:6px 10px;font-size:12px;margin-bottom:6px}
+.iw-spot{display:flex;gap:8px;padding:5px 0;border-top:1px solid #e8e8ed}
+.iw-spot:first-of-type{border-top:none;padding-top:0}
+.iw-spot-name{font-weight:600;font-size:13px}
+.iw-spot-desc{font-size:11px;color:#86868b;margin-top:1px}
+.iw-spot-tag{display:inline-block;font-size:9px;padding:1px 5px;border-radius:4px;margin-right:4px;font-weight:600}
+.iw-spot-tag.food{background:rgba(255,59,48,.08);color:#ff3b30}
+.iw-spot-tag.tip{background:rgba(0,122,255,.08);color:#007aff}
+.iw-spot-tag.must{background:rgba(52,199,89,.08);color:#34c759}
+#rb-btn{position:fixed;top:16px;right:16px;z-index:200}
+.rb-trigger{background:rgba(255,255,255,.92);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-radius:980px;padding:8px 16px;font-size:14px;font-weight:600;color:var(--accent);box-shadow:0 1px 8px rgba(0,0,0,.12);cursor:pointer;border:none}
+#rb-overlay{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:300;opacity:0;pointer-events:none;transition:opacity .3s}
+#rb-overlay.show{opacity:1;pointer-events:auto}
+#rb-panel{position:fixed;top:0;left:0;bottom:0;width:360px;max-width:85vw;background:var(--white);z-index:301;transform:translateX(-100%);transition:transform .35s cubic-bezier(.22,1,.36,1);overflow-y:auto;box-shadow:2px 0 20px rgba(0,0,0,.12)}
+#rb-panel.show{transform:translateX(0)}
+#rb-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #e8e8ed;position:sticky;top:0;background:var(--white)}
+#rb-header span{font-size:17px;font-weight:700}
+#rb-close{width:30px;height:30px;border-radius:50%;border:none;background:#f5f5f7;font-size:16px;cursor:pointer}
+#rb-body{padding:16px 20px 40px}
+.rb-day{margin-bottom:24px}
+.rb-day-head2{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.rb-day-date{font-size:11px;font-weight:600;color:#aeaeb2}
+.rb-day-city{font-size:16px;font-weight:700}
+.rb-day-weather{font-size:12px;color:#86868b;margin:4px 0 8px}
+.rb-entry{display:grid;grid-template-columns:48px 1fr;gap:8px;padding:6px 0;border-bottom:1px solid #e8e8ed}
+.rb-time{font-size:11px;font-weight:600;color:var(--accent)}
+.rb-action{font-size:13px;font-weight:500}
+.rb-note{font-size:11px;color:#86868b;margin-top:1px}
+.rb-entry.drive .rb-time{color:#aeaeb2}
+.rb-entry.key .rb-time{color:#34c759}
+@media(max-width:767px){
+  #app{grid-template-columns:1fr}
+  #timeline{position:fixed;left:0;right:0;bottom:0;width:100%;height:80vh;z-index:500;border-radius:18px 18px 0 0;border-right:none;box-shadow:0 -4px 20px rgba(0,0,0,.08);padding:24px 0 20px;transform:translateY(calc(80vh - 64px));transition:transform .38s cubic-bezier(.32,0,.15,1)}
+  #timeline[data-state="half"]{transform:translateY(calc(80vh - 50vh))}
+}
+.mk-stop-wrap{display:flex;flex-direction:column;align-items:center;width:44px}
+.mk-stop{width:22px;height:22px;border-radius:50%;background:#f5f5f7;border:2px solid #aeaeb2;display:flex;align-items:center;justify-content:center;font-size:10px}
+.mk-stop-label{font-size:9px;color:#86868b;margin-top:2px;white-space:nowrap}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="timeline"></div>
+  <div id="map-wrap">
+    <div id="map"></div>
+    <div id="rb-btn"><button class="rb-trigger" id="rb-open">📖 行程方案</button></div>
+  </div>
+</div>
+<div id="rb-overlay"></div>
+<div id="rb-panel">
+  <div id="rb-header"><span>📖 三日行程方案</span><button id="rb-close">✕</button></div>
+  <div id="rb-body"></div>
+</div>
+
+<!-- 高德地图 JS API v2 -->
+<script>
+window._AMapSecurityConfig={securityJsCode:'830b90a26c3b039ba69daccced906ba1'};
+</script>
+<script src="https://webapi.amap.com/maps?v=2.0&key=45cbf43f4675e9b9377fa955a6b1e996&plugin=AMap.Geocoder"></script>
+
+<script>
+var weather={
+  "MAY 8":{icon:"☀️",desc:"晴",hi:25,lo:14,wind:"东风3级"},
+  "MAY 9":{icon:"☀️",desc:"晴",hi:26,lo:16,wind:"东南风3级"},
+  "MAY10":{icon:"☀️",desc:"晴",hi:29,lo:14,wind:"南风3级"}
+};
+
+var places=[
+  // DAY 1
+  {d:"MAY 8",name:"南京南站",addr:"南京市雨花台区南京南站",title:"到达南京",tag:"arrival",brief:"高铁抵达，打车至酒店约20分钟",spots:[{tag:"tip",name:"交通",desc:"打车到安达仕约30元"}]},
+  {d:"MAY 8",name:"南京安达仕酒店",addr:"南京市建邺区白龙江东街108号南京安达仕酒店",title:"入住",tag:"hotel",brief:"河西核心区，豪华精选品牌",spots:[{tag:"must",name:"大堂设计",desc:"酒店室内设计风格"},{tag:"tip",name:"周边",desc:"河西商圈，可步行至元通地铁站"}]},
+  {d:"MAY 8",name:"德基广场",addr:"南京市玄武区中山路18号德基广场",title:"高端商业考察",tag:"mall",brief:"德基广场二期，奢侈品旗舰聚集地",spots:[{tag:"must",name:"精装细节",desc:"墙面/天花/地面材质做法"},{tag:"must",name:"灯光设计",desc:"公区灯光氛围营造"},{tag:"tip",name:"品牌",desc:"LV全国旗舰店、CHANEL等"}]},
+  {d:"MAY 8",name:"颐和路",addr:"南京市鼓楼区颐和路",title:"民国建筑漫步",tag:"culture",brief:"民国公馆一条街，梧桐大道",spots:[{tag:"must",name:"建筑",desc:"民国别墅群/使馆旧址"},{tag:"tip",name:"日落",desc:"傍晚时分光影最好"}]},
+  // DAY 2
+  {d:"MAY 9",name:"明孝陵",addr:"南京市玄武区紫金山明孝陵",title:"世界文化遗产",tag:"culture",brief:"明太祖朱元璋陵寝，600年历史",spots:[{tag:"must",name:"神道石象路",desc:"600m神道石刻"},{tag:"must",name:"建筑格局",desc:"下马坊-大金门-方城明楼"},{tag:"tip",name:"时间",desc:"建议2-3小时"}]},
+  {d:"MAY 9",name:"中山陵",addr:"南京市玄武区紫金山中山陵",title:"民国纪念建筑",tag:"culture",brief:"中山陵，392级台阶俯瞰南京",spots:[{tag:"must",name:"设计",desc:"吕彦直设计中西合璧"},{tag:"tip",name:"时间",desc:"约1-1.5小时"}]},
+  {d:"MAY 9",name:"南京博物院",addr:"南京市玄武区中山东路321号南京博物院",title:"历史文化",tag:"culture",brief:"中国三大博物馆之一",spots:[{tag:"must",name:"历史馆",desc:"江苏古代文明"},{tag:"must",name:"数字馆",desc:"沉浸式数字体验"},{tag:"tip",name:"预约",desc:"免费需提前预约"}]},
+  {d:"MAY 9",name:"中山码头",addr:"南京市鼓楼区中山北路643号中山码头",title:"长江日落",tag:"scenic",brief:"轮渡2元看长江日落",spots:[{tag:"tip",name:"轮渡",desc:"中山码头-浦口码头"},{tag:"food",name:"晚餐",desc:"码头附近或回新街口"}]},
+  // DAY 3
+  {d:"MAY10",name:"南京南站",addr:"南京市雨花台区南京南站",title:"返回杭州",tag:"departure",brief:"高铁回杭州",spots:[{tag:"tip",name:"交通",desc:"地铁1号线/打车30分钟"}]}
+];
+
+var stops=[];var coordsLoaded=0;
+var geocoder=new AMap.Geocoder({city:'南京',radius:1000});
+
+places.forEach(function(p,i){
+  geocoder.getLocation(p.addr,function(status,result){
+    var lat=32.06,lng=118.80;
+    if(status==='complete'&&result.geocodes&&result.geocodes.length>0){
+      var loc=result.geocodes[0];
+      lat=loc.getLat();lng=loc.getLng();
+    }
+    stops[i]={d:p.d,name:p.name,lat:lat,lng:lng,title:p.title,tag:p.tag,brief:p.brief,spots:p.spots};
+    coordsLoaded++;
+    if(coordsLoaded===places.length)drawMap();
+  });
+});
+
+function drawMap(){
+  var map=new AMap.Map('map',{zoom:11,center:[118.78,32.06],mapStyle:'amap://styles/whitesmoke'});
+  var markers=[];
+  var dayColors={arrival:'#4caf50',hotel:'#e65100',mall:'#1976d2',culture:'#7b1fa2',scenic:'#00838f',departure:'#4caf50'};
+  var dayEmojis={arrival:'🚄',hotel:'🏨',mall:'🏬',culture:'🏛️',scenic:'⛴️',departure:'🚄'};
+
+  // 按天分组画路线折线
+  var dayGroups={};
+  stops.forEach(function(s){
+    if(!dayGroups[s.d])dayGroups[s.d]=[];
+    dayGroups[s.d].push(s);
+  });
+  var dayColorsPoly={MAY8:'#b8860b',MAY9:'#7b1fa2',MAY10:'#4caf50'};
+  Object.keys(dayGroups).forEach(function(d){
+    var g=dayGroups[d];
+    if(g.length<2)return;
+    var coords=g.map(function(s){return[s.lng,s.lat];});
+    new AMap.Polyline({path:coords,strokeColor:dayColorsPoly[d],strokeWeight:4,strokeOpacity:.6,strokeStyle:d==='MAY8'?'solid':d==='MAY9'?'dashed':'dotted',map:map});
+  });
+
+  stops.forEach(function(s,i){
+    var c=dayColors[s.tag]||'#007aff',e=dayEmojis[s.tag]||'📍';
+    var m=new AMap.Marker({
+      position:[s.lng,s.lat],
+      content:'<div style="width:32px;height:32px;border-radius:50%;background:'+c+';display:flex;align-items:center;justify-content:center;border:2.5px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.18)"><span style="color:#fff;font-size:13px">'+e+'</span></div>',
+      offset:new AMap.Pixel(-16,-16),map:map,zIndex:90
+    });
+
+    var w=weather[s.d];
+    var spotsHtml=s.spots.map(function(sp){return '<div style="display:flex;gap:8px;padding:5px 0;border-top:1px solid #e8e8ed"><div style="width:20px">'+(sp.tag==='food'?'🍽️':sp.tag==='tip'?'💡':'⭐')+'</div><div style="flex:1"><div style="font-weight:600;font-size:13px"><span style="display:inline-block;font-size:9px;padding:1px 5px;border-radius:4px;margin-right:4px;font-weight:600;background:'+(sp.tag==='food'?'rgba(255,59,48,.08)':sp.tag==='tip'?'rgba(0,122,255,.08)':'rgba(52,199,89,.08)')+';color:'+(sp.tag==='food'?'#ff3b30':sp.tag==='tip'?'#007aff':'#34c759')+'">'+sp.tag+'</span>'+sp.name+'</div><div style="font-size:11px;color:#86868b;margin-top:1px">'+sp.desc+'</div></div></div>';}).join('');
+
+    m.on('click',function(){
+      map.setZoomAndCenter(14,[s.lng,s.lat],false,400);
+      var iw=new AMap.InfoWindow({
+        content:'<div style="font-size:13px;line-height:1.5;padding:10px"><div style="font-size:11px;color:#aeaeb2;font-weight:600">'+s.d+' · '+s.name+'</div><div style="font-size:17px;font-weight:700;margin:2px 0">'+s.title+'</div>'+(w?'<div style="background:#fff8e1;border-radius:8px;padding:6px 10px;font-size:12px;margin-bottom:6px">'+w.icon+' '+w.desc+' '+w.hi+'°/'+w.lo+'°</div>':'')+'<div style="font-size:12px;color:#86868b;margin-bottom:6px">'+s.brief+'</div>'+spotsHtml+'</div>',
+        offset:new AMap.Pixel(0,-38),closeWhenClickMap:true
+      });
+      iw.open(map,[s.lng,s.lat]);
+    });
+    markers.push(m);
+  });
+
+  // 时间轴
+  var tl=document.getElementById('timeline');
+  var dayTimes={'MAY 8':['12:00','12:30','14:00','17:30'],'MAY 9':['08:30','10:30','13:00','17:00'],'MAY10':['09:00']};
+  stops.forEach(function(s,i){
+    var tArr=dayTimes[s.d]||[''];
+    var d=document.createElement('div');d.className='tl-item';d.dataset.idx=i;
+    d.innerHTML='<div class="tl-date">'+s.d.replace('MAY','5月')+'</div><div class="tl-name">'+s.name+'</div><div class="tl-time">'+(tArr[stops.filter(function(x){return x.d===s.d;}).indexOf(s)]||'')+'</div><div class="tl-type">'+s.title+'</div>';
+    d.onclick=function(){
+      map.setZoomAndCenter(14,[s.lng,s.lat],false,400);
+      markers[i].emit('click');
+      document.querySelectorAll('.tl-item').forEach(function(el){el.classList.remove('active');});
+      d.classList.add('active');
+      if(window.innerWidth<=767)document.getElementById('timeline').dataset.state='half';
+    };
+    tl.appendChild(d);
+  });
+}
+
+window.onload=function(){setTimeout(function(){initMap();},500);};
+</script>
+
+<script>
+document.getElementById('rb-open').onclick=function(){
+  document.getElementById('rb-body').innerHTML=[
+    {d:"5月8日 周五",sub:"南京初探",weather:weather["MAY 8"],
+     entries:[
+      {time:"12:00",cls:"key",action:"🚄 到达南京南站",note:"打车至酒店约20分钟"},
+      {time:"12:30",cls:"",action:"🏨 入住安达仕酒店",note:"河西核心区"},
+      {time:"14:00",cls:"",action:"🏬 德基广场·考察",note:"精装/灯光/品牌"},
+      {time:"16:30",cls:"drive",action:"🚕 前往颐和路",note:"约15分钟"},
+      {time:"17:00",cls:"key",action:"🏛️ 颐和路·民国建筑漫步",note:"梧桐大道·夕阳"},
+      {time:"19:00",cls:"",action:"🍽️ 晚餐（新街口/颐和路）"},
+      {time:"20:30",cls:"",action:"🏨 返回安达仕休息"}
+    ]},
+    {d:"5月9日 周六",sub:"紫金山·历史文化",weather:weather["MAY 9"],
+     entries:[
+      {time:"08:30",cls:"key",action:"🏛️ 明孝陵",note:"石象路神道·方城明楼"},
+      {time:"10:30",cls:"",action:"🏛️ 中山陵",note:"392级台阶·俯瞰南京"},
+      {time:"12:00",cls:"drive",action:"🍽️ 午餐（紫金山/博物院附近）"},
+      {time:"13:00",cls:"key",action:"🏛️ 南京博物院",note:"历史馆·数字馆"},
+      {time:"16:00",cls:"drive",action:"🚕 前往中山码头"},
+      {time:"17:00",cls:"key",action:"⛴️ 中山码头·长江日落",note:"轮渡2元·浦口码头"},
+      {time:"18:30",cls:"",action:"🍽️ 晚餐"},
+      {time:"20:00",cls:"",action:"🏨 返回安达仕"}
+    ]},
+    {d:"5月10日 周日",sub:"返程",weather:weather["MAY10"],
+     entries:[
+      {time:"09:00",cls:"key",action:"🚄 南京南站→杭州",note:"高铁约1小时"}
+    ]}
+  ].map(function(day){
+    var en=day.entries.map(function(e){return '<div class="rb-entry '+(e.cls||'')+'"><div class="rb-time">'+e.time+'</div><div style="flex:1"><div style="font-size:13px;font-weight:500">'+e.action+'</div>'+(e.note?'<div style="font-size:11px;color:#86868b">'+e.note+'</div>':'')+'</div></div>';}).join('');
+    return '<div class="rb-day"><div class="rb-day-head2"><span class="rb-day-date">'+day.d+'</span><span class="rb-day-city">'+day.sub+'</span></div><div class="rb-day-weather">'+day.weather.icon+' '+day.weather.desc+' '+day.weather.hi+'°/'+day.weather.lo+'°</div><div style="display:flex;flex-direction:column">'+en+'</div></div>';
+  }).join('');
+  document.getElementById('rb-panel').classList.add('show');
+  document.getElementById('rb-overlay').classList.add('show');
+};
+document.getElementById('rb-close').onclick=function(){closeRB();};
+document.getElementById('rb-overlay').onclick=function(){closeRB();};
+function closeRB(){
+  document.getElementById('rb-panel').classList.remove('show');
+  document.getElementById('rb-overlay').classList.remove('show');
+}
+</script>
+</body>
+</html>
