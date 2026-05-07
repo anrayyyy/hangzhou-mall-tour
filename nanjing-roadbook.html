@@ -83,7 +83,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display"
 <script>
 window._AMapSecurityConfig={securityJsCode:'830b90a26c3b039ba69daccced906ba1'};
 </script>
-<script src="https://webapi.amap.com/maps?v=2.0&key=45cbf43f4675e9b9377fa955a6b1e996"></script>
+<script src="https://webapi.amap.com/maps?v=2.0&key=45cbf43f4675e9b9377fa955a6b1e996&plugin=AMap.Driving"></script>
 
 <script>
 var weather={
@@ -110,7 +110,7 @@ function drawMap(){
   var dayColors={arrival:'#4caf50',hotel:'#e65100',mall:'#1976d2',culture:'#7b1fa2',scenic:'#00838f',departure:'#4caf50'};
   var dayEmojis={arrival:'🚄',hotel:'🏨',mall:'🏬',culture:'🏛️',scenic:'⛴️',departure:'🚄'};
 
-  // 按天分组画路线折线
+  // 按天画驾车路线
   var dayGroups={};
   stops.forEach(function(s){
     if(!dayGroups[s.d])dayGroups[s.d]=[];
@@ -120,8 +120,16 @@ function drawMap(){
   Object.keys(dayGroups).forEach(function(d){
     var g=dayGroups[d];
     if(g.length<2)return;
-    var coords=g.map(function(s){return[s.lng,s.lat];});
-    new AMap.Polyline({path:coords,strokeColor:dayColorsPoly[d],strokeWeight:4,strokeOpacity:.6,strokeStyle:d==='MAY8'?'solid':d==='MAY9'?'dashed':'dotted',map:map});
+    var driving=new AMap.Driving({policy:AMap.DrivingPolicy.LEAST_TIME});
+    var waypoints=[];
+    for(var k=1;k<g.length-1;k++)waypoints.push([g[k].lng,g[k].lat]);
+    driving.search([g[0].lng,g[0].lat],[g[g.length-1].lng,g[g.length-1].lat],
+      {waypoints:waypoints},function(s,r){
+        if(s==='complete'&&r.routes&&r.routes[0]){
+          var path=r.routes[0].steps.map(function(step){return step.path;}).flat();
+          new AMap.Polyline({path:path,strokeColor:dayColorsPoly[d],strokeWeight:4,strokeOpacity:.7,strokeStyle:d==='MAY8'?'solid':d==='MAY9'?'dashed':'dotted',map:map});
+        }
+      });
   });
 
   stops.forEach(function(s,i){
