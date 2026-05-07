@@ -116,18 +116,22 @@ function drawMap(){
     if(!dayGroups[s.d])dayGroups[s.d]=[];
     dayGroups[s.d].push(s);
   });
-  var dayColorsPoly={MAY8:'#b8860b',MAY9:'#7b1fa2',MAY10:'#4caf50'};
+  var dayColors=[{color:'#b8860b',style:'solid'},{color:'#7b1fa2',style:'dashed'},{color:'#4caf50',style:'dotted'}];
+  var dayIdx=0;
   Object.keys(dayGroups).forEach(function(d){
     var g=dayGroups[d];
-    if(g.length<2)return;
+    if(g.length<2){dayIdx++;return;}
+    var color=dayColors[dayIdx].color;
+    var style=dayColors[dayIdx].style;
+    dayIdx++;
     var driving=new AMap.Driving({policy:AMap.DrivingPolicy.LEAST_TIME});
-    var waypoints=[];
-    for(var k=1;k<g.length-1;k++)waypoints.push([g[k].lng,g[k].lat]);
+    var waypts=[];
+    for(var k=1;k<g.length-1;k++)waypts.push([g[k].lng,g[k].lat]);
     driving.search([g[0].lng,g[0].lat],[g[g.length-1].lng,g[g.length-1].lat],
-      {waypoints:waypoints},function(s,r){
+      {waypoints:waypts},function(s,r){
         if(s==='complete'&&r.routes&&r.routes[0]){
           var path=r.routes[0].steps.map(function(step){return step.path;}).flat();
-          new AMap.Polyline({path:path,strokeColor:dayColorsPoly[d],strokeWeight:4,strokeOpacity:.7,strokeStyle:d==='MAY8'?'solid':d==='MAY9'?'dashed':'dotted',map:map});
+          new AMap.Polyline({path:path,strokeColor:color,strokeWeight:4,strokeStyle:style,strokeOpacity:.7,map:map});
         }
       });
   });
