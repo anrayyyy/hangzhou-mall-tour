@@ -120,12 +120,12 @@ const routeStops=[
 {name:"晶悦府",lat:30.3370,lng:120.1644},
 {name:"杭珹未来中心",lat:30.259402,lng:119.993425},
 {name:"栖湖云庄",lat:30.285581,lng:120.074507},
-{name:"奥体中海中海万潮玖序",lat:30.214436,lng:120.211325}
+{name:"奥体中海南"//奥体,lat:30.214436,lng:120.211325}
 ];
 
 let map,driving;
 function initMap(){
-map=new AMap.Map('map',{zoom:10,center:[120.10,30.27],mapStyle:'amap://styles/whitesmoke'});
+map=new AMap.Map("map",{zoom:11,center:[120.13,30.26],mapStyle:'amap://styles/whitesmoke'});
 const icons=["🏠","🏗️","🍽️","🚗","🏗️","🚗","🏗️","🏠"];
 stops.forEach((s,i)=>{
 const el=document.createElement('div');
