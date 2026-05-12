@@ -79,9 +79,13 @@ body{grid-template-columns:1fr}
 <div class="tl-divider"></div>
 <div class="tl-item" data-i="5"><div class="tl-date">14:30–15:10</div><div class="tl-name">建发→奥体</div><div class="tl-brief">驾车约25min过江</div><div class="tl-time">🚗 过江</div></div>
 <div class="tl-divider"></div>
-<div class="tl-item" data-i="6"><div class="tl-date">15:10–16:30</div><div class="tl-name">中海+保利</div><div class="tl-brief">奥体·世纪城</div><div class="tl-time">🏗️ 中海·保利</div></div>
+<div class="tl-item" data-i="6"><div class="tl-date">15:10–16:00</div><div class="tl-name">中海·万潮玖序</div><div class="tl-brief">钱江世纪城</div><div class="tl-time">🏗️ 中海</div></div>
 <div class="tl-divider"></div>
-<div class="tl-item" data-i="7"><div class="tl-date">16:30–17:00</div><div class="tl-name">奥体→晶悦府</div><div class="tl-brief">驾车约25min</div><div class="tl-time">🏠 回家</div></div>
+<div class="tl-item" data-i="7"><div class="tl-date">16:00–16:10</div><div class="tl-name">中海→保利</div><div class="tl-brief">驾车约5min</div><div class="tl-time">🚗 奥体方向</div></div>
+<div class="tl-divider"></div>
+<div class="tl-item" data-i="8"><div class="tl-date">16:10–17:00</div><div class="tl-name">保利·天珺</div><div class="tl-brief">奥体核心</div><div class="tl-time">🏗️ 保利</div></div>
+<div class="tl-divider"></div>
+<div class="tl-item" data-i="9"><div class="tl-date">17:00–17:30</div><div class="tl-name">奥体→晶悦府</div><div class="tl-brief">驾车约25min</div><div class="tl-time">🏠 回家</div></div>
 </div>
 <div id="map-wrap">
 <div id="map"></div>
@@ -104,10 +108,14 @@ history:"华润置地在未来科技城的旗舰TOD，含高端住宅、万象�
 features:["102轮竞价溢价115%","容积率1.1纯低密","总价3000万+"],
 spots:[{name:"考察重点",desc:"新中式排屋立面、园区景观"},{name:"关注",desc:"低密产品空间尺度与精装"}],
 history:"建发经102轮竞价以34.35亿夺得蒋村地块，楼面价88029元/㎡刷新杭州纪录。"},
-{d:"15:10",name:"中海玖序+保利天珺",lat:30.222161,lng:120.253197,title:"奥体双盘",brief:"中海联手扎哈事务所·保利天系TOP级",
-features:["中海·万潮玖序230-420㎡","保利天珺74422元/㎡首开","2026Q1杭州销冠"],
-spots:[{name:"中海重点",desc:"扎哈'都会峡谷'景观"},{name:"保利重点",desc:"天系TOP级产品标准"}],
-history:"中海钱湾玖序联手扎哈·哈迪德建筑事务所。保利天珺为奥体最后涉宅地。"}
+{d:"15:10",name:"中海·万潮玖序",lat:30.214436,lng:120.211325,title:"中海·钱湾玖序",brief:"中海联手扎哈·哈迪德建筑事务所打造奥体顶豪·230-420㎡",
+features:["扎哈·哈迪德'都会峡谷'景观","230-420㎡大平层","钱江世纪城核心"],
+spots:[{name:"考察重点",desc:"都会峡谷立体景观设计"},{name:"关注",desc:"中海玖序产品系标准"}],
+history:"中海钱湾玖序联手扎哈·哈迪德建筑事务所，打造'都会峡谷'立体景观，主力230-420㎡。"},
+{d:"16:00",name:"保利·天珺",lat:30.222161,lng:120.253197,title:"保利·天珺",brief:"奥体最后涉宅地·天系TOP级·2026Q1杭州销冠",
+features:["奥体核心最后宅地","均价74422元/㎡首开","2026Q1住宅销售金额榜首"],
+spots:[{name:"考察重点",desc:"天系TOP级产品标准"},{name:"对比",desc:"与中海玖序差异化定位"}],
+history:"保利天珺位于奥博中心单元，是奥体最后一块涉宅地，2026年一季度登顶杭州住宅销售金额榜首。"}
 ];
 
 var map=null;
@@ -117,7 +125,7 @@ addMarkers();
 addRoute();
 }
 function addMarkers(){
-var icons=["🏠","🏗️","🍽️","🚗","🏗️","🚗","🏗️","🏠"];
+var icons=["🏠","🏗️","🍽️","🚗","🏗️","🚗","🏗️","🚗","🏗️","🏠"];
 for(var i=0;i<stops.length;i++){
 (function(s,idx){
 var el=document.createElement('div');
@@ -144,16 +152,17 @@ function addRoute(){
 var start=new AMap.LngLat(120.1644,30.3370);
 var pass1=new AMap.LngLat(119.993425,30.259402);
 var pass2=new AMap.LngLat(120.074507,30.285581);
+var pass3=new AMap.LngLat(120.211325,30.214436);
 var end=new AMap.LngLat(120.253197,30.222161);
 var dr=new AMap.Driving({map:map,policy:AMap.DrivingPolicy.LEAST_TIME,hideMarkers:true,isOutline:true,outlineColor:'#ffffff',autoFitView:false});
-dr.search(start,end,{waypoints:[pass1,pass2]},function(s,r){if(s==='complete')dr.search(r);});
+dr.search(start,end,{waypoints:[pass1,pass2,pass3]},function(s,r){if(s==='complete')dr.search(r);});
 }
 function selectCity(i){
 document.querySelectorAll('.tl-item').forEach(function(el){el.classList.remove('active');});
 var el=document.querySelector('.tl-item[data-i="'+i+'"]');
 if(el)el.classList.add('active');
 if(isMobile())return;
-var s=i<4?stops[i]:stops[stops.length-1];
+var s=stops[Math.min(i,stops.length-1)];
 var z=map.getZoom();
 map.setZoomAndCenter(Math.max(z,13),[s.lng,s.lat+(z>=12?0.1:0.3)],false,400);
 var spotsHtml='';if(s.spots){for(var j=0;j<s.spots.length;j++){spotsHtml+='<div class="spot spot-design"><div class="spot-name">'+s.spots[j].name+'</div><div class="spot-desc">'+s.spots[j].desc+'</div></div>';}}
