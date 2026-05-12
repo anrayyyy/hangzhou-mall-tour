@@ -3,13 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>杭州高端商业考察 · 天目里→恒隆→城北万象城</title>
+<title>杭州高端商业考察 · 城北万象城→天目里→恒隆</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 :root { --white: #faf9f7; --bd: #e8e4df; --text: #2c2c2c; --muted: #8a8681; --accent: #c0392b; --gold: #b8860b; }
 body { font-family: 'Noto Sans SC', 'PingFang SC', system-ui, sans-serif; background: var(--white); color: var(--text); display: grid; grid-template-columns: 148px 1fr; height: 100vh; overflow: hidden; }
-
-/* Timeline */
 #timeline { width: 148px; overflow-y: auto; padding: 16px 0; background: var(--white); border-right: 1px solid var(--bd); }
 .tl-item { padding: 10px 14px; cursor: pointer; border-left: 3px solid transparent; transition: all .2s; }
 .tl-item:hover { background: #f0ede8; }
@@ -20,12 +18,8 @@ body { font-family: 'Noto Sans SC', 'PingFang SC', system-ui, sans-serif; backgr
 .tl-item .tl-time { font-size: 10px; color: var(--accent); margin-top: 2px; }
 .tl-divider { height: 20px; position: relative; }
 .tl-divider::after { content: ''; position: absolute; left: 18px; top: 0; bottom: 0; width: 1px; background: var(--bd); }
-
-/* Map */
 #map-wrap { position: relative; overflow: hidden; }
 #map { height: 100vh; width: 100%; }
-
-/* InfoWindow custom styles */
 .iw { max-width: 320px; font-family: 'Noto Sans SC', system-ui, sans-serif; }
 .iw-head { border-bottom: 2px solid var(--accent); padding-bottom: 8px; margin-bottom: 10px; }
 .iw-date { font-size: 11px; color: var(--muted); }
@@ -43,8 +37,6 @@ body { font-family: 'Noto Sans SC', 'PingFang SC', system-ui, sans-serif; backgr
 .spot-name { font-weight: 600; }
 .spot-desc { color: #555; margin-top: 2px; }
 .iw-history { margin-top: 8px; padding: 8px 10px; background: #faf5ee; border-radius: 6px; font-size: 12px; line-height: 1.6; color: #555; }
-
-/* Roadbook button & panel */
 #rb-btn { position: fixed; top: 16px; right: 16px; z-index: 200; }
 .rb-trigger { background: var(--accent); color: #fff; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: 500; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
 .rb-trigger:hover { background: #a0241a; }
@@ -61,31 +53,20 @@ body { font-family: 'Noto Sans SC', 'PingFang SC', system-ui, sans-serif; backgr
 .rb-day-date { font-size: 13px; font-weight: 700; color: var(--accent); }
 .rb-day-city { font-size: 14px; font-weight: 600; }
 .rb-day-km { font-size: 11px; color: var(--muted); }
-.rb-day-weather { font-size: 12px; color: var(--muted); margin-top: 2px; }
 .rb-entries { margin-top: 8px; }
 .rb-entry { display: grid; grid-template-columns: 44px 1fr; gap: 8px; padding: 6px 0; border-bottom: 1px solid #f0ede8; }
 .rb-time { font-size: 11px; color: var(--muted); font-weight: 600; }
-.rb-entry-right { }
 .rb-action { font-size: 13px; }
 .rb-note { font-size: 11px; color: var(--muted); margin-top: 1px; }
 .rb-entry.drive .rb-action { color: var(--accent); }
 .rb-entry.key .rb-action { font-weight: 600; }
 .rb-spots { margin-top: 10px; padding: 10px 12px; background: #f5f0ea; border-radius: 8px; }
-.rb-spots-title { font-size: 12px; font-weight: 600; margin-top: 6px; color: var(--text); }
+.rb-spots-title { font-size: 12px; font-weight: 600; margin-top: 6px; }
 .rb-spots-title:first-child { margin-top: 0; }
 .rb-spot-item { font-size: 12px; margin: 4px 0; }
-
-/* Mobile drawer */
 @media (max-width: 767px) {
   body { grid-template-columns: 1fr; }
-  #timeline {
-    position: fixed; left: 0; right: 0; bottom: 0;
-    width: 100%; height: 85vh;
-    border-radius: 18px 18px 0 0;
-    transform: translateY(calc(85vh - 72px));
-    transition: transform .38s cubic-bezier(.32,0,.15,1);
-    z-index: 500; overflow-y: auto; background: var(--white);
-  }
+  #timeline { position: fixed; left: 0; right: 0; bottom: 0; width: 100%; height: 85vh; border-radius: 18px 18px 0 0; transform: translateY(calc(85vh - 72px)); transition: transform .38s cubic-bezier(.32,0,.15,1); z-index: 500; overflow-y: auto; background: var(--white); }
   #timeline[data-state="half"] { transform: translateY(calc(85vh - 40vh)); }
   #timeline[data-state="full"] { transform: translateY(0); }
   .amap-info-outer { display: none !important; }
@@ -97,67 +78,49 @@ body { font-family: 'Noto Sans SC', 'PingFang SC', system-ui, sans-serif; backgr
 
 <div id="timeline" data-state="closed">
   <div class="tl-item active" data-i="0">
-    <div class="tl-date">08:30</div>
-    <div class="tl-name">晶悦府 → 天目里</div>
-    <div class="tl-brief">出发 · 驾车约35min</div>
-    <div class="tl-time">🚗 城西方向</div>
+    <div class="tl-date">09:00</div><div class="tl-name">晶悦府 → 城北万象城</div>
+    <div class="tl-brief">出发 · 驾车约15min</div><div class="tl-time">🚗 北向</div>
   </div>
   <div class="tl-divider"></div>
   <div class="tl-item" data-i="1">
-    <div class="tl-date">09:15–11:30</div>
-    <div class="tl-name">天目里</div>
-    <div class="tl-brief">伦佐·皮亚诺作品</div>
-    <div class="tl-time">📐 建筑考察</div>
+    <div class="tl-date">09:20–11:30</div><div class="tl-name">城北万象城</div>
+    <div class="tl-brief">华润·良渚新城</div><div class="tl-time">🏬 上午考察</div>
   </div>
   <div class="tl-divider"></div>
   <div class="tl-item" data-i="2">
-    <div class="tl-date">11:30–12:30</div>
-    <div class="tl-name">午餐 · 天目里</div>
-    <div class="tl-brief">18号酒馆/Bistro</div>
-    <div class="tl-time">🍽️</div>
+    <div class="tl-date">11:30–12:30</div><div class="tl-name">城北万象城午餐</div>
+    <div class="tl-brief">商场内餐饮</div><div class="tl-time">🍽️</div>
   </div>
   <div class="tl-divider"></div>
   <div class="tl-item" data-i="3">
-    <div class="tl-date">13:00–13:30</div>
-    <div class="tl-name">天目里 → 恒隆</div>
-    <div class="tl-brief">驾车约20min</div>
-    <div class="tl-time">🚗 武林方向</div>
+    <div class="tl-date">12:30–13:00</div><div class="tl-name">城北万象城 → 天目里</div>
+    <div class="tl-brief">驾车约25min</div><div class="tl-time">🚗 南下城西</div>
   </div>
   <div class="tl-divider"></div>
   <div class="tl-item" data-i="4">
-    <div class="tl-date">13:30–16:00</div>
-    <div class="tl-name">恒隆广场 Westlake 66</div>
-    <div class="tl-brief">恒隆地产 · 武林商圈</div>
-    <div class="tl-time">🏬 刚试营业</div>
+    <div class="tl-date">13:00–15:00</div><div class="tl-name">天目里</div>
+    <div class="tl-brief">伦佐·皮亚诺作品</div><div class="tl-time">📐 建筑考察</div>
   </div>
   <div class="tl-divider"></div>
   <div class="tl-item" data-i="5">
-    <div class="tl-date">16:00–16:40</div>
-    <div class="tl-name">恒隆 → 城北万象城</div>
-    <div class="tl-brief">驾车约25min</div>
-    <div class="tl-time">🚗 上塘高架北上</div>
+    <div class="tl-date">15:00–15:20</div><div class="tl-name">天目里 → 恒隆</div>
+    <div class="tl-brief">驾车约15min</div><div class="tl-time">🚗 武林方向</div>
   </div>
   <div class="tl-divider"></div>
   <div class="tl-item" data-i="6">
-    <div class="tl-date">16:40–18:30</div>
-    <div class="tl-name">城北万象城</div>
-    <div class="tl-brief">华润万象生活 · 良渚</div>
-    <div class="tl-time">🏬 考察收尾</div>
+    <div class="tl-date">15:20–17:30</div><div class="tl-name">恒隆广场 Westlake 66</div>
+    <div class="tl-brief">恒隆地产·武林商圈</div><div class="tl-time">🏬 下午收尾</div>
   </div>
   <div class="tl-divider"></div>
   <div class="tl-item" data-i="7">
-    <div class="tl-date">18:30–19:00</div>
-    <div class="tl-name">城北万象城 → 晶悦府</div>
-    <div class="tl-brief">驾车约15min到家</div>
-    <div class="tl-time">🏠 回家</div>
+    <div class="tl-date">17:30–17:50</div><div class="tl-name">恒隆 → 晶悦府</div>
+    <div class="tl-brief">驾车约15min到家</div><div class="tl-time">🏠 回家</div>
   </div>
 </div>
 
 <div id="map-wrap">
   <div id="map"></div>
-  <div id="rb-btn">
-    <div class="rb-trigger" id="rb-open">📖 考察路书</div>
-  </div>
+  <div id="rb-btn"><div class="rb-trigger" id="rb-open">📖 考察路书</div></div>
   <div id="rb-overlay"></div>
   <div id="rb-panel">
     <div id="rb-header"><span>📋 一日考察路书</span><button id="rb-close">✕</button></div>
@@ -171,299 +134,116 @@ const AMAP_SECRET = '830b90a26c3b039ba69daccced906ba1';
 window._AMapSecurityConfig = { securityJsCode: AMAP_SECRET };
 
 const stops = [
-  { d: "08:30", name: "晶悦府", lat: 30.3370, lng: 120.1644, type: "start", title: "出发", brief: "杭州拱墅区铁路北板块 · 星创晶悦府", places: [], features: ["出发前确认车况良好", "导航至天目里约35min", "走留石快速路→紫金港路"] },
-  { d: "09:15", name: "天目里", lat: 30.2855, lng: 120.0950, type: "star", title: "伦佐·皮亚诺 · 杭州必看", brief: "集办公、商业、艺术于一体的城市综合体，2020年开业，江南布衣总部基地。全球最美书店之一茑屋书店中国大陆首店落址于此。",
-    places: [
-      { name: "茑屋书店", desc: "中国大陆首店，书籍+文创+咖啡复合空间" },
-      { name: "之馆 (BY ART MATTERS)", desc: "当代艺术美术馆，定期策展" },
-      { name: "水镜广场", desc: "标志性浅水池广场，建筑倒影效果" }
-    ],
-    features: ["伦佐·皮亚诺在中国第一个项目", "铝板+玻璃幕墙+清水混凝土", "屋顶茶园 & 景观平台", "开放式街区动线设计"],
-    spots: [
-      { tag: "food", name: "18号酒馆", desc: "精酿啤酒+西餐，氛围很好" },
-      { tag: "food", name: "柴米多农场餐厅", desc: "云南创意菜，农场到餐桌" },
-      { tag: "food", name: "% Arabica咖啡", desc: "京都网红咖啡，空间设计极简" },
-      { tag: "design", name: "B1OCK 买手店", desc: "7层复合空间，每层不同设计师" }
-    ],
-    history: "天目里由江南布衣集团投资，邀请意大利建筑大师伦佐·皮亚诺（Renzo Piano）操刀，是其在中国大陆的首个作品。项目以'苹果园'为设计理念——建筑为'树'，景观为'园'，人在园中游。11栋建筑围合出中央广场，水镜、乔木、清水混凝土营造出宁静而富有仪式感的城市公共空间。" },
-  { d: "11:30", name: "午餐 · 天目里", lat: 30.2853, lng: 120.0953, type: "normal", title: "天目里用午餐", brief: "推荐：18号酒馆或柴米多农场餐厅", places: [], features: [] },
-  { d: "13:00", name: "恒隆广场 Westlake 66", lat: 30.2745, lng: 120.1600, type: "star", title: "恒隆地产 · 武林商圈新地标", brief: "恒隆地产在杭州的旗舰商业项目，2026年4月28日试营业。总投资约300亿，10万㎡购物中心+甲级办公楼+文华东方酒店。",
-    places: [
-      { name: "百亿商地", desc: "2018年恒隆107.3亿拿下，杭州首个百亿商地" },
-      { name: "购物中心", desc: "10万㎡高端商业空间，规划众多首店" },
-      { name: "文华东方酒店", desc: "浙江省首家文华东方，顶奢定位" }
-    ],
-    features: ["武林广场核心地段，百井坊巷", "恒隆'城市脉动'理念", "336轮竞价，杭州土拍历史性时刻", "8年打磨，2026终开业"],
-    spots: [
-      { tag: "tip", name: "考察重点", desc: "首层动线、中庭尺度、垂直交通组织" },
-      { tag: "tip", name: "品牌观察", desc: "关注招商品牌层级和首店比例" },
-      { tag: "tip", name: "对比", desc: "与上海恒隆/港汇恒隆做空间比较" }
-    ],
-    history: "恒隆地产2018年5月28日经336轮竞价以107.3亿拿下百井坊地块，创杭州土拍历史。投资约190亿建设，历时8年，2026年4月28日试营业。项目由KPF建筑事务所设计，以'Westlake 66'为名致敬西湖，商业面积约10万平方米，是恒隆在内地布局的重要标杆。" },
-  { d: "16:00", name: "城北万象城", lat: 30.3425, lng: 120.0900, type: "star", title: "华润万象生活 · 良渚新城", brief: "华润置地在杭州城北的大型商业综合体，16万㎡购物中心+285m甲级写字楼润珹置地中心。",
-    places: [
-      { name: "里巷", desc: "一楼水镜广场旁特色街区，大台阶+露台+水景" },
-      { name: "285m写字楼", desc: "润珹置地中心，城北最高地标" },
-      { name: "餐饮集群", desc: "B1美食广场+各层特色餐饮" }
-    ],
-    features: ["16万㎡购物中心+甲级写字楼", "城北新中心，玉湖板块", "特色街区'里巷'值得研究"],
-    spots: [
-      { tag: "design", name: "考察重点", desc: "水镜广场与街区联动关系" },
-      { tag: "food", name: "晚餐推荐", desc: "城北万象城内餐饮选择丰富" }
-    ],
-    history: "城北万象城是华润置地在杭州的第二座万象城，位于余杭区良渚街道杭行路，毗邻玉湖公园。购物中心约16万㎡，配套285米高的润珹置地中心写字楼，是城北新中心的重要商业配套。项目以'水镜广场+里巷街区'为核心亮点，打造全天候社交空间。" }
+  { d: "09:00", name: "晶悦府", lat: 30.3370, lng: 120.1644, type:"start", title:"出发", brief:"杭州拱墅区铁路北板块 · 星创晶悦府 → 城北万象城", places:[], features:["出门北上杭行路约15min","考察前确认满电/加油"] },
+  { d: "09:20", name: "城北万象城", lat: 30.3425, lng: 120.0900, type:"star", title:"华润万象生活 · 良渚新城", brief:"华润置地杭州第二座万象城，16万㎡购物中心+285m润珹置地中心。",
+    places:[{name:"里巷街区",desc:"水镜广场旁特色街区，大台阶+露台+水景"},{name:"润珹置地中心",desc:"城北最高地标285m"}],
+    features:["考察重点：水镜广场与街区联动","关注动线设计、店铺面宽与业态组合","社区商业综合体定位","建议早上去人少，便于拍照记录"],
+    spots:[{tag:"design",name:"关注重点",desc:"室内精装材料、天花造型、灯光设计"},{tag:"food",name:"午餐推荐",desc:"B1美食广场或3-4楼餐饮"},
+           {tag:"tip",name:"拍照记录",desc:"中庭、导视系统、卫生间标准"}],
+    history:"城北万象城位于余杭区良渚杭行路，毗邻玉湖公园。购物中心16万㎡，配套285米写字楼，是城北新中心的核心商业配套。特色'里巷街区'通过水镜广场+大台阶创造城市公共空间。" },
+  { d: "11:30", name:"午餐", lat:30.3425, lng:120.0900, type:"normal", title:"城北万象城内午餐", brief:"商场内餐饮选择丰富", places:[], features:[] },
+  { d: "12:30", name:"天目里", lat:30.2855, lng:120.0950, type:"star", title:"伦佐·皮亚诺·杭州必看", brief:"集办公、商业、艺术于一体的城市综合体，江南布衣总部。中国大陆首家茑屋书店落址于此。",
+    places:[{name:"茑屋书店",desc:"中国大陆首店，书籍+文创+咖啡复合空间"},{name:"之馆 BY ART MATTERS",desc:"当代艺术美术馆"},{name:"水镜广场",desc:"标志性浅水池广场，建筑倒影"}],
+    features:["伦佐·皮亚诺中国首个作品","铝板+玻璃幕墙+清水混凝土","屋顶茶园与景观平台","开放式街区动线"],
+    spots:[{tag:"food",name:"下午茶",desc:"% Arabica咖啡或18号酒馆"}],
+    history:"天目里由江南布衣投资，伦佐·皮亚诺操刀。以'苹果园'为设计理念——建筑为树，景观为园。11栋建筑围合中央广场，水镜与清水混凝土营造出宁静的城市公共空间。" },
+  { d:"15:00", name:"恒隆广场 Westlake 66", lat:30.2745, lng:120.1600, type:"star", title:"恒隆地产·武林商圈新地标", brief:"恒隆杭州旗舰，2026年4月28日试营业。总投资约300亿，10万㎡购物中心+甲级办公楼+文华东方酒店。",
+    places:[{name:"百亿商地",desc:"2018年107.3亿拿下，杭州首个百亿商地"},{name:"购物中心",desc:"10万㎡高端商业"},{name:"文华东方",desc:"浙江省首家"}],
+    features:["武林广场核心·百井坊巷","KPF建筑设计","336轮竞价·杭州土拍历史"],
+    spots:[{tag:"tip",name:"考察重点",desc:"首层动线、中庭尺度、垂直交通组织"},{tag:"tip",name:"品牌观察",desc:"招商品牌层级与首店比例"}],
+    history:"恒隆2018年336轮竞价以107.3亿拿地，投资190亿建设8年。KPF设计，'Westlake 66'致敬西湖。" },
+  { d:"17:30", name:"恒隆→晶悦府", lat:30.3370, lng:120.1644, type:"end", title:"返程回家", brief:"上塘高架北上约15min到家", places:[], features:[] }
 ];
 
 const routeStops = [
-  { name: "晶悦府", lat: 30.3370, lng: 120.1644 },
-  { name: "天目里", lat: 30.2855, lng: 120.0950 },
-  { name: "恒隆广场", lat: 30.2745, lng: 120.1600 },
-  { name: "城北万象城", lat: 30.3425, lng: 120.0900 }
+  { name:"晶悦府", lat:30.3370, lng:120.1644 },
+  { name:"城北万象城", lat:30.3425, lng:120.0900 },
+  { name:"天目里", lat:30.2855, lng:120.0950 },
+  { name:"恒隆广场", lat:30.2745, lng:120.1600 }
 ];
-
-const weather = {
-  "08:30": { icon:"☀️", desc:"晴", hi:32, lo:20, wind:"东北风2级", note:"初夏晴朗，注意防晒" }
-};
-
-function isMobile() { return window.innerWidth <= 767; }
 
 let map, driving;
 
 function initMap() {
-  map = new AMap.Map('map', {
-    zoom: 11, center: [120.13, 30.31],
-    mapStyle: 'amap://styles/whitesmoke'
+  map = new AMap.Map('map', { zoom:11, center:[120.13,30.31], mapStyle:'amap://styles/whitesmoke' });
+  const icons = ["🏠","🏬","🍽️","🚗","📐","🚗","🏬","🏠"];
+  stops.forEach((s,i) => {
+    const el=document.createElement('div');
+    el.innerHTML=`<div style="background:${s.type==='star'?'#c0392b':'#555'};color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,0.3)">${icons[i]||'📍'}</div>`;
+    const m=new AMap.Marker({ position:[s.lng,s.lat], content:el, map, zIndex:s.type==='star'?100:80, bubble:true });
+    m.on('click',()=>selectCity(i));
   });
-
-  // Add markers for all stops
-  stops.forEach((s, i) => {
-    const el = document.createElement('div');
-    el.className = 'mk-stop-wrap';
-    const icons = ['🏠','📐','🍽️','🏬','🏬','🚗','🏬','🏠'];
-    el.innerHTML = `<div class="mk-stop" style="background:${s.type==='star'?'#c0392b':'#555'};color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,0.3)}">${icons[i]||'📍'}</div>`;
-    const marker = new AMap.Marker({
-      position: [s.lng, s.lat], content: el, map,
-      zIndex: s.type==='star'?100:80, bubble: true
-    });
-    marker.on('click', () => selectCity(i));
-  });
-
-  // Add waypoint markers for driving route
-  const waypoints = [
-    { name: "留石快速路", icon: "🛣️", lng: 120.110, lat: 30.315 },
-    { name: "紫金港隧道", icon: "🛣️", lng: 120.080, lat: 30.305 },
+  const waypts = [
+    {name:"上塘高架",icon:"🛣️",lng:120.1420,lat:30.3200},
+    {name:"留石快速路",icon:"🛣️",lng:120.1100,lat:30.3150},
   ];
-  waypoints.forEach(wp => {
-    const wEl = document.createElement('div');
-    wEl.style.cssText = 'background:rgba(255,255,255,.9);padding:2px 8px;border-radius:10px;font-size:11px;box-shadow:0 1px 3px rgba(0,0,0,.15)';
-    wEl.textContent = wp.icon + ' ' + wp.name;
-    new AMap.Marker({ position:[wp.lng, wp.lat], content:wEl, offset:new AMap.Pixel(-20,-10), map, zIndex:60 });
+  waypts.forEach(wp=>{
+    const wEl=document.createElement('div'); wEl.style.cssText='background:rgba(255,255,255,.9);padding:2px 8px;border-radius:10px;font-size:11px;box-shadow:0 1px 3px rgba(0,0,0,.15)';
+    wEl.textContent=wp.icon+' '+wp.name;
+    new AMap.Marker({position:[wp.lng,wp.lat],content:wEl,offset:new AMap.Pixel(-20,-10),map,zIndex:60});
   });
-
-  // Plan driving route
-  planRoutes();
-}
-
-function planRoutes() {
-  // Use AMap.Driving to plan the entire route
-  driving = new AMap.Driving({
-    map: map,
-    panel: null,
-    policy: AMap.DrivingPolicy.LEAST_TIME,
-    hideMarkers: true,
-    isOutline: true,
-    outlineColor: '#ffffff',
-    autoFitView: false
-  });
-
-  // Plan multi-stop route
-  const coords = routeStops.map(s => [s.lng, s.lat]);
-  // Build waypoints: first and last as start/end, rest as pass-through
-  const start = coords[0];
-  const end = coords[coords.length - 1];
-  const passes = coords.slice(1, -1);
-
-  driving.search(new AMap.LngLat(start[0], start[1]),
-    new AMap.LngLat(end[0], end[1]), {
-      waypoints: passes.map(p => new AMap.LngLat(p[0], p[1]))
-    }, (status, result) => {
-      if (status === 'complete') {
-        driving.search(result); // render
-      }
-    });
+  driving = new AMap.Driving({ map, policy:AMap.DrivingPolicy.LEAST_TIME, hideMarkers:true, isOutline:true, outlineColor:'#ffffff', autoFitView:false });
+  const start=routeStops[0], end=routeStops[routeStops.length-1];
+  const passes=routeStops.slice(1,-1).map(p=>new AMap.LngLat(p.lng,p.lat));
+  driving.search(new AMap.LngLat(start.lng,start.lat), new AMap.LngLat(end.lng,end.lat), {waypoints:passes}, (s,r)=>{ if(s==='complete') driving.search(r); });
 }
 
 function selectCity(i) {
-  const s = stops[i];
-  if (isMobile()) showMobileSheet(i);
+  const s=stops[i];
+  if(isMobile()){ showMobileSheet(i); }
   else openInfoWindow(i);
-  document.querySelectorAll('.tl-item').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tl-item').forEach(el=>el.classList.remove('active'));
   document.querySelector(`.tl-item[data-i="${i}"]`)?.classList.add('active');
 }
 
 function openInfoWindow(i) {
-  const s = stops[i];
-  const zoomLevel = map.getZoom();
-  const latShift = zoomLevel >= 12 ? 0.12 : 0.5;
-  const targetZoom = Math.max(zoomLevel, 12);
-  map.setZoomAndCenter(targetZoom, [s.lng, s.lat + latShift], false, 400);
-
-  const spotsHtml = (s.spots || []).map(sp =>
-    `<div class="spot spot-${sp.tag}"><div class="spot-name">${sp.name}</div><div class="spot-desc">${sp.desc}</div></div>`
-  ).join('');
-
-  const featuresHtml = (s.features || []).map(f =>
-    `<div class="iw-feature">${f}</div>`
-  ).join('');
-
-  const content = `
-    <div class="iw">
-      <div class="iw-head">
-        <div class="iw-date">${s.d}</div>
-        <div class="iw-title">${s.title}</div>
-      </div>
-      <div class="iw-brief">${s.brief}</div>
-      ${featuresHtml}
-      <div class="iw-spots">${spotsHtml}</div>
-      ${s.history ? `<div class="iw-history">${s.history}</div>` : ''}
-    </div>`;
-
-  const iw = new AMap.InfoWindow({
-    content: content,
-    offset: new AMap.Pixel(0, -38),
-    autoMove: false,
-    closeWhenClickMap: true
-  });
-  iw.open(map, [s.lng, s.lat]);
+  const s=stops[i];
+  const zoomLevel=map.getZoom();
+  const latShift=zoomLevel>=12?0.12:0.5;
+  map.setZoomAndCenter(Math.max(zoomLevel,12),[s.lng,s.lat+latShift],false,400);
+  const spotsHtml=(s.spots||[]).map(sp=>`<div class="spot spot-${sp.tag}"><div class="spot-name">${sp.name}</div><div class="spot-desc">${sp.desc}</div></div>`).join('');
+  const featuresHtml=(s.features||[]).map(f=>`<div class="iw-feature">${f}</div>`).join('');
+  const content=`<div class="iw"><div class="iw-head"><div class="iw-date">${s.d}</div><div class="iw-title">${s.title}</div></div><div class="iw-brief">${s.brief}</div>${featuresHtml}<div class="iw-spots">${spotsHtml}</div>${s.history?`<div class="iw-history">${s.history}</div>`:''}</div>`;
+  const iw=new AMap.InfoWindow({content,offset:new AMap.Pixel(0,-38),autoMove:false,closeWhenClickMap:true});
+  iw.open(map,[s.lng,s.lat]);
 }
+function showMobileSheet(i){ document.querySelectorAll('.tl-item').forEach(el=>el.classList.remove('active')); document.querySelectorAll('.tl-item')[i]?.classList.add('active'); }
+function setDrawer(s){ document.getElementById('timeline').dataset.state=s; }
+function isMobile(){ return window.innerWidth<=767; }
+document.querySelectorAll('.tl-item').forEach(el=>{ el.addEventListener('click',()=>{ const i=parseInt(el.dataset.i); if(isMobile()){ showMobileSheet(i); setDrawer('half'); } else selectCity(i); }); });
 
-function showMobileSheet(i) {
-  const s = stops[i];
-  const items = document.querySelectorAll('.tl-item');
-  items.forEach(el => el.classList.remove('active'));
-  items[i]?.classList.add('active');
-}
-
-function setDrawer(state) {
-  document.getElementById('timeline').dataset.state = state;
-}
-
-// Timeline click handling
-document.querySelectorAll('.tl-item').forEach(el => {
-  el.addEventListener('click', () => {
-    const i = parseInt(el.dataset.i);
-    if (isMobile()) {
-      showMobileSheet(i);
-      setDrawer('half');
-    } else {
-      selectCity(i);
-    }
-  });
-});
-
-// Mobile drawer drag hint
-if (isMobile()) {
-  const tl = document.getElementById('timeline');
-  let startY = 0, isDragging = false;
-  tl.addEventListener('touchstart', e => {
-    startY = e.touches[0].clientY;
-    isDragging = true;
-  }, { passive: true });
-  tl.addEventListener('touchmove', e => {
-    if (!isDragging) return;
-    const dy = e.touches[0].clientY - startY;
-    if (dy > 50) setDrawer('closed');
-  }, { passive: true });
-  tl.addEventListener('touchend', () => { isDragging = false; }, { passive: true });
-}
-
-// Load AMap
-const sc = document.createElement('script');
-sc.src = `https://webapi.amap.com/maps?v=2.0&key=${AMAP_KEY}&plugin=AMap.Driving`;
-sc.onload = initMap;
+const sc=document.createElement('script');
+sc.src=`https://webapi.amap.com/maps?v=2.0&key=${AMAP_KEY}&plugin=AMap.Driving`;
+sc.onload=initMap;
 document.head.appendChild(sc);
 </script>
 
 <script>
-// Roadbook panel
-document.getElementById('rb-open').addEventListener('click', () => {
-  document.getElementById('rb-panel').classList.add('open');
-  document.getElementById('rb-overlay').classList.add('show');
-  buildRoadbook();
-});
-document.getElementById('rb-close').addEventListener('click', closeRb);
-document.getElementById('rb-overlay').addEventListener('click', closeRb);
-function closeRb() {
-  document.getElementById('rb-panel').classList.remove('open');
-  document.getElementById('rb-overlay').classList.remove('show');
-}
+document.getElementById('rb-open').addEventListener('click',()=>{ document.getElementById('rb-panel').classList.add('open'); document.getElementById('rb-overlay').classList.add('show'); buildRoadbook(); });
+document.getElementById('rb-close').addEventListener('click',closeRb);
+document.getElementById('rb-overlay').addEventListener('click',closeRb);
+function closeRb(){ document.getElementById('rb-panel').classList.remove('open'); document.getElementById('rb-overlay').classList.remove('show'); }
 
-function buildRoadbook() {
-  const days = [
-    { d: "上午", city: "晶悦府 → 天目里", km: "~15km",
-      entries: [
-        { time: "08:30", cls: "drive", action: "晶悦府出发", note: "满电/加油，导航至天目里" },
-        { time: "08:35", cls: "", action: "留石快速路 → 紫金港路", note: "" },
-        { time: "09:00", cls: "", action: "抵达天目里停车", note: "天目里地下车库车位充足" }
-      ] },
-    { d: "上午", city: "📍 天目里考察", km: "重点：建筑与空间",
-      entries: [
-        { time: "09:15", cls: "key", action: "水镜广场 · 建筑外观", note: "铝板+玻璃幕墙+清水混凝土" },
-        { time: "09:45", cls: "key", action: "茑屋书店", note: "中国大陆首店，关注空间设计与书籍陈列" },
-        { time: "10:30", cls: "key", action: "之馆艺术中心", note: "关注美术馆空间尺度与展陈设计" },
-        { time: "11:00", cls: "", action: "园区自由考察", note: "B1OCK、%Arabica等店铺空间" },
-        { time: "11:30", cls: "", action: "午餐 · 18号酒馆", note: "精酿啤酒+西餐" }
-      ] },
-    { d: "下午", city: "天目里 → 恒隆广场", km: "~10km",
-      entries: [
-        { time: "13:00", cls: "drive", action: "天目里出发 → 恒隆广场", note: "天目山路→环城西路→武林" },
-        { time: "13:20", cls: "", action: "抵达武林商圈", note: "建议停恒隆地下车库" }
-      ] },
-    { d: "下午", city: "📍 恒隆广场 Westlake 66", km: "重点：高端商业空间",
-      entries: [
-        { time: "13:30", cls: "key", action: "首层动线 · 店铺面宽", note: "关注KPF设计的中庭尺度与楼层标高" },
-        { time: "14:00", cls: "key", action: "垂直交通组织", note: "扶梯/直梯布位与商业动线关系" },
-        { time: "14:30", cls: "", action: "品牌观察", note: "招商品牌层级与首店比例" },
-        { time: "15:00", cls: "", action: "卫生间/母婴室考察", note: "高端商业的服务设施标准" },
-        { time: "15:30", cls: "", action: "屋顶/景观层", note: "关注户外空间设计" }
-      ] },
-    { d: "下午", city: "恒隆 → 城北万象城", km: "~12km",
-      entries: [
-        { time: "16:00", cls: "drive", action: "恒隆出发 → 城北万象城", note: "上塘高架北上→好运街出口" },
-        { time: "16:25", cls: "", action: "抵达城北万象城", note: "良渚杭行路1499号" }
-      ] },
-    { d: "傍晚", city: "📍 城北万象城", km: "重点：社区商业综合体",
-      entries: [
-        { time: "16:40", cls: "key", action: "水镜广场 & 里巷街区", note: "华润的特色街区，关注动线诱导" },
-        { time: "17:15", cls: "", action: "商业业态考察", note: "16万㎡的品类组合与品牌落位" },
-        { time: "18:00", cls: "key", action: "观察晚高峰客流", note: "周边社区客群画像" }
-      ] },
-    { d: "傍晚", city: "城北万象城 → 晶悦府", km: "~6km",
-      entries: [
-        { time: "18:30", cls: "drive", action: "返程回家", note: "杭行路→石祥路→晶悦府" },
-        { time: "18:50", cls: "", action: "到家", note: "路程仅15min" }
-      ] }
+function buildRoadbook(){
+  const days=[
+    {d:"上午",city:"晶悦府 → 城北万象城",km:"~6km",
+      entries:[{time:"09:00",cls:"drive",action:"晶悦府出发 → 城北万象城",note:"杭行路北上，约15min"},{time:"09:15",cls:"",action:"抵达城北万象城停车",note:"地下车库"}]},
+    {d:"上午",city:"📍 城北万象城",km:"重点：社区商业综合体",
+      entries:[{time:"09:20",cls:"key",action:"水镜广场 & 里巷街区",note:"考察动线与空间设计"},{time:"10:00",cls:"key",action:"中庭 & 垂直交通",note:"关注扶梯/直梯布位与导视系统"},{time:"10:30",cls:"",action:"商业业态考察",note:"16万㎡品类组合与品牌落位"},{time:"11:00",cls:"",action:"拍照记录",note:"精装材料、天花造型、灯光"},{time:"11:30",cls:"",action:"商场内午餐",note:""}]},
+    {d:"下午",city:"城北万象城 → 天目里",km:"~12km",
+      entries:[{time:"12:30",cls:"drive",action:"城北万象城 → 天目里",note:"留石快速路→紫金港路，约25min"},{time:"12:55",cls:"",action:"抵达天目里停车",note:""}]},
+    {d:"下午",city:"📍 天目里",km:"重点：建筑与空间",
+      entries:[{time:"13:00",cls:"key",action:"水镜广场·建筑外观",note:"铝板+玻璃幕墙+清水混凝土"},{time:"13:30",cls:"key",action:"茑屋书店",note:"首店空间设计与书籍陈列"},{time:"14:15",cls:"",action:"之馆艺术中心/自由考察",note:"B1OCK、%Arabica等店铺空间"},{time:"14:40",cls:"",action:"园区拍照记录",note:""}]},
+    {d:"下午",city:"天目里 → 恒隆广场",km:"~10km",
+      entries:[{time:"15:00",cls:"drive",action:"天目里→恒隆",note:"天目山路→环城西路→武林，约15min"},{time:"15:15",cls:"",action:"抵达恒隆停车",note:""}]},
+    {d:"下午",city:"📍 恒隆广场 Westlake 66",km:"重点：高端商业空间",
+      entries:[{time:"15:20",cls:"key",action:"首层动线·中庭尺度",note:"KPF设计，关注楼层标高与空间尺度"},{time:"15:50",cls:"key",action:"垂直交通组织",note:""},{time:"16:20",cls:"",action:"品牌观察",note:"招商层级与首店比例"},{time:"16:50",cls:"",action:"服务设施考察",note:"卫生间/母婴室/休息区标准"},{time:"17:15",cls:"",action:"收尾拍照",note:""}]},
+    {d:"傍晚",city:"恒隆 → 晶悦府",km:"~10km",
+      entries:[{time:"17:30",cls:"drive",action:"恒隆出发回家",note:"上塘高架北上约15min"},{time:"17:45",cls:"",action:"到家",note:""}]}
   ];
-
-  document.getElementById('rb-body').innerHTML = days.map(day => {
-    const entries = day.entries.map(e => `
-      <div class="rb-entry ${e.cls||''}">
-        <div class="rb-time">${e.time}</div>
-        <div class="rb-entry-right">
-          <div class="rb-action">${e.action}</div>
-          ${e.note ? `<div class="rb-note">${e.note}</div>` : ''}
-        </div>
-      </div>`).join('');
-
-    return `
-      <div class="rb-day">
-        <div class="rb-day-head">
-          <span class="rb-day-date">${day.d}</span>
-          <span class="rb-day-city">${day.city}</span>
-          <span class="rb-day-km">${day.km}</span>
-        </div>
-        <div class="rb-entries">${entries}</div>
-      </div>`;
+  document.getElementById('rb-body').innerHTML = days.map(day=>{
+    const entries=day.entries.map(e=>`<div class="rb-entry ${e.cls||''}"><div class="rb-time">${e.time}</div><div class="rb-entry-right"><div class="rb-action">${e.action}</div>${e.note?`<div class="rb-note">${e.note}</div>`:''}</div></div>`).join('');
+    return `<div class="rb-day"><div class="rb-day-head"><span class="rb-day-date">${day.d}</span><span class="rb-day-city">${day.city}</span><span class="rb-day-km">${day.km}</span></div><div class="rb-entries">${entries}</div></div>`;
   }).join('');
 }
 </script>
