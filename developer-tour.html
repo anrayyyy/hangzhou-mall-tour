@@ -134,10 +134,15 @@ const m=new AMap.Marker({position:[s.lng,s.lat],content:el,map,zIndex:s.type==='
 m.on('click',()=>selectCity(i));
 });
 
+  // 中海万潮玖序独立标记
+  const zhEl=document.createElement("div");
+  zhEl.innerHTML=`<div style="background:#c0392b;color:#fff;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:bold;box-shadow:0 3px 8px rgba(0,0,0,0.4);border:2px solid #fff">海</div>`;
+  new AMap.Marker({position:[120.211325,30.214436],content:zhEl,map,zIndex:110,bubble:true});
 // Additional marker for 保利天珺
+// 保利天珺独立标记
 const bjEl=document.createElement('div');
 bjEl.innerHTML='<div style="background:#2d7d46;color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 2px 4px rgba(0,0,0,0.3)">🏗️</div>';
-new AMap.Marker({position:[120.253197,30.222161],content:bjEl,map,zIndex:95,bubble:true});
+new AMap.Marker({position:[120.253197,30.222161],content:bjEl,map,zIndex:110,bubble:true,label:{content:"保利·天珺",direction:"top",offset:new AMap.Pixel(0,-5)}});
 
 driving=new AMap.Driving({map,policy:AMap.DrivingPolicy.LEAST_TIME,hideMarkers:true,isOutline:true,outlineColor:'#ffffff',autoFitView:false});
 const start=routeStops[0],end=routeStops[routeStops.length-1];
