@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>骑行·晶悦府→兴耀大厦</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--white:#faf9f7;--bd:#e8e4df;--text:#2c2c2c;--muted:#8a8681;--accent:#e67e22}
+body{font-family:'Noto Sans SC','PingFang SC',system-ui,sans-serif;background:var(--white);color:var(--text);display:grid;grid-template-columns:148px 1fr;height:100vh;overflow:hidden}
+#timeline{width:148px;overflow-y:auto;padding:16px 0;background:var(--white);border-right:1px solid var(--bd)}
+.tl-item{padding:10px 14px;cursor:pointer;border-left:3px solid transparent}
+.tl-item:hover{background:#f0ede8}
+.tl-item.active{border-left-color:var(--accent);background:#f5f0ea}
+.tl-item .tl-date{font-size:11px;color:var(--muted)}
+.tl-item .tl-name{font-size:13px;font-weight:600;margin-top:2px}
+.tl-item .tl-brief{font-size:10px;color:var(--muted);margin-top:2px}
+.tl-item .tl-time{font-size:10px;color:var(--accent);margin-top:2px}
+.tl-divider{height:20px}
+#map-wrap{position:relative;overflow:hidden}
+#map{height:100vh;width:100%}
+.iw{max-width:320px;font-family:'Noto Sans SC',system-ui,sans-serif}
+.iw-head{border-bottom:2px solid var(--accent);padding-bottom:8px;margin-bottom:10px}
+.iw-date{font-size:11px;color:var(--muted)}
+.iw-title{font-size:18px;font-weight:700;margin-top:2px}
+.iw-brief{font-size:13px;line-height:1.6;margin:8px 0;color:#444}
+.iw-feature{font-size:12px;margin:6px 0;padding-left:14px}
+.iw-spots{margin-top:10px}
+.spot{padding:6px 10px;margin:4px 0;border-radius:6px;font-size:12px}
+.spot-tip{background:#f0f5e8}
+.spot-name{font-weight:600}
+.spot-desc{color:#555;margin-top:2px}
+#rb-btn{position:fixed;top:16px;right:16px;z-index:200}
+.rb-trigger{background:var(--accent);color:#fff;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:500;box-shadow:0 2px 8px rgba(0,0,0,0.15)}
+.rb-trigger:hover{background:#c06a1a}
+#rb-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:300;display:none}
+#rb-panel{position:fixed;top:0;left:0;bottom:0;width:380px;max-width:90vw;background:var(--white);z-index:400;transform:translateX(-100%);transition:transform .35s;overflow-y:auto}
+#rb-panel.open{transform:translateX(0)}
+#rb-overlay.show{display:block}
+#rb-header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--bd)}
+#rb-header span{font-size:16px;font-weight:700}
+#rb-close{background:none;border:none;font-size:20px;cursor:pointer;padding:4px}
+#rb-body{padding:16px 20px}
+.rb-day{margin-bottom:24px}
+.rb-day-head{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.rb-day-date{font-size:13px;font-weight:700;color:var(--accent)}
+.rb-day-city{font-size:14px;font-weight:600}
+.rb-day-km{font-size:11px;color:var(--muted)}
+.rb-entries{margin-top:8px}
+.rb-entry{display:grid;grid-template-columns:44px 1fr;gap:8px;padding:6px 0;border-bottom:1px solid #f0ede8}
+.rb-time{font-size:11px;color:var(--muted);font-weight:600}
+.rb-action{font-size:13px}
+.rb-note{font-size:11px;color:var(--muted);margin-top:1px}
+.rb-entry.drive .rb-action{color:var(--accent)}
+.rb-entry.key .rb-action{font-weight:600}
+@media(max-width:767px){
+body{grid-template-columns:1fr}
+#timeline{position:fixed;left:0;right:0;bottom:0;width:100%;height:85vh;border-radius:18px 18px 0 0;transform:translateY(calc(85vh - 72px));transition:transform .38s;z-index:500;overflow-y:auto;background:var(--white)}
+#timeline[data-state="half"]{transform:translateY(calc(85vh - 40vh))}
+#timeline[data-state="full"]{transform:translateY(0)}
+.amap-info-outer{display:none!important}
+#rb-panel{width:100vw}
+}
+</style>
+</head>
+<body>
+<div id="timeline">
+<div class="tl-item active" data-i="0"><div class="tl-date">07:30</div><div class="tl-name">晶悦府出发</div><div class="tl-brief">🚲 约23km</div><div class="tl-time">拱墅→滨江</div></div>
+<div class="tl-divider"></div>
+<div class="tl-item" data-i="1"><div class="tl-date">路段1</div><div class="tl-name">晶悦府→上塘河</div><div class="tl-brief">沿河道南下</div><div class="tl-time">🚲 约5km</div></div>
+<div class="tl-divider"></div>
+<div class="tl-item" data-i="2"><div class="tl-date">路段2</div><div class="tl-name">上塘河→钱塘江</div><div class="tl-brief">复兴大桥过江</div><div class="tl-time">🚲 约10km</div></div>
+<div class="tl-divider"></div>
+<div class="tl-item" data-i="3"><div class="tl-date">路段3</div><div class="tl-name">过江→兴耀大厦</div><div class="tl-brief">滨江沿江南大道</div><div class="tl-time">🚲 约8km</div></div>
+<div class="tl-divider"></div>
+<div class="tl-item" data-i="4"><div class="tl-date">~09:00</div><div class="tl-name">抵达兴耀大厦</div><div class="tl-brief">江南大道518号</div><div class="tl-time">🏁 滨江</div></div>
+</div>
+<div id="map-wrap">
+<div id="map"></div>
+<div id="rb-btn"><div class="rb-trigger" id="rb-open">📋 骑行路书</div></div>
+<div id="rb-overlay"></div>
+<div id="rb-panel"><div id="rb-header"><span>🚲 骑行路书</span><button id="rb-close">✕</button></div><div id="rb-body"></div></div>
+</div>
+
+<script>
+var AMAP_KEY='45cbf43f4675e9b9377fa955a6b1e996';
+var AMAP_SECRET='830b90a26c3b039ba69daccced906ba1';
+window._AMapSecurityConfig={securityJsCode:AMAP_SECRET};
+
+var stops=[
+{d:"07:30",name:"晶悦府",lat:30.337044,lng:120.164353,title:"出发",brief:"拱墅区铁路北·星创晶悦府",features:["检查车况·胎压·刹车","带好水+手机+充电宝","建议穿骑行裤"],spots:[]},
+{d:"08:00",name:"上塘河绿道",lat:30.3000,lng:120.1600,title:"沿上塘河骑行",brief:"沿上塘河绿道南下，路段约5km，车少景好",features:["沿河绿道·无机动车","经过浙大城市学院"],spots:[]},
+{d:"08:30",name:"复兴大桥过江",lat:30.2400,lng:120.1700,title:"过江·复兴大桥",brief:"复兴大桥有非机动车道，过江约2km",features:["非机动车道过江","桥上可看钱塘江景","注意横风"],spots:[]},
+{d:"08:45",name:"滨江·江南大道",lat:30.2150,lng:120.1900,title:"沿江南大道东行",brief:"过江后沿江南大道向东骑行至兴耀大厦",features:["江南大道有非机动车道","约3.5km到兴耀大厦"],spots:[]},
+{d:"09:00",name:"兴耀大厦",lat:30.203179,lng:120.203905,title:"抵达",brief:"滨江区江南大道518号",features:["江汉路地铁站C口旁","附近有停车点"],spots:[{name:"建议",desc:"到了可以找个地方喝杯咖啡休息"}]}
+];
+
+var map=null;
+function initMap(){
+map=new AMap.Map('map',{zoom:12,center:[120.18,30.27],mapStyle:'amap://styles/whitesmoke'});
+addMarkers();
+addRoute();
+}
+function addMarkers(){
+var icons=["🚲","🚲","🚲","🚲","🏁"];
+for(var i=0;i<stops.length;i++){
+(function(s,idx){
+var el=document.createElement('div');
+var bg=idx==0?'#e67e22':idx==stops.length-1?'#27ae60':'#555';
+el.innerHTML='<div style="background:'+bg+';color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,0.3)">'+(icons[idx]||'📍')+'</div>';
+var m=new AMap.Marker({position:[s.lng,s.lat],content:el,map:map,zIndex:100,bubble:true});
+m.on('click',function(){selectCity(idx);});
+})(stops[i],i);
+}
+}
+function addRoute(){
+var dr=new AMap.Driving({map:map,policy:AMap.DrivingPolicy.LEAST_TIME,hideMarkers:true,isOutline:true,outlineColor:'#ffffff',autoFitView:false});
+var start=new AMap.LngLat(120.164353,30.337044);
+var p1=new AMap.LngLat(120.1600,30.3000);
+var p2=new AMap.LngLat(120.1700,30.2400);
+var p3=new AMap.LngLat(120.1900,30.2150);
+var end=new AMap.LngLat(120.203905,30.203179);
+dr.search(start,end,{waypoints:[p1,p2,p3]},function(s,r){if(s==='complete')dr.search(r);});
+}
+function selectCity(i){
+document.querySelectorAll('.tl-item').forEach(function(el){el.classList.remove('active');});
+var el=document.querySelector('.tl-item[data-i="'+i+'"]');
+if(el)el.classList.add('active');
+if(isMobile())return;
+var s=stops[i];
+var z=map.getZoom();
+map.setZoomAndCenter(Math.max(z,14),[s.lng,s.lat+(z>=14?0.02:0.3)],false,400);
+var spotsHtml='';if(s.spots){for(var j=0;j<s.spots.length;j++){spotsHtml+='<div class="spot spot-tip"><div class="spot-name">'+s.spots[j].name+'</div><div class="spot-desc">'+s.spots[j].desc+'</div></div>';}}
+var featuresHtml='';if(s.features){for(var j=0;j<s.features.length;j++){featuresHtml+='<div class="iw-feature">'+s.features[j]+'</div>';}}
+var content='<div class="iw"><div class="iw-head"><div class="iw-date">'+s.d+'</div><div class="iw-title">'+(s.title||'')+'</div></div><div class="iw-brief">'+s.brief+'</div>'+featuresHtml+'<div class="iw-spots">'+spotsHtml+'</div></div>';
+var iw=new AMap.InfoWindow({content:content,offset:new AMap.Pixel(0,-38),autoMove:false,closeWhenClickMap:true});
+iw.open(map,[s.lng,s.lat]);
+}
+function isMobile(){return window.innerWidth<=767;}
+document.querySelectorAll('.tl-item').forEach(function(el){
+el.addEventListener('click',function(){
+var i=parseInt(el.dataset.i);
+document.querySelectorAll('.tl-item').forEach(function(e){e.classList.remove('active');});
+el.classList.add('active');
+if(isMobile()){document.getElementById('timeline').dataset.state='half';}else{selectCity(i);}
+});
+});
+var sc=document.createElement('script');
+sc.src='https://webapi.amap.com/maps?v=2.0&key='+AMAP_KEY+'&plugin=AMap.Driving';
+sc.onload=initMap;
+document.head.appendChild(sc);
+</script>
+<script>
+document.getElementById('rb-open').addEventListener('click',function(){
+document.getElementById('rb-panel').classList.add('open');
+document.getElementById('rb-overlay').classList.add('show');buildRoadbook();});
+document.getElementById('rb-close').addEventListener('click',function(){document.getElementById('rb-panel').classList.remove('open');document.getElementById('rb-overlay').classList.remove('show');});
+document.getElementById('rb-overlay').addEventListener('click',function(){document.getElementById('rb-panel').classList.remove('open');document.getElementById('rb-overlay').classList.remove('show');});
+function buildRoadbook(){
+var days=[{d:"07:30",city:"晶悦府→兴耀大厦",km:"~23km骑行",
+entries:[{t:"07:30",c:"key",a:"晶悦府出发",n:"检查车况，带好补给"},{t:"07:30-08:00",c:"drive",a:"沿上塘河绿道南下",n:"约5km，车少景好"},{t:"08:00-08:30",c:"drive",a:"上塘河→复兴大桥",n:"约10km，注意路口"},{t:"08:30-08:40",c:"key",a:"复兴大桥过江",n:"非机动车道，注意横风"},{t:"08:40-09:00",c:"drive",a:"江南大道东行",n:"约3.5km到兴耀大厦"},{t:"09:00",c:"key",a:"抵达兴耀大厦",n:"滨江区江南大道518号"}]}];
+var html='';for(var i=0;i<days.length;i++){var d=days[i];var entries='';for(var j=0;j<d.entries.length;j++){var e=d.entries[j];entries+='<div class="rb-entry '+(e.c||'')+'"><div class="rb-time">'+e.t+'</div><div class="rb-entry-right"><div class="rb-action">'+e.a+'</div>'+(e.n?'<div class="rb-note">'+e.n+'</div>':'')+'</div></div>';}
+html+='<div class="rb-day"><div class="rb-day-head"><span class="rb-day-date">'+d.d+'</span><span class="rb-day-city">'+d.city+'</span><span class="rb-day-km">'+d.km+'</span></div><div class="rb-entries">'+entries+'</div></div>';}
+document.getElementById('rb-body').innerHTML=html;}
+</script>
+</body>
+</html>
