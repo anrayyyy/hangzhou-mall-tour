@@ -6,18 +6,17 @@
 <title>房企考察·华润×建发×中海×保利</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--white:#faf9f7;--bd:#e8e4df;--text:#2c2c2c;--muted:#8a8681;--accent:#1a5276;--gold:#b8860b}
+:root{--white:#faf9f7;--bd:#e8e4df;--text:#2c2c2c;--muted:#8a8681;--accent:#1a5276}
 body{font-family:'Noto Sans SC','PingFang SC',system-ui,sans-serif;background:var(--white);color:var(--text);display:grid;grid-template-columns:148px 1fr;height:100vh;overflow:hidden}
 #timeline{width:148px;overflow-y:auto;padding:16px 0;background:var(--white);border-right:1px solid var(--bd)}
-.tl-item{padding:10px 14px;cursor:pointer;border-left:3px solid transparent;transition:all .2s}
+.tl-item{padding:10px 14px;cursor:pointer;border-left:3px solid transparent}
 .tl-item:hover{background:#f0ede8}
 .tl-item.active{border-left-color:var(--accent);background:#f5f0ea}
-.tl-item .tl-date{font-size:11px;color:var(--muted);letter-spacing:.5px}
+.tl-item .tl-date{font-size:11px;color:var(--muted)}
 .tl-item .tl-name{font-size:13px;font-weight:600;margin-top:2px}
-.tl-item .tl-brief{font-size:10px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-item .tl-brief{font-size:10px;color:var(--muted);margin-top:2px}
 .tl-item .tl-time{font-size:10px;color:var(--accent);margin-top:2px}
-.tl-divider{height:20px;position:relative}
-.tl-divider::after{content:'';position:absolute;left:18px;top:0;bottom:0;width:1px;background:var(--bd)}
+.tl-divider{height:20px}
 #map-wrap{position:relative;overflow:hidden}
 #map{height:100vh;width:100%}
 .iw{max-width:320px;font-family:'Noto Sans SC',system-ui,sans-serif}
@@ -25,15 +24,14 @@ body{font-family:'Noto Sans SC','PingFang SC',system-ui,sans-serif;background:va
 .iw-date{font-size:11px;color:var(--muted)}
 .iw-title{font-size:18px;font-weight:700;margin-top:2px}
 .iw-brief{font-size:13px;line-height:1.6;margin:8px 0;color:#444}
-.iw-feature{font-size:12px;margin:6px 0;padding-left:14px;position:relative}
-.iw-feature::before{content:'·';position:absolute;left:4px;color:var(--accent)}
+.iw-feature{font-size:12px;margin:6px 0;padding-left:14px}
 .iw-spots{margin-top:10px}
 .spot{padding:6px 10px;margin:4px 0;border-radius:6px;font-size:12px}
 .spot-design{background:#e8f0f8}
 .spot-tip{background:#f0f5e8}
 .spot-name{font-weight:600}
 .spot-desc{color:#555;margin-top:2px}
-.iw-history{margin-top:8px;padding:8px 10px;background:#faf5ee;border-radius:6px;font-size:12px;line-height:1.6;color:#555}
+.iw-history{margin-top:8px;padding:8px 10px;background:#faf5ee;border-radius:6px;font-size:12px;line-height:1.6}
 #rb-btn{position:fixed;top:16px;right:16px;z-index:200}
 .rb-trigger{background:var(--accent);color:#fff;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:500;box-shadow:0 2px 8px rgba(0,0,0,0.15)}
 .rb-trigger:hover{background:#0e3a55}
@@ -53,14 +51,13 @@ body{font-family:'Noto Sans SC','PingFang SC',system-ui,sans-serif;background:va
 .rb-entries{margin-top:8px}
 .rb-entry{display:grid;grid-template-columns:44px 1fr;gap:8px;padding:6px 0;border-bottom:1px solid #f0ede8}
 .rb-time{font-size:11px;color:var(--muted);font-weight:600}
-.rb-entry-right{}
 .rb-action{font-size:13px}
 .rb-note{font-size:11px;color:var(--muted);margin-top:1px}
 .rb-entry.drive .rb-action{color:var(--accent)}
 .rb-entry.key .rb-action{font-weight:600}
 @media(max-width:767px){
 body{grid-template-columns:1fr}
-#timeline{position:fixed;left:0;right:0;bottom:0;width:100%;height:85vh;border-radius:18px 18px 0 0;transform:translateY(calc(85vh - 72px));transition:transform .38s cubic-bezier(.32,0,.15,1);z-index:500;overflow-y:auto;background:var(--white)}
+#timeline{position:fixed;left:0;right:0;bottom:0;width:100%;height:85vh;border-radius:18px 18px 0 0;transform:translateY(calc(85vh - 72px));transition:transform .38s;z-index:500;overflow-y:auto;background:var(--white)}
 #timeline[data-state="half"]{transform:translateY(calc(85vh - 40vh))}
 #timeline[data-state="full"]{transform:translateY(0)}
 .amap-info-outer{display:none!important}
@@ -69,20 +66,20 @@ body{grid-template-columns:1fr}
 </style>
 </head>
 <body>
-<div id="timeline">
-<div class="tl-item active" data-i="0"><div class="tl-date">08:30</div><div class="tl-name">晶悦府→杭珹未来中心</div><div class="tl-brief">出发·约40min</div><div class="tl-time">🚗 未来科技城</div></div>
+<div id="timeline" data-state="closed">
+<div class="tl-item active" data-i="0"><div class="tl-date">08:30</div><div class="tl-name">晶悦府→杭珹</div><div class="tl-brief">出发·约40min</div><div class="tl-time">🚗 未来科技城</div></div>
 <div class="tl-divider"></div>
-<div class="tl-item" data-i="1"><div class="tl-date">09:15–11:30</div><div class="tl-name">华润·杭珹未来中心</div><div class="tl-brief">未来科技城·TOD</div><div class="tl-time">🏗️ 华润</div></div>
+<div class="tl-item" data-i="1"><div class="tl-date">09:15–11:30</div><div class="tl-name">华润·杭珹</div><div class="tl-brief">未来科技城·TOD</div><div class="tl-time">🏗️ 华润</div></div>
 <div class="tl-divider"></div>
-<div class="tl-item" data-i="2"><div class="tl-date">11:30–12:30</div><div class="tl-name">午餐</div><div class="tl-brief">杭珹周边用餐</div><div class="tl-time">🍽️</div></div>
+<div class="tl-item" data-i="2"><div class="tl-date">11:30–12:30</div><div class="tl-name">午餐</div><div class="tl-brief">杭珹周边</div><div class="tl-time">🍽️</div></div>
 <div class="tl-divider"></div>
-<div class="tl-item" data-i="3"><div class="tl-date">12:30–13:10</div><div class="tl-name">杭珹→建发栖湖云庄</div><div class="tl-brief">驾车约30min</div><div class="tl-time">🚗 蒋村</div></div>
+<div class="tl-item" data-i="3"><div class="tl-date">12:30–13:10</div><div class="tl-name">杭珹→建发</div><div class="tl-brief">驾车约30min</div><div class="tl-time">🚗 蒋村</div></div>
 <div class="tl-divider"></div>
 <div class="tl-item" data-i="4"><div class="tl-date">13:10–14:30</div><div class="tl-name">建发·栖湖云庄</div><div class="tl-brief">蒋村·杭州地王</div><div class="tl-time">🏗️ 建发</div></div>
 <div class="tl-divider"></div>
-<div class="tl-item" data-i="5"><div class="tl-date">14:30–15:00</div><div class="tl-name">栖湖云庄→奥体</div><div class="tl-brief">驾车约25min</div><div class="tl-time">🚗 过江</div></div>
+<div class="tl-item" data-i="5"><div class="tl-date">14:30–15:10</div><div class="tl-name">建发→奥体</div><div class="tl-brief">驾车约25min过江</div><div class="tl-time">🚗 过江</div></div>
 <div class="tl-divider"></div>
-<div class="tl-item" data-i="6"><div class="tl-date">15:00–16:30</div><div class="tl-name">中海玖序+保利天珺</div><div class="tl-brief">奥体·世纪城</div><div class="tl-time">🏗️ 中海·保利</div></div>
+<div class="tl-item" data-i="6"><div class="tl-date">15:10–16:30</div><div class="tl-name">中海+保利</div><div class="tl-brief">奥体·世纪城</div><div class="tl-time">🏗️ 中海·保利</div></div>
 <div class="tl-divider"></div>
 <div class="tl-item" data-i="7"><div class="tl-date">16:30–17:00</div><div class="tl-name">奥体→晶悦府</div><div class="tl-brief">驾车约25min</div><div class="tl-time">🏠 回家</div></div>
 </div>
@@ -90,114 +87,130 @@ body{grid-template-columns:1fr}
 <div id="map"></div>
 <div id="rb-btn"><div class="rb-trigger" id="rb-open">📋 考察路书</div></div>
 <div id="rb-overlay"></div>
-<div id="rb-panel"><div id="rb-header"><span>📋 房企考察路书</span><button id="rb-close">✕</button></div><div id="rb-body"></div></div>
+<div id="rb-panel"><div id="rb-header"><span>📋 考察路书</span><button id="rb-close">✕</button></div><div id="rb-body"></div></div>
 </div>
-
 <script>
-const AMAP_KEY='45cbf43f4675e9b9377fa955a6b1e996',AMAP_SECRET='830b90a26c3b039ba69daccced906ba1';
+var AMAP_KEY='45cbf43f4675e9b9377fa955a6b1e996';
+var AMAP_SECRET='830b90a26c3b039ba69daccced906ba1';
 window._AMapSecurityConfig={securityJsCode:AMAP_SECRET};
 
-const stops=[
-{d:"08:30",name:"晶悦府",lat:30.3370,lng:120.1644,type:"start",title:"出发",brief:"拱墅铁路北→未来科技城",places:[],features:["走留石快速路西行","导航至华润杭珹未来中心"]},
-{d:"09:15",name:"华润·杭珹未来中心",lat:30.259402,lng:119.993425,type:"star",title:"华润置地·未来科技城TOD",brief:"绿汀路3/5/16号线三地铁上盖·超100万㎡城市综合体·约19万㎡万象城级商业",
-places:[{name:"瑞玺艺术馆",desc:"340㎡云端平墅样板间"},{name:"万象城级商业",desc:"约19万㎡自持商业"},{name:"绿汀路TOD",desc:"3条地铁线交汇"}],
-features:["超100万㎡TOD生活聚场","340㎡云端平墅·总价800-1000万","自带2000㎡高端双会所","楼下万象城级商业综合体"],
-spots:[{tag:"design",name:"考察重点",desc:"TOD综合体动线设计、住宅与商业连接"},{tag:"design",name:"瑞玺产品",desc:"华润高端平墅精装标准"},{tag:"tip",name:"拍照",desc:"样板间装修细节、公区标准"}],
-history:"杭珹未来中心是华润置地在未来科技城的旗舰TOD项目，位于绿汀路站三地铁上盖（3/5/16号线）。总体量超100万㎡，包含高端住宅、万象城级商业、写字楼等业态。住宅部分'瑞玺'主打340㎡云端大平层，总价千万级。"},
-{d:"12:30",name:"建发·栖湖云庄",lat:30.285581,lng:120.074507,type:"star",title:"建发·蒋村地王",brief:"西溪湿地直线300m·楼面价88029元/㎡创杭州纪录·83套4层纯排屋·户均476㎡",
-places:[{name:"西溪湿地",desc:"直线距离约300米"},{name:"蒋村板块",desc:"近十年唯一低密宅地"}],
-features:["102轮竞价·溢价115%","容积率1.1纯低密","总价3000万+顶豪"],
-spots:[{tag:"design",name:"考察重点",desc:"新中式排屋立面、园区景观"},{tag:"design",name:"关注",desc:"低密产品空间尺度与精装"}],
-history:"建发房产经102轮竞价以34.35亿夺得蒋村地块，溢价率115.39%，楼面价88029元/㎡刷新杭州纪录。容积率仅1.1，83套4层纯排屋，户均476㎡，是杭州顶豪市场的标志性项目。"},
-{d:"15:00",name:"中海玖序+保利天珺",lat:30.214436,lng:120.211325,type:"star",title:"中海钱湾玖序 × 保利天珺",brief:"奥体双盘·中海携手扎哈事务所·保利天系TOP级",
-places:[{name:"中海·万潮玖序",desc:"扎哈·哈迪德'都会峡谷'·230-420㎡"},{name:"保利·天珺",desc:"奥体最后涉宅地·2026Q1杭州销冠"}],
-features:["中海·玖序：扎哈·哈迪德建筑事务所","中海·万潮玖序：230-420㎡","保利·天珺：均价74422元/㎡","奥体核心·SKP/杭州之门旁"],
-spots:[{tag:"design",name:"中海重点",desc:"扎哈设计的'都会峡谷'立体景观"},{tag:"design",name:"保利重点",desc:"天系TOP级产品标准"},{tag:"tip",name:"对比",desc:"中海玖序vs保利天珺差异化定位"}],
-history:"中海钱湾玖序联手扎哈·哈迪德建筑事务所，打造'都会峡谷'景观，主力230-420㎡。保利天珺位于奥博中心单元，是奥体最后一块涉宅地，2026年一季度登顶杭州住宅销售金额榜首，首开74422元/㎡。"}
+var stops=[
+{d:"08:30",name:"晶悦府",lat:30.3370,lng:120.1644,title:"出发",brief:"拱墅铁路北→未来科技城"},
+{d:"09:15",name:"华润·杭珹未来中心",lat:30.259402,lng:119.993425,title:"华润置地·未来科技城TOD",brief:"绿汀路三地铁上盖·超100万㎡综合体",
+features:["340㎡云端平墅","万象城级19万㎡商业","三地铁绿汀路站上盖"],
+spots:[{name:"考察重点",desc:"TOD动线、住宅与商业连接"},{name:"瑞玺产品",desc:"华润高端平墅精装标准"}],
+history:"华润置地在未来科技城的旗舰TOD，含高端住宅、万象城级商业、写字楼。"},
+{d:"12:30",name:"建发·栖湖云庄",lat:30.285581,lng:120.074507,title:"建发·蒋村地王",brief:"西溪湿地旁·楼面价88029元/㎡创纪录·83套4层排屋",
+features:["102轮竞价溢价115%","容积率1.1纯低密","总价3000万+"],
+spots:[{name:"考察重点",desc:"新中式排屋立面、园区景观"},{name:"关注",desc:"低密产品空间尺度与精装"}],
+history:"建发经102轮竞价以34.35亿夺得蒋村地块，楼面价88029元/㎡刷新杭州纪录。"},
+{d:"15:10",name:"中海玖序+保利天珺",lat:30.222161,lng:120.253197,title:"奥体双盘",brief:"中海联手扎哈事务所·保利天系TOP级",
+features:["中海·万潮玖序230-420㎡","保利天珺74422元/㎡首开","2026Q1杭州销冠"],
+spots:[{name:"中海重点",desc:"扎哈'都会峡谷'景观"},{name:"保利重点",desc:"天系TOP级产品标准"}],
+history:"中海钱湾玖序联手扎哈·哈迪德建筑事务所。保利天珺为奥体最后涉宅地。"}
 ];
 
-const routeStops=[
-{name:"晶悦府",lat:30.3370,lng:120.1644},
-{name:"杭珹未来中心",lat:30.259402,lng:119.993425},
-{name:"栖湖云庄",lat:30.285581,lng:120.074507},
-{name:"奥体中海南"//奥体,lat:30.214436,lng:120.211325}
-];
-
-let map,driving;
+var map=null;
 function initMap(){
-map=new AMap.Map("map",{zoom:11,center:[120.13,30.26],mapStyle:'amap://styles/whitesmoke'});
-const icons=["🏠","🏗️","🍽️","🚗","🏗️","🚗","🏗️","🏠"];
-stops.forEach((s,i)=>{
-const el=document.createElement('div');
-el.innerHTML=`<div style="background:${s.type==='star'?'#1a5276':'#555'};color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,0.3)">${icons[i]||'📍'}</div>`;
-const m=new AMap.Marker({position:[s.lng,s.lat],content:el,map,zIndex:s.type==='star'?100:80,bubble:true});
-m.on('click',()=>selectCity(i));
-});
-
-  // 中海万潮玖序独立标记
-  const zhEl=document.createElement("div");
-  zhEl.innerHTML=`<div style="background:#c0392b;color:#fff;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:bold;box-shadow:0 3px 8px rgba(0,0,0,0.4);border:2px solid #fff">海</div>`;
-  new AMap.Marker({position:[120.211325,30.214436],content:zhEl,map,zIndex:110,bubble:true});
-// Route完成后自动飞到奥体
-setTimeout(function(){
-  const lastStop=stops[stops.length-2];
-  map.setZoomAndCenter(14,[lastStop.lng,lastStop.lat+0.05],true,600);
-},3000);
-
-// Additional marker for 保利天珺
+map=new AMap.Map('map',{zoom:11,center:[120.13,30.27],mapStyle:'amap://styles/whitesmoke'});
+addMarkers();
+addRoute();
+}
+function addMarkers(){
+var icons=["🏠","🏗️","🍽️","🚗","🏗️","🚗","🏗️","🏠"];
+for(var i=0;i<stops.length;i++){
+(function(s,idx){
+var el=document.createElement('div');
+var bg=s.name.indexOf('华润')>-1||s.name.indexOf('建发')>-1||s.name.indexOf('中海')>-1?'#1a5276':'#555';
+el.innerHTML='<div style="background:'+bg+';color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,0.3)">'+(icons[idx]||'📍')+'</div>';
+var m=new AMap.Marker({position:[s.lng,s.lat],content:el,map:map,zIndex:s.name.indexOf('华润')>-1||s.name.indexOf('建发')>-1||s.name.indexOf('中海')>-1?100:80,bubble:true});
+m.on('click',function(){selectCity(idx);});
+})(stops[i],i);
+}
+// 中海万潮玖序独立标记
+(function(){
+var el=document.createElement('div');
+el.innerHTML='<div style="background:#c0392b;color:#fff;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:bold;box-shadow:0 3px 8px rgba(0,0,0,0.4);border:2px solid #fff">海</div>';
+new AMap.Marker({position:[120.211325,30.214436],content:el,map:map,zIndex:110,bubble:true});
+})();
 // 保利天珺独立标记
-const bjEl=document.createElement('div');
-bjEl.innerHTML='<div style="background:#2d7d46;color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 2px 4px rgba(0,0,0,0.3)">🏗️</div>';
-new AMap.Marker({position:[120.253197,30.222161],content:bjEl,map,zIndex:110,bubble:true,label:{content:"保利·天珺",direction:"top",offset:new AMap.Pixel(0,-5)}});
-
-driving=new AMap.Driving({map,policy:AMap.DrivingPolicy.LEAST_TIME,hideMarkers:true,isOutline:true,outlineColor:'#ffffff',autoFitView:false});
-const start=routeStops[0],end=routeStops[routeStops.length-1];
-const passes=[new AMap.LngLat(routeStops[1].lng,routeStops[1].lat),new AMap.LngLat(routeStops[2].lng,routeStops[2].lat)];
-driving.search(new AMap.LngLat(start.lng,start.lat),new AMap.LngLat(end.lng,end.lat),{waypoints:passes},(s,r)=>{if(s==='complete')driving.search(r);});
+(function(){
+var el=document.createElement('div');
+el.innerHTML='<div style="background:#2d7d46;color:#fff;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:bold;box-shadow:0 3px 8px rgba(0,0,0,0.4);border:2px solid #fff">珺</div>';
+new AMap.Marker({position:[120.253197,30.222161],content:el,map:map,zIndex:110,bubble:true});
+})();
+}
+function addRoute(){
+var start=new AMap.LngLat(120.1644,30.3370);
+var pass1=new AMap.LngLat(119.993425,30.259402);
+var pass2=new AMap.LngLat(120.074507,30.285581);
+var end=new AMap.LngLat(120.253197,30.222161);
+var dr=new AMap.Driving({map:map,policy:AMap.DrivingPolicy.LEAST_TIME,hideMarkers:true,isOutline:true,outlineColor:'#ffffff',autoFitView:false});
+dr.search(start,end,{waypoints:[pass1,pass2]},function(s,r){if(s==='complete')dr.search(r);});
 }
 function selectCity(i){
-const s=stops[i];
-if(isMobile())showMobileSheet(i);else openInfoWindow(i);
-document.querySelectorAll('.tl-item').forEach(el=>el.classList.remove('active'));
-document.querySelector(`.tl-item[data-i="${i}"]`)?.classList.add('active');
-}
-function openInfoWindow(i){
-const s=stops[i];const z=map.getZoom();
-map.setZoomAndCenter(Math.max(z,12),[s.lng,s.lat+(z>=12?0.12:0.5)],false,400);
-const spotsHtml=(s.spots||[]).map(sp=>`<div class="spot spot-${sp.tag}"><div class="spot-name">${sp.name}</div><div class="spot-desc">${sp.desc}</div></div>`).join('');
-const featuresHtml=(s.features||[]).map(f=>`<div class="iw-feature">${f}</div>`).join('');
-const content=`<div class="iw"><div class="iw-head"><div class="iw-date">${s.d}</div><div class="iw-title">${s.title}</div></div><div class="iw-brief">${s.brief}</div>${featuresHtml}<div class="iw-spots">${spotsHtml}</div>${s.history?`<div class="iw-history">${s.history}</div>`:''}</div>`;
-const iw=new AMap.InfoWindow({content,offset:new AMap.Pixel(0,-38),autoMove:false,closeWhenClickMap:true});
+document.querySelectorAll('.tl-item').forEach(function(el){el.classList.remove('active');});
+var el=document.querySelector('.tl-item[data-i="'+i+'"]');
+if(el)el.classList.add('active');
+if(isMobile())return;
+var s=i<4?stops[i]:stops[stops.length-1];
+var z=map.getZoom();
+map.setZoomAndCenter(Math.max(z,13),[s.lng,s.lat+(z>=12?0.1:0.3)],false,400);
+var spotsHtml='';if(s.spots){for(var j=0;j<s.spots.length;j++){spotsHtml+='<div class="spot spot-design"><div class="spot-name">'+s.spots[j].name+'</div><div class="spot-desc">'+s.spots[j].desc+'</div></div>';}}
+var featuresHtml='';if(s.features){for(var j=0;j<s.features.length;j++){featuresHtml+='<div class="iw-feature">'+s.features[j]+'</div>';}}
+var content='<div class="iw"><div class="iw-head"><div class="iw-date">'+s.d+'</div><div class="iw-title">'+(s.title||'')+'</div></div><div class="iw-brief">'+s.brief+'</div>'+featuresHtml+'<div class="iw-spots">'+spotsHtml+'</div>'+(s.history?'<div class="iw-history">'+s.history+'</div>':'')+'</div>';
+var iw=new AMap.InfoWindow({content:content,offset:new AMap.Pixel(0,-38),autoMove:false,closeWhenClickMap:true});
 iw.open(map,[s.lng,s.lat]);
 }
-function showMobileSheet(i){document.querySelectorAll('.tl-item').forEach(el=>el.classList.remove('active'));document.querySelectorAll('.tl-item')[i]?.classList.add('active');}
-function setDrawer(s){document.getElementById('timeline').dataset.state=s;}
 function isMobile(){return window.innerWidth<=767;}
-document.querySelectorAll('.tl-item').forEach(el=>{el.addEventListener('click',()=>{const i=parseInt(el.dataset.i);if(isMobile()){showMobileSheet(i);setDrawer('half');}else selectCity(i);});});
-const sc=document.createElement('script');
-sc.src=`https://webapi.amap.com/maps?v=2.0&key=${AMAP_KEY}&plugin=AMap.Driving`;
+document.querySelectorAll('.tl-item').forEach(function(el){
+el.addEventListener('click',function(){
+var i=parseInt(el.dataset.i);
+document.querySelectorAll('.tl-item').forEach(function(e){e.classList.remove('active');});
+el.classList.add('active');
+if(isMobile()){document.getElementById('timeline').dataset.state='half';}else{selectCity(i);}
+});
+});
+var sc=document.createElement('script');
+sc.src='https://webapi.amap.com/maps?v=2.0&key='+AMAP_KEY+'&plugin=AMap.Driving';
 sc.onload=initMap;
 document.head.appendChild(sc);
 </script>
 <script>
-document.getElementById('rb-open').addEventListener('click',()=>{document.getElementById('rb-panel').classList.add('open');document.getElementById('rb-overlay').classList.add('show');buildRoadbook();});
-document.getElementById('rb-close').addEventListener('click',closeRb);
-document.getElementById('rb-overlay').addEventListener('click',closeRb);
-function closeRb(){document.getElementById('rb-panel').classList.remove('open');document.getElementById('rb-overlay').classList.remove('show');}
+document.getElementById('rb-open').addEventListener('click',function(){
+document.getElementById('rb-panel').classList.add('open');
+document.getElementById('rb-overlay').classList.add('show');
+buildRoadbook();
+});
+document.getElementById('rb-close').addEventListener('click',function(){
+document.getElementById('rb-panel').classList.remove('open');
+document.getElementById('rb-overlay').classList.remove('show');
+});
+document.getElementById('rb-overlay').addEventListener('click',function(){
+document.getElementById('rb-panel').classList.remove('open');
+document.getElementById('rb-overlay').classList.remove('show');
+});
 function buildRoadbook(){
-const days=[
-{d:"上午",city:"晶悦府→华润杭珹未来中心",km:"~25km",entries:[{time:"08:30",cls:"drive",action:"晶悦府出发",note:"留石快速路西行→未来科技城"},{time:"09:10",cls:"",action:"抵达杭珹未来中心·瑞玺艺术馆",note:""}]},
-{d:"上午",city:"🏗️ 华润·杭珹未来中心",km:"未来科技城·TOD",entries:[{time:"09:15",cls:"key",action:"瑞玺艺术馆参观",note:"340㎡云端平墅样板间"},{time:"10:00",cls:"key",action:"TOD综合体动线考察",note:"住宅-商业-地铁连接"},{time:"10:45",cls:"",action:"周边万象城商业进度",note:""},{time:"11:30",cls:"",action:"午餐",note:"由购房顾问推荐或周边用餐"}]},
-{d:"下午",city:"杭珹→建发栖湖云庄",km:"~15km",entries:[{time:"12:30",cls:"drive",action:"未来科技城→蒋村",note:"文一西路东行"},{time:"12:55",cls:"",action:"抵达栖湖云庄",note:""}]},
-{d:"下午",city:"🏗️ 建发·栖湖云庄",km:"蒋村·西溪湿地旁",entries:[{time:"13:10",cls:"key",action:"项目外围考察",note:"排屋立面、新中式风格"},{time:"13:45",cls:"key",action:"示范区参观",note:"空间尺度与景观"},{time:"14:15",cls:"",action:"西溪湿地周边环境",note:"了解板块成熟度"}]},
-{d:"下午",city:"栖湖云庄→奥体",km:"~20km",entries:[{time:"14:30",cls:"drive",action:"蒋村→奥体",note:"紫金港路→上塘高架→过江"},{time:"14:55",cls:"",action:"抵达奥体板块",note:""}]},
-{d:"下午",city:"🏗️ 中海玖序 + 保利天珺",km:"奥体·世纪城",entries:[{time:"15:00",cls:"key",action:"中海·万潮玖序考察",note:"扎哈·哈迪德'都会峡谷'概念"},{time:"15:50",cls:"key",action:"保利天珺考察",note:"天系TOP级产品·杭州销冠"},{time:"16:20",cls:"",action:"对比总结",note:"两盘差异化与定位"}]},
-{d:"傍晚",city:"奥体→晶悦府",km:"~15km",entries:[{time:"16:30",cls:"drive",action:"返程回家",note:"过江→上塘高架北上"},{time:"16:55",cls:"",action:"到家",note:""}]}
+var days=[
+{d:"上午",city:"晶悦府→华润杭珹",km:"~25km",entries:[{t:"08:30",c:"drive",a:"晶悦府出发",n:"留石快速路西行至未来科技城"},{t:"09:10",c:"",a:"抵达杭珹未来中心·瑞玺艺术馆",n:""}]},
+{d:"上午",city:"华润·杭珹未来中心",km:"未来科技城TOD",entries:[{t:"09:15",c:"key",a:"瑞玺艺术馆参观",n:"340㎡云端平墅样板间"},{t:"10:00",c:"key",a:"TOD动线考察",n:"住宅-商业-地铁连接"},{t:"10:45",c:"",a:"万象城商业进度"},{t:"11:30",c:"",a:"午餐",n:"杭珹周边"}]},
+{d:"下午",city:"杭珹→建发栖湖云庄",km:"~15km",entries:[{t:"12:30",c:"drive",a:"未来科技城→蒋村",n:"文一西路东行"},{t:"12:55",c:"",a:"抵达栖湖云庄",n:""}]},
+{d:"下午",city:"建发·栖湖云庄",km:"蒋村·西溪",entries:[{t:"13:10",c:"key",a:"排屋立面考察",n:"新中式风格"},{t:"13:45",c:"key",a:"示范区参观",n:"空间尺度与景观"},{t:"14:15",c:"",a:"西溪湿地周边环境"}]},
+{d:"下午",city:"建发→奥体",km:"~20km",entries:[{t:"14:30",c:"drive",a:"蒋村→奥体",n:"紫金港路→上塘高架→过江"},{t:"14:55",c:"",a:"抵达奥体",n:""}]},
+{d:"下午",city:"中海玖序+保利天珺",km:"奥体·世纪城",entries:[{t:"15:10",c:"key",a:"中海·万潮玖序",n:"扎哈'都会峡谷'概念"},{t:"16:00",c:"key",a:"保利·天珺",n:"天系TOP·杭州销冠"},{t:"16:20",c:"",a:"对比总结"}]},
+{d:"傍晚",city:"奥体→晶悦府",km:"~15km",entries:[{t:"16:30",c:"drive",a:"返程回家",n:"过江→上塘高架北上"},{t:"16:55",c:"",a:"到家",n:""}]}
 ];
-document.getElementById('rb-body').innerHTML=days.map(day=>{
-const entries=day.entries.map(e=>`<div class="rb-entry ${e.cls||''}"><div class="rb-time">${e.time}</div><div class="rb-entry-right"><div class="rb-action">${e.action}</div>${e.note?`<div class="rb-note">${e.note}</div>`:''}</div></div>`).join('');
-return `<div class="rb-day"><div class="rb-day-head"><span class="rb-day-date">${day.d}</span><span class="rb-day-city">${day.city}</span><span class="rb-day-km">${day.km}</span></div><div class="rb-entries">${entries}</div></div>`;
-}).join('');
+var html='';
+for(var i=0;i<days.length;i++){
+var d=days[i];
+var entries='';
+for(var j=0;j<d.entries.length;j++){
+var e=d.entries[j];
+entries+='<div class="rb-entry '+(e.c||'')+'"><div class="rb-time">'+e.t+'</div><div class="rb-entry-right"><div class="rb-action">'+e.a+'</div>'+(e.n?'<div class="rb-note">'+e.n+'</div>':'')+'</div></div>';
+}
+html+='<div class="rb-day"><div class="rb-day-head"><span class="rb-day-date">'+d.d+'</span><span class="rb-day-city">'+d.city+'</span><span class="rb-day-km">'+d.km+'</span></div><div class="rb-entries">'+entries+'</div></div>';
+}
+document.getElementById('rb-body').innerHTML=html;
 }
 </script>
 </body>
