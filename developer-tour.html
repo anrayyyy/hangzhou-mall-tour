@@ -172,7 +172,7 @@ if(isMobile()){document.getElementById('timeline').dataset.state='half';}else{se
 });
 });
 var sc=document.createElement('script');
-sc.src='https://webapi.amap.com/maps?v=2.0&key='+AMAP_KEY+'&plugin=AMap.Driving';
+sc.src=`https://webapi.amap.com/maps?v=2.0&key=${AMAP_KEY}&plugin=AMap.Driving`;
 sc.onload=initMap;
 document.head.appendChild(sc);
 </script>
