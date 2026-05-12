@@ -138,6 +138,12 @@ m.on('click',()=>selectCity(i));
   const zhEl=document.createElement("div");
   zhEl.innerHTML=`<div style="background:#c0392b;color:#fff;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:bold;box-shadow:0 3px 8px rgba(0,0,0,0.4);border:2px solid #fff">海</div>`;
   new AMap.Marker({position:[120.211325,30.214436],content:zhEl,map,zIndex:110,bubble:true});
+// Route完成后自动飞到奥体
+setTimeout(function(){
+  const lastStop=stops[stops.length-2];
+  map.setZoomAndCenter(14,[lastStop.lng,lastStop.lat+0.05],true,600);
+},3000);
+
 // Additional marker for 保利天珺
 // 保利天珺独立标记
 const bjEl=document.createElement('div');
