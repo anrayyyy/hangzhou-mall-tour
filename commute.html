@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>通勤·晶悦府→兴耀大厦</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--white:#faf9f7;--bd:#e8e4df;--text:#2c2c2c;--muted:#8a8681;--accent:#2980b9}
+body{font-family:'Noto Sans SC','PingFang SC',system-ui,sans-serif;background:var(--white);color:var(--text);display:grid;grid-template-columns:148px 1fr;height:100vh;overflow:hidden}
+#timeline{width:148px;overflow-y:auto;padding:16px 0;background:var(--white);border-right:1px solid var(--bd)}
+.tl-item{padding:10px 14px;cursor:pointer;border-left:3px solid transparent}
+.tl-item:hover{background:#f0ede8}
+.tl-item.active{border-left-color:var(--accent);background:#f5f0ea}
+.tl-item .tl-date{font-size:11px;color:var(--muted)}
+.tl-item .tl-name{font-size:13px;font-weight:600;margin-top:2px}
+.tl-item .tl-brief{font-size:10px;color:var(--muted);margin-top:2px}
+.tl-item .tl-time{font-size:10px;color:var(--accent);margin-top:2px}
+.tl-divider{height:20px}
+#map-wrap{position:relative;overflow:hidden}
+#map{height:100vh;width:100%}
+.iw{max-width:320px;font-family:'Noto Sans SC',system-ui,sans-serif}
+.iw-head{border-bottom:2px solid var(--accent);padding-bottom:8px;margin-bottom:10px}
+.iw-date{font-size:11px;color:var(--muted)}
+.iw-title{font-size:18px;font-weight:700;margin-top:2px}
+.iw-brief{font-size:13px;line-height:1.6;margin:8px 0;color:#444}
+.iw-feature{font-size:12px;margin:6px 0;padding-left:14px}
+.iw-spots{margin-top:10px}
+.spot{padding:6px 10px;margin:4px 0;border-radius:6px;font-size:12px}
+.spot-tip{background:#f0f5e8}
+.spot-name{font-weight:600}
+.spot-desc{color:#555;margin-top:2px}
+#rb-btn{position:fixed;top:16px;right:16px;z-index:200}
+.rb-trigger{background:var(--accent);color:#fff;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:500;box-shadow:0 2px 8px rgba(0,0,0,0.15)}
+.rb-trigger:hover{background:#1a6ba0}
+#rb-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:300;display:none}
+#rb-panel{position:fixed;top:0;left:0;bottom:0;width:380px;max-width:90vw;background:var(--white);z-index:400;transform:translateX(-100%);transition:transform .35s;overflow-y:auto}
+#rb-panel.open{transform:translateX(0)}
+#rb-overlay.show{display:block}
+#rb-header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--bd)}
+#rb-header span{font-size:16px;font-weight:700}
+#rb-close{background:none;border:none;font-size:20px;cursor:pointer;padding:4px}
+#rb-body{padding:16px 20px}
+.rb-day{margin-bottom:24px}
+.rb-day-head{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.rb-day-date{font-size:13px;font-weight:700;color:var(--accent)}
+.rb-day-city{font-size:14px;font-weight:600}
+.rb-day-km{font-size:11px;color:var(--muted)}
+.rb-entries{margin-top:8px}
+.rb-entry{display:grid;grid-template-columns:44px 1fr;gap:8px;padding:6px 0;border-bottom:1px solid #f0ede8}
+.rb-time{font-size:11px;color:var(--muted);font-weight:600}
+.rb-action{font-size:13px}
+.rb-note{font-size:11px;color:var(--muted);margin-top:1px}
+.rb-entry.bus .rb-action{color:#e67e22}
+.rb-entry.walk .rb-action{color:#27ae60}
+.rb-entry.metro .rb-action{color:var(--accent)}
+.rb-entry.key .rb-action{font-weight:600}
+@media(max-width:767px){
+body{grid-template-columns:1fr}
+#timeline{position:fixed;left:0;right:0;bottom:0;width:100%;height:85vh;border-radius:18px 18px 0 0;transform:translateY(calc(85vh - 72px));transition:transform .38s;z-index:500;overflow-y:auto;background:var(--white)}
+#timeline[data-state="half"]{transform:translateY(calc(85vh - 40vh))}
+#timeline[data-state="full"]{transform:translateY(0)}
+.amap-info-outer{display:none!important}
+#rb-panel{width:100vw}
+}
+</style>
+</head>
+<body>
+<div id="timeline">
+<div class="tl-item active" data-i="0"><div class="tl-date">07:30</div><div class="tl-name">晶悦府</div><div class="tl-brief">西门出发</div><div class="tl-time">🚶 步行</div></div>
+<div class="tl-divider"></div>
+<div class="tl-item" data-i="1"><div class="tl-date">07:35</div><div class="tl-name">乘36路</div><div class="tl-brief">晶悦府→善贤</div><div class="tl-time">🚌 公交</div></div>
+<div class="tl-divider"></div>
+<div class="tl-item" data-i="2"><div class="tl-date">07:50</div><div class="tl-name">善贤地铁站</div><div class="tl-brief">换乘5号线</div><div class="tl-time">🚇 地铁</div></div>
+<div class="tl-divider"></div>
+<div class="tl-item" data-i="3"><div class="tl-date">08:05</div><div class="tl-name">打铁关</div><div class="tl-brief">1号线换乘</div><div class="tl-time">🚇 中转</div></div>
+<div class="tl-divider"></div>
+<div class="tl-item" data-i="4"><div class="tl-date">08:12</div><div class="tl-name">江陵路</div><div class="tl-brief">6号线换乘</div><div class="tl-time">🚇 中转</div></div>
+<div class="tl-divider"></div>
+<div class="tl-item" data-i="5"><div class="tl-date">08:20</div><div class="tl-name">江汉路站</div><div class="tl-brief">C口出站</div><div class="tl-time">🚶 步行</div></div>
+<div class="tl-divider"></div>
+<div class="tl-item" data-i="6"><div class="tl-date">08:25</div><div class="tl-name">兴耀大厦</div><div class="tl-brief">抵达</div><div class="tl-time">🏁 到达</div></div>
+</div>
+<div id="map-wrap">
+<div id="map"></div>
+<div id="rb-btn"><div class="rb-trigger" id="rb-open">📋 通勤路书</div></div>
+<div id="rb-overlay"></div>
+<div id="rb-panel"><div id="rb-header"><span>🚇 通勤路书</span><button id="rb-close">✕</button></div><div id="rb-body"></div></div>
+</div>
+
+<script>
+var AMAP_KEY='45cbf43f4675e9b9377fa955a6b1e996';
+var AMAP_SECRET='830b90a26c3b039ba69daccced906ba1';
+window._AMapSecurityConfig={securityJsCode:AMAP_SECRET};
+
+var stops=[
+{d:"07:30",name:"晶悦府西门",lat:30.337044,lng:120.164353,title:"晶悦府西门出发",brief:"步行至晶悦府附近公交站·约5min",features:["西门出，步行约400m到公交站","等36路公交"],spots:[]},
+{d:"07:35",name:"乘36路公交",lat:30.3260,lng:120.1625,title:"36路·晶悦府→善贤",brief:"约3-4站到善贤/善贤坝站·约10-12min",features:["36路：晶悦府附近站→善贤坝/善贤站","约3-4站，不堵车10-12min"],spots:[]},
+{d:"07:50",name:"善贤地铁站",lat:30.317363,lng:120.160827,title:"善贤站·5号线",brief:"步行至地铁站约200m·5号线出发",features:["善贤坝/善贤公交站步行200m到地铁站","5号线往南方向"],spots:[]},
+{d:"08:05",name:"打铁关站",lat:30.3050,lng:120.1750,title:"打铁关·换乘1号线",brief:"5号线→1号线，约4站",features:["5号线善贤→打铁关(4站约8min)","站内换乘1号线(萧山方向)"],spots:[{name:"换乘提示",desc:"打铁关换乘步行约3min"}]},
+{d:"08:12",name:"江陵路站",lat:30.2130,lng:120.2150,title:"江陵路·换乘6号线",brief:"1号线→6号线",features:["1号线打铁关→江陵路(6站约12min)","站内换乘6号线(桂花西路方向)"],spots:[{name:"换乘提示",desc:"江陵路站换乘步行约4min"}]},
+{d:"08:20",name:"江汉路站",lat:30.202836,lng:120.204943,title:"江汉路·C口出站",brief:"6号线江陵路→江汉路(1站约2min)",features:["C口出站","出站步行约100m到兴耀大厦"],spots:[]},
+{d:"08:25",name:"兴耀大厦",lat:30.203179,lng:120.203905,title:"抵达·兴耀大厦",brief:"滨江区江南大道518号·全程约55min",features:["总耗时：步行5min+公交12min+地铁25min+等车间隙≈55min","出江汉路站C口即到"],spots:[{name:"时间参考",desc:"早高峰建议多预留10-15min"}]}
+];
+
+var map=null;
+function initMap(){
+map=new AMap.Map('map',{zoom:12,center:[120.18,30.27],mapStyle:'amap://styles/whitesmoke'});
+addMarkers();
+addRoute();
+}
+function addMarkers(){
+var icons=["🚶","🚌","🚇","🚇","🚇","🚶","🏁"];
+for(var i=0;i<stops.length;i++){
+(function(s,idx){
+var el=document.createElement('div');
+var bg=idx==0?'#27ae60':idx==stops.length-1?'#2980b9':'#555';
+el.innerHTML='<div style="background:'+bg+';color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,0.3)">'+(icons[idx]||'📍')+'</div>';
+var m=new AMap.Marker({position:[s.lng,s.lat],content:el,map:map,zIndex:100,bubble:true});
+m.on('click',function(){selectCity(idx);});
+})(stops[i],i);
+}
+// 地铁站细化标记
+['善贤','打铁关','江陵路','江汉路'].forEach(function(n,i){
+var ps=[[120.160651,30.317478],[120.1715,30.3027],[120.2145,30.2108],[120.204943,30.202836]];
+if(i<4){
+var el=document.createElement('div');
+el.innerHTML='<div style="background:#2980b9;color:#fff;border-radius:8px;padding:3px 8px;font-size:11px;font-weight:600;box-shadow:0 2px 4px rgba(0,0,0,0.2)">🚇'+n+'</div>';
+new AMap.Marker({position:ps[i],content:el,map:map,zIndex:50,bubble:true});
+}
+});
+}
+function addRoute(){
+// Show the general route as a polyline
+var path=[
+[120.164353,30.337044],[120.1625,30.3260],[120.160827,30.317363],
+[120.1715,30.3027],[120.2145,30.2108],[120.204943,30.202836],[120.203905,30.203179]
+];
+var polyline=new AMap.Polyline({path:path,strokeColor:'#2980b9',strokeWeight:4,strokeOpacity:0.6,strokeStyle:'dashed',map:map});
+}
+function selectCity(i){
+document.querySelectorAll('.tl-item').forEach(function(el){el.classList.remove('active');});
+var el=document.querySelector('.tl-item[data-i="'+i+'"]');
+if(el)el.classList.add('active');
+if(isMobile())return;
+var s=stops[i];
+var z=map.getZoom();
+map.setZoomAndCenter(Math.max(z,14),[s.lng,s.lat+(z>=14?0.02:0.3)],false,400);
+var spotsHtml='';if(s.spots){for(var j=0;j<s.spots.length;j++){spotsHtml+='<div class="spot spot-tip"><div class="spot-name">'+s.spots[j].name+'</div><div class="spot-desc">'+s.spots[j].desc+'</div></div>';}}
+var featuresHtml='';if(s.features){for(var j=0;j<s.features.length;j++){featuresHtml+='<div class="iw-feature">'+s.features[j]+'</div>';}}
+var content='<div class="iw"><div class="iw-head"><div class="iw-date">'+s.d+'</div><div class="iw-title">'+(s.title||'')+'</div></div><div class="iw-brief">'+s.brief+'</div>'+featuresHtml+'<div class="iw-spots">'+spotsHtml+'</div></div>';
+var iw=new AMap.InfoWindow({content:content,offset:new AMap.Pixel(0,-38),autoMove:false,closeWhenClickMap:true});
+iw.open(map,[s.lng,s.lat]);
+}
+function isMobile(){return window.innerWidth<=767;}
+document.querySelectorAll('.tl-item').forEach(function(el){
+el.addEventListener('click',function(){
+var i=parseInt(el.dataset.i);
+document.querySelectorAll('.tl-item').forEach(function(e){e.classList.remove('active');});
+el.classList.add('active');
+if(isMobile()){document.getElementById('timeline').dataset.state='half';}else{selectCity(i);}
+});
+});
+var sc=document.createElement('script');
+sc.src='https://webapi.amap.com/maps?v=2.0&key='+AMAP_KEY+'&plugin=AMap.Driving';
+sc.onload=initMap;
+document.head.appendChild(sc);
+</script>
+<script>
+document.getElementById('rb-open').addEventListener('click',function(){
+document.getElementById('rb-panel').classList.add('open');
+document.getElementById('rb-overlay').classList.add('show');buildRoadbook();});
+document.getElementById('rb-close').addEventListener('click',function(){
+document.getElementById('rb-panel').classList.remove('open');
+document.getElementById('rb-overlay').classList.remove('show');});
+document.getElementById('rb-overlay').addEventListener('click',function(){
+document.getElementById('rb-panel').classList.remove('open');
+document.getElementById('rb-overlay').classList.remove('show');});
+function buildRoadbook(){
+var days=[{d:"每日通勤",city:"晶悦府→兴耀大厦",km:"~55min",
+entries:[
+{t:"07:30",c:"walk",a:"晶悦府西门出发步行",n:"步行约400m到附近公交站"},
+{t:"07:35",c:"bus",a:"乘36路公交→善贤",n:"约3-4站·10-12min"},
+{t:"07:48",c:"walk",a:"善贤坝/善贤站→地铁站",n:"步行约200m"},
+{t:"07:50",c:"metro",a:"5号线善贤→打铁关",n:"4站·约8min"},
+{t:"08:00",c:"walk",a:"打铁关站内换乘1号线",n:"换乘步行约3min"},
+{t:"08:03",c:"metro",a:"1号线打铁关→江陵路",n:"6站·约12min"},
+{t:"08:15",c:"walk",a:"江陵路站内换乘6号线",n:"换乘步行约4min"},
+{t:"08:19",c:"metro",a:"6号线江陵路→江汉路",n:"1站·约2min"},
+{t:"08:22",c:"walk",a:"江汉路C口出站",n:"步行100m到兴耀大厦"},
+{t:"08:25",c:"key",a:"抵达兴耀大厦",n:"滨江·江南大道518号"}
+]}];
+var html='';for(var i=0;i<days.length;i++){var d=days[i];var entries='';for(var j=0;j<d.entries.length;j++){var e=d.entries[j];entries+='<div class="rb-entry '+(e.c||'')+'"><div class="rb-time">'+e.t+'</div><div class="rb-entry-right"><div class="rb-action">'+e.a+'</div>'+(e.n?'<div class="rb-note">'+e.n+'</div>':'')+'</div></div>';}
+html+='<div class="rb-day"><div class="rb-day-head"><span class="rb-day-date">'+d.d+'</span><span class="rb-day-city">'+d.city+'</span><span class="rb-day-km">'+d.km+'</span></div><div class="rb-entries">'+entries+'</div></div>';}
+document.getElementById('rb-body').innerHTML=html;}
+</script>
+</body>
+</html>
