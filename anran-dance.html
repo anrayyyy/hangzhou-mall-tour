@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>🕺 安燃跳舞机</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg1:#0f0c29;
+  --bg2:#302b63;
+  --bg3:#24243e;
+  --accent:#ff6b6b;
+  --accent2:#ffd93d;
+  --text:#f0f0f0;
+  --dim:#aaa;
+}
+body{
+  min-height:100vh;
+  background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));
+  font-family:'Noto Sans SC','PingFang SC','Helvetica Neue',sans-serif;
+  display:flex;flex-direction:column;align-items:center;
+  overflow:hidden;color:var(--text);
+}
+
+/* 舞台 */
+.stage{
+  position:relative;
+  width:100%;max-width:480px;
+  flex:1;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+
+/* 灯光效果 */
+.light-spot{
+  position:absolute;
+  width:300px;height:300px;
+  background:radial-gradient(circle,rgba(255,107,107,.08) 0%,transparent 70%);
+  border-radius:50%;
+  top:45%;left:50%;transform:translate(-50%,-50%);
+  animation:lightPulse 2s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes lightPulse{0%,100%{opacity:.6;transform:translate(-50%,-50%) scale(1)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}}
+
+/* 标题 */
+header{
+  text-align:center;padding:20px 0 0;position:relative;z-index:5;
+  width:100%;max-width:480px;
+}
+header h1{
+  font-size:26px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  font-weight:800;letter-spacing:2px;
+}
+header .sub{font-size:13px;color:var(--dim);margin-top:4px}
+
+/* 角色容器 */
+#char-wrap{
+  position:relative;
+  width:280px;height:420px;
+  margin:10px auto;
+  z-index:3;
+}
+#char-wrap img{
+  width:100%;height:100%;
+  object-fit:contain;
+  display:block;
+  transition:filter .3s;
+}
+
+/* 动画状态 - 使用 transform-origin 从底部 */
+.dance-idle{
+  animation:idleBreathe 3s ease-in-out infinite;
+}
+@keyframes idleBreathe{
+  0%,100%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(-3px) scale(1.01)}
+}
+
+/* 舞动A: 迪斯科 */
+.dance-disco{
+  animation:disco 0.6s ease-in-out infinite;
+}
+@keyframes disco{
+  0%{transform:rotate(-6deg) translateY(0) scale(1)}
+  25%{transform:rotate(0deg) translateY(-8px) scale(1.03)}
+  50%{transform:rotate(6deg) translateY(0) scale(1)}
+  75%{transform:rotate(0deg) translateY(-8px) scale(1.03)}
+  100%{transform:rotate(-6deg) translateY(0) scale(1)}
+}
+
+/* 舞动B: 摇摆舞 */
+.dance-swing{
+  animation:swing 0.8s ease-in-out infinite;
+}
+@keyframes swing{
+  0%{transform:translateX(-15px) rotate(-8deg)}
+  25%{transform:translateX(-5px) rotate(-3deg) translateY(-5px)}
+  50%{transform:translateX(15px) rotate(8deg)}
+  75%{transform:translateX(5px) rotate(3deg) translateY(-5px)}
+  100%{transform:translateX(-15px) rotate(-8deg)}
+}
+
+/* 舞动C: 转圈 */
+.dance-spin{
+  animation:spin 1.2s ease-in-out infinite;
+}
+@keyframes spin{
+  0%{transform:rotate(0deg) scale(1)}
+  25%{transform:rotate(5deg) scale(1.05) translateY(-8px)}
+  50%{transform:rotate(0deg) scale(1)}
+  75%{transform:rotate(-5deg) scale(1.05) translateY(-8px)}
+  100%{transform:rotate(0deg) scale(1)}
+}
+
+/* 舞动D: 抖腿舞 */
+.dance-shake{
+  animation:shake 0.2s ease-in-out infinite;
+}
+@keyframes shake{
+  0%,100%{transform:translateX(0) rotate(0deg)}
+  25%{transform:translateX(-4px) rotate(-2deg)}
+  50%{transform:translateX(0) rotate(0deg) translateY(-4px)}
+  75%{transform:translateX(4px) rotate(2deg)}
+}
+
+/* 舞动E: 机械舞 */
+.dance-robot{
+  animation:robot 0.9s steps(4) infinite;
+}
+@keyframes robot{
+  0%{transform:translateY(0) rotate(-3deg) skewX(0deg)}
+  25%{transform:translateY(-10px) rotate(0deg) skewX(3deg)}
+  50%{transform:translateY(0) rotate(3deg) skewX(0deg)}
+  75%{transform:translateY(-10px) rotate(0deg) skewX(-3deg)}
+  100%{transform:translateY(0) rotate(-3deg) skewX(0deg)}
+}
+
+/* DJ台灯效装饰 */
+.ground-line{
+  position:absolute;bottom:8%;left:5%;right:5%;height:2px;
+  background:linear-gradient(90deg,transparent,var(--accent),var(--accent2),var(--accent),transparent);
+  opacity:.5;border-radius:2px;z-index:2;
+}
+
+/* 控制面板 */
+.controls{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:10px;
+  padding:16px 10px 20px;max-width:480px;width:100%;
+  position:relative;z-index:10;
+}
+.dance-btn{
+  padding:12px 20px;border:none;border-radius:30px;
+  font-size:14px;font-weight:600;
+  cursor:pointer;transition:all .2s;
+  color:#fff;position:relative;overflow:hidden;
+  background:rgba(255,255,255,.08);
+  backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.12);
+  display:flex;align-items:center;gap:6px;
+  flex:1;min-width:80px;justify-content:center;
+}
+.dance-btn:hover{
+  background:rgba(255,255,255,.15);
+  transform:translateY(-2px);
+}
+.dance-btn:active{transform:translateY(0)}
+.dance-btn.active{
+  border-color:var(--accent);
+  background:rgba(255,107,107,.2);
+  box-shadow:0 0 20px rgba(255,107,107,.2);
+}
+.dance-btn .emoji{font-size:20px}
+.dance-btn.stop-btn{
+  border-color:rgba(255,255,255,.2);
+}
+.dance-btn.stop-btn:hover{
+  background:rgba(255,255,255,.12);
+}
+
+/* 节拍闪光 */
+.beat-flash{
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  pointer-events:none;z-index:1;
+}
+.beat-flash.active{
+  background:radial-gradient(ellipse at center,rgba(255,107,107,.06) 0%,transparent 60%);
+  animation:flashPulse 0.6s ease-out;
+}
+@keyframes flashPulse{0%{opacity:1}100%{opacity:0}}
+
+/* BPM 显示 */
+.bpm-display{
+  position:absolute;top:10px;right:10px;
+  font-size:11px;color:var(--dim);z-index:10;
+  background:rgba(0,0,0,.3);padding:4px 10px;border-radius:12px;
+}
+
+/* 移动端 */
+@media(max-width:420px){
+  #char-wrap{width:200px;height:320px}
+  header h1{font-size:22px}
+  .dance-btn{padding:10px 14px;font-size:13px;min-width:70px}
+}
+
+/* 全屏点击闪光 */
+.stage:after{
+  content:'';position:fixed;top:0;left:0;right:0;bottom:0;
+  pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse at center,rgba(255,107,107,.03),transparent 50%);
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🕺 安燃的跳舞机</h1>
+  <div class="sub">点击舞种，看自己跳起来！</div>
+</header>
+
+<div class="stage">
+  <div class="light-spot"></div>
+  <div class="beat-flash" id="beat-flash"></div>
+
+  <div id="char-wrap">
+    <img src="anran-dance.jpg" alt="安燃" id="dancer" class="dance-idle">
+  </div>
+
+  <div class="ground-line"></div>
+  <div class="bpm-display" id="bpm-display">💓 待机中</div>
+</div>
+
+<div class="controls">
+  <button class="dance-btn active" data-dance="stop" id="btn-stop">
+    <span class="emoji">⏸️</span> 停止
+  </button>
+  <button class="dance-btn" data-dance="disco">
+    <span class="emoji">🕺</span> 迪斯科
+  </button>
+  <button class="dance-btn" data-dance="swing">
+    <span class="emoji">💃</span> 摇摆舞
+  </button>
+  <button class="dance-btn" data-dance="spin">
+    <span class="emoji">🌀</span> 转圈圈
+  </button>
+  <button class="dance-btn" data-dance="shake">
+    <span class="emoji">⚡</span> 抖腿舞
+  </button>
+  <button class="dance-btn" data-dance="robot">
+    <span class="emoji">🤖</span> 机械舞
+  </button>
+</div>
+
+<script>
+const dancer = document.getElementById('dancer');
+const beatFlash = document.getElementById('beat-flash');
+const bpmDisplay = document.getElementById('bpm-display');
+let currentDance = 'stop';
+let beatTimer = null;
+
+// 动作映射
+const danceMap = {
+  'disco': { class: 'dance-disco', name: '🕺 迪斯科', bpm: '100 BPM' },
+  'swing': { class: 'dance-swing', name: '💃 摇摆舞', bpm: '75 BPM' },
+  'spin':  { class: 'dance-spin', name: '🌀 转圈圈', bpm: '50 BPM' },
+  'shake': { class: 'dance-shake', name: '⚡ 抖腿舞', bpm: '150 BPM' },
+  'robot': { class: 'dance-robot', name: '🤖 机械舞', bpm: '66 BPM' },
+  'stop':  { class: 'dance-idle', name: '⏸️ 待机', bpm: '💓 待机中' },
+};
+
+function applyDance(type) {
+  // 清除所有舞种class
+  const allClasses = ['dance-idle','dance-disco','dance-swing','dance-spin','dance-shake','dance-robot'];
+  dancer.classList.remove(...allClasses);
+
+  // 清除按钮active
+  document.querySelectorAll('.dance-btn').forEach(b => b.classList.remove('active'));
+
+  if (type === 'stop') {
+    dancer.classList.add('dance-idle');
+    document.getElementById('btn-stop').classList.add('active');
+    bpmDisplay.textContent = '💓 待机中';
+    if (beatTimer) { clearInterval(beatTimer); beatTimer = null; }
+    return;
+  }
+
+  const dance = danceMap[type];
+  dancer.classList.add(dance.class);
+  document.querySelector(`.dance-btn[data-dance="${type}"]`).classList.add('active');
+  bpmDisplay.textContent = dance.bpm;
+
+  // 节拍闪光
+  if (beatTimer) clearInterval(beatTimer);
+  const intervals = { disco: 300, swing: 400, spin: 600, shake: 150, robot: 450 };
+  const ms = intervals[type] || 400;
+  beatTimer = setInterval(() => {
+    beatFlash.classList.remove('active');
+    void beatFlash.offsetWidth; // reflow
+    beatFlash.classList.add('active');
+  }, ms);
+}
+
+// 按钮点击
+document.querySelectorAll('.dance-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const dance = btn.dataset.dance;
+    currentDance = dance;
+    applyDance(dance);
+  });
+});
+
+// 键盘快捷键：1-6
+document.addEventListener('keydown', e => {
+  const keys = ['1','2','3','4','5','6'];
+  const dances = ['stop','disco','swing','spin','shake','robot'];
+  const idx = keys.indexOf(e.key);
+  if (idx >= 0) {
+    currentDance = dances[idx];
+    applyDance(dances[idx]);
+  }
+});
+
+// 初始状态
+applyDance('stop');
+
+// 点击图片也随机切换
+dancer.addEventListener('click', () => {
+  const dances = ['disco','swing','spin','shake','robot'];
+  const r = dances[Math.floor(Math.random() * dances.length)];
+  currentDance = r;
+  applyDance(r);
+});
+</script>
+</body>
+</html>
