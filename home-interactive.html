@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>🏠 我的家 · 状态看板</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1a1a2e;
+  --card:#16213e;
+  --card2:#0f3460;
+  --accent:#e94560;
+  --green:#2ecc71;
+  --yellow:#f1c40f;
+  --text:#eaeaea;
+  --dim:#8a8aa0;
+}
+body{font-family:'Noto Sans SC','PingFang SC','Helvetica Neue',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+.container{max-width:1200px;margin:0 auto;padding:20px}
+
+/* Header */
+header{text-align:center;padding:24px 0 8px}
+header h1{font-size:24px;font-weight:700;background:linear-gradient(135deg,#e94560,#f1c40f);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+header .sub{color:var(--dim);font-size:13px;margin-top:4px}
+.time-status{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:12px;font-size:13px}
+.time-status .dot{width:8px;height:8px;border-radius:50%;display:inline-block;animation:pulse 2s infinite}
+.time-status .dot.online{background:var(--green)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.status-badge{background:var(--card2);padding:4px 14px;border-radius:20px;font-size:12px;color:var(--yellow)}
+
+/* 模型容器 */
+#model-wrap{
+  position:relative;
+  width:100%;
+  max-width:960px;
+  margin:16px auto;
+  border-radius:16px;
+  overflow:hidden;
+  background:#0a0a1a;
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+}
+#model-wrap img{width:100%;height:auto;display:block;opacity:.92}
+
+/* 热区 overlay */
+#hotspots{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
+.hotspot{position:absolute;pointer-events:auto;cursor:pointer;transition:all .3s}
+.hotspot-inner{
+  width:100%;height:100%;
+  border:2px solid rgba(255,255,255,.15);
+  border-radius:10px;
+  background:rgba(255,255,255,.04);
+  transition:all .3s;
+  display:flex;align-items:center;justify-content:center;
+}
+.hotspot:hover .hotspot-inner{
+  border-color:var(--accent);
+  background:rgba(233,69,96,.12);
+  box-shadow:0 0 24px rgba(233,69,96,.2),inset 0 0 24px rgba(233,69,96,.05);
+}
+.hotspot.active .hotspot-inner{
+  border-color:var(--accent);
+  background:rgba(233,69,96,.15);
+  box-shadow:0 0 32px rgba(233,69,96,.3);
+}
+
+.hotspot-label{
+  position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);
+  white-space:nowrap;font-size:11px;color:var(--dim);
+  background:rgba(0,0,0,.7);padding:2px 8px;border-radius:8px;
+  opacity:0;transition:opacity .3s;pointer-events:none;
+}
+.hotspot:hover .hotspot-label{opacity:1}
+
+/* 浮动状态标签（在热区内部显示当前状态） */
+.hotspot .hint{
+  font-size:20px;
+  opacity:0;
+  transition:all .3s;
+  text-shadow:0 2px 8px rgba(0,0,0,.6);
+  pointer-events:none;
+}
+.hotspot:hover .hint{opacity:.6}
+.hotspot.active .hint{opacity:1;animation:bounce 1.5s infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+
+/* 时间选择器 */
+.time-picker{
+  display:flex;justify-content:center;align-items:center;gap:12px;
+  margin:12px auto;padding:12px 20px;max-width:500px;
+  background:var(--card);border-radius:14px;border:1px solid rgba(255,255,255,.06);
+}
+.time-picker label{font-size:13px;color:var(--dim)}
+.time-picker select{
+  background:var(--card2);color:var(--text);border:1px solid rgba(255,255,255,.1);
+  padding:6px 14px;border-radius:10px;font-size:14px;cursor:pointer;
+}
+.time-picker select:focus{outline:none;border-color:var(--accent)}
+.btn{
+  background:var(--accent);color:#fff;border:none;padding:6px 18px;
+  border-radius:10px;font-size:13px;cursor:pointer;transition:all .2s;font-weight:500;
+}
+.btn:hover{opacity:.85;transform:scale(1.04)}
+
+/* 状态信息面板 */
+#info-panel{
+  margin:8px auto;max-width:600px;padding:20px 24px;
+  background:var(--card);border-radius:16px;
+  border-left:4px solid var(--accent);
+  display:none;animation:fadeIn .4s;
+  border:1px solid rgba(255,255,255,.06);
+}
+#info-panel.show{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+#info-panel .info-icon{font-size:40px;margin-bottom:8px}
+#info-panel .info-title{font-size:18px;font-weight:600;margin-bottom:4px}
+#info-panel .info-zone{font-size:12px;color:var(--dim);margin-bottom:6px}
+#info-panel .info-desc{font-size:14px;line-height:1.7;color:#ccc}
+
+/* 底部图例 */
+.legend-wrap{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 20px;margin:20px auto 10px;padding:12px 16px;max-width:700px;background:var(--card);border-radius:12px;border:1px solid rgba(255,255,255,.05)}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--dim)}
+.legend-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+
+/* 行为时间表 */
+.schedule-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:4px;
+  margin:6px 0 0;padding:10px 14px;background:var(--card2);border-radius:12px;
+}
+.sched-item{text-align:center;padding:4px 2px;border-radius:6px;font-size:10px;color:var(--dim);transition:all .2s;cursor:pointer}
+.sched-item.active{background:var(--accent);color:#fff;font-weight:600}
+
+/* 移动端 */
+@media(max-width:600px){
+  .container{padding:12px}
+  header h1{font-size:20px}
+  #info-panel{padding:16px;margin:8px 4px}
+  .time-picker{flex-wrap:wrap;gap:8px}
+  .schedule-grid{grid-template-columns:repeat(auto-fill,minmax(50px,1fr))}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>🏠 我的家 · 动态状态看板</h1>
+    <div class="sub">鼠标悬停查看区域 &nbsp;·&nbsp; 点击标记行为状态</div>
+    <div class="time-status">
+      <span class="dot online"></span>
+      <span id="current-time-display">正在加载...</span>
+      <span class="status-badge" id="current-status-indicator">👀 有人在家</span>
+    </div>
+  </header>
+
+  <!-- 时间选择器（顶部） -->
+  <div class="time-picker">
+    <label>⏰ 时间</label>
+    <select id="time-select">
+      <option value="07:00">🌅 07:00 起床</option>
+      <option value="08:00">🍳 08:00 早餐</option>
+      <option value="09:00">💻 09:00 工作</option>
+      <option value="12:00">🍜 12:00 午饭</option>
+      <option value="14:00">🛋️ 14:00 午休</option>
+      <option value="15:00">📺 15:00 看电视</option>
+      <option value="18:00" selected>🍽️ 18:00 晚饭</option>
+      <option value="20:00">📖 20:00 读书</option>
+      <option value="22:00">🛁 22:00 洗漱</option>
+      <option value="23:00">🛌 23:00 睡觉</option>
+    </select>
+    <button class="btn" id="apply-btn">应用</button>
+    <button class="btn" style="background:#0f3460" id="auto-btn">▶ 自动演示</button>
+  </div>
+
+  <!-- 模型容器 -->
+  <div id="model-wrap">
+    <img src="" alt="加载户型模型中..." id="model-img">
+    <div id="hotspots"></div>
+  </div>
+
+  <!-- 信息面板 -->
+  <div id="info-panel">
+    <div class="info-icon" id="info-icon">🛋️</div>
+    <div class="info-title" id="info-title">在沙发上看电视</div>
+    <div class="info-zone" id="info-zone">📍 客厅</div>
+    <div class="info-desc" id="info-desc">靠在沙发上，投影正播放着最新的纪录片...</div>
+  </div>
+
+  <!-- 时间进度条 -->
+  <div class="legend-wrap" id="schedule-bar">
+    <div style="width:100%;font-size:12px;color:var(--dim);margin-bottom:4px;text-align:center">📋 今日时间线</div>
+    <div class="schedule-grid" id="sched-grid"></div>
+  </div>
+
+  <!-- 图例 -->
+  <div class="legend-wrap">
+    <span class="legend-item"><span class="legend-dot" style="background:#e94560"></span> 当前所在</span>
+    <span class="legend-item"><span class="legend-dot" style="background:rgba(233,69,96,.15)"></span> 可点击区域</span>
+    <span class="legend-item">🔵 鼠标悬停查看</span>
+    <span class="legend-item">🔄 点击切换时间段</span>
+  </div>
+</div>
+
+<script>
+// ======================== 户型数据 ========================
+// 热区坐标基于等轴测视图的百分比位置 (left%, top%, width%, height%)
+// 坐标对应安ran发的SU等轴测视图布局
+
+const zones = [
+  {
+    id: "kitchen",
+    name: "厨房",
+    icon: "🍳",
+    left: "4%", top: "3%", w: "20%", h: "22%",
+    statuses: {
+      "07:00": { action: "做早餐", desc: "炉灶上煎着鸡蛋，咖啡机正咕噜咕噜响着..." },
+      "08:00": { action: "做早餐", desc: "煎蛋、烤面包、牛奶燕麦，一顿简单的早餐..." },
+      "12:00": { action: "做午饭", desc: "灶台上炒着菜，香味飘满了整个家..." },
+      "18:00": { action: "做晚饭", desc: "系上围裙，准备给家人做顿可口的晚餐..." },
+    },
+    fallback: { action: "备餐中", desc: "厨房台面上摆满了食材和厨具..." }
+  },
+  {
+    id: "dining",
+    name: "餐厅",
+    icon: "🍽️",
+    left: "24%", top: "6%", w: "16%", h: "16%",
+    statuses: {
+      "07:00": { action: "吃早餐", desc: "坐在餐桌前享用早餐，窗外晨光正好..." },
+      "08:00": { action: "吃早餐", desc: "和家人一起吃早餐，聊着今天的计划..." },
+      "12:00": { action: "吃午饭", desc: "开饭啦！一家人围坐在餐桌前吃午饭..." },
+      "18:00": { action: "吃晚饭", desc: "晚餐时间，暖黄的灯光下享受美食..." },
+    },
+    fallback: { action: "在餐桌旁", desc: "餐桌上摆着水果和一杯茶..." }
+  },
+  {
+    id: "living_sofa",
+    name: "客厅 · 沙发",
+    icon: "🛋️",
+    left: "40%", top: "2%", w: "22%", h: "18%",
+    statuses: {
+      "09:00": { action: "喝咖啡看手机", desc: "窝在沙发上刷着手机，享受周末的慵懒..." },
+      "14:00": { action: "午休打盹", desc: "午后阳光洒进来，在沙发上眯了一小觉..." },
+      "15:00": { action: "看电视", desc: "投影开着，正追最近热播的剧集..." },
+      "20:00": { action: "看电视/刷剧", desc: "晚上窝在沙发上看电影，手边还有零食..." },
+    },
+    fallback: { action: "在沙发上休息", desc: "舒服地靠在沙发上，放松一下..." }
+  },
+  {
+    id: "living_desk",
+    name: "客厅 · 书桌",
+    icon: "💻",
+    left: "60%", top: "1%", w: "22%", h: "18%",
+    statuses: {
+      "09:00": { action: "在家办公", desc: "坐在书桌前处理工作邮件和文件..." },
+      "15:00": { action: "在书桌前工作", desc: "打开电脑，专注于手头的设计图纸..." },
+      "20:00": { action: "读书/学习", desc: "翻着刚买的新书，偶尔在笔记本上写写画画..." },
+    },
+    fallback: { action: "在书桌前", desc: "书桌上摊开了一些文件和书籍..." }
+  },
+  {
+    id: "bathroom",
+    name: "卫生间",
+    icon: "🚿",
+    left: "14%", top: "25%", w: "12%", h: "20%",
+    statuses: {
+      "07:00": { action: "洗漱", desc: "对着镜子刷牙洗脸，新的一天开始了..." },
+      "22:00": { action: "洗澡", desc: "热水冲去一天的疲惫，舒舒服服洗个澡..." },
+      "23:00": { action: "洗漱准备睡觉", desc: "刷牙洗脸，准备上床睡觉..." },
+    },
+    fallback: { action: "在卫生间", desc: "洗手间灯亮着..." }
+  },
+  {
+    id: "bedroom_spare",
+    name: "多功能房",
+    icon: "📚",
+    left: "4%", top: "48%", w: "20%", h: "20%",
+    statuses: {
+      "20:00": { action: "在多功能房", desc: "这个房间目前当书房用，偶尔做做运动..." },
+    },
+    fallback: { action: "空置/活动", desc: "多功能房的空间，可以用来做瑜伽或收纳..." }
+  },
+  {
+    id: "bedroom_second",
+    name: "次卧",
+    icon: "🛏️",
+    left: "26%", top: "44%", w: "18%", h: "24%",
+    statuses: {
+      "14:00": { action: "午睡", desc: "在次卧小憩，窗外的微风轻轻吹着窗帘..." },
+    },
+    fallback: { action: "次卧空置", desc: "次卧安静整洁，阳光透过窗户洒在地板上..." }
+  },
+  {
+    id: "bedroom_master",
+    name: "主卧",
+    icon: "🛌",
+    left: "46%", top: "42%", w: "22%", h: "26%",
+    statuses: {
+      "07:00": { action: "起床", desc: "伸个懒腰，从床上爬起来迎接新的一天..." },
+      "23:00": { action: "睡觉", desc: "关灯躺下，一天的忙碌结束了，晚安🌙" },
+      "22:00": { action: "在床上刷手机", desc: "躺在床上刷着手机，准备入睡..." },
+    },
+    fallback: { action: "在主卧", desc: "主卧安静舒适，床铺整整齐齐..." }
+  },
+  {
+    id: "bathroom_master",
+    name: "主卫",
+    icon: "🪞",
+    left: "40%", top: "32%", w: "12%", h: "12%",
+    statuses: {
+      "07:00": { action: "洗漱", desc: "在主卫洗漱化妆，准备出门..." },
+      "22:00": { action: "洗漱", desc: "在套内卫生间洗漱，方便又私密..." },
+    },
+    fallback: { action: "在主卫", desc: "主卫灯亮着..." }
+  },
+];
+
+// ======================== 行为时间表 ========================
+const schedule = [
+  { time: "07:00", label: "🌅 07", zone: "bedroom_master", desc: "起床" },
+  { time: "08:00", label: "🍳 08", zone: "dining", desc: "早餐" },
+  { time: "09:00", label: "💻 09", zone: "living_desk", desc: "工作" },
+  { time: "12:00", label: "🍜 12", zone: "dining", desc: "午饭" },
+  { time: "14:00", label: "😴 14", zone: "living_sofa", desc: "午休" },
+  { time: "15:00", label: "📺 15", zone: "living_sofa", desc: "看电视" },
+  { time: "18:00", label: "🍽️ 18", zone: "dining", desc: "晚饭" },
+  { time: "20:00", label: "📖 20", zone: "living_desk", desc: "读书" },
+  { time: "22:00", label: "🛁 22", zone: "bathroom", desc: "洗漱" },
+  { time: "23:00", label: "🛌 23", zone: "bedroom_master", desc: "睡觉" },
+];
+
+// ======================== 状态映射（时间→热区ID→行为）=======================
+function getStatusForZone(zone, time) {
+  const t = zone.statuses[time];
+  if (t) return t;
+  return zone.fallback;
+}
+
+function getActiveZone(time) {
+  const s = schedule.find(s => s.time === time);
+  return s ? s.zone : null;
+}
+
+// ======================== 渲染 ========================
+function render() {
+  const hotspots = document.getElementById('hotspots');
+  hotspots.innerHTML = '';
+
+  zones.forEach(z => {
+    const div = document.createElement('div');
+    div.className = 'hotspot';
+    div.dataset.zone = z.id;
+    div.style.cssText = `left:${z.left};top:${z.top};width:${z.w};height:${z.h}`;
+
+    const inner = document.createElement('div');
+    inner.className = 'hotspot-inner';
+
+    const hint = document.createElement('div');
+    hint.className = 'hint';
+    hint.textContent = z.icon;
+    inner.appendChild(hint);
+
+    div.appendChild(inner);
+
+    // Label
+    const label = document.createElement('div');
+    label.className = 'hotspot-label';
+    label.textContent = z.name;
+    div.appendChild(label);
+
+    div.addEventListener('click', () => {
+      const time = document.getElementById('time-select').value;
+      applyState(z.id, time);
+    });
+
+    hotspots.appendChild(div);
+  });
+
+  // 渲染时间表
+  const grid = document.getElementById('sched-grid');
+  grid.innerHTML = '';
+  schedule.forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'sched-item';
+    div.textContent = s.label;
+    div.dataset.time = s.time;
+    div.addEventListener('click', () => {
+      document.getElementById('time-select').value = s.time;
+      applyState(s.zone, s.time);
+    });
+    grid.appendChild(div);
+  });
+}
+
+// ======================== 应用状态 ========================
+function applyState(zoneId, time) {
+  // 清除所有 active
+  document.querySelectorAll('.hotspot').forEach(el => el.classList.remove('active'));
+
+  const zone = zones.find(z => z.id === zoneId);
+  if (!zone) return;
+
+  // 高亮热区
+  const el = document.querySelector(`.hotspot[data-zone="${zoneId}"]`);
+  if (el) el.classList.add('active');
+
+  const status = getStatusForZone(zone, time);
+
+  // 显示信息面板
+  const panel = document.getElementById('info-panel');
+  document.getElementById('info-icon').textContent = zone.icon;
+  document.getElementById('info-title').textContent = `${status.action}`;
+  document.getElementById('info-zone').textContent = `📍 ${zone.name}`;
+  document.getElementById('info-desc').textContent = status.desc;
+  panel.classList.add('show');
+
+  // 更新时间显示
+  document.getElementById('current-time-display').textContent =
+    `🕐 ${time} · 在${zone.name}`;
+
+  // 更新状态指示
+  document.getElementById('current-status-indicator').textContent =
+    `${zone.icon} ${status.action}`;
+
+  // 高亮时间线
+  document.querySelectorAll('.sched-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.time === time);
+  });
+}
+
+// ======================== 自动演示 ========================
+let autoTimer = null;
+function startAutoDemo() {
+  if (autoTimer) { clearInterval(autoTimer); autoTimer = null; document.getElementById('auto-btn').textContent = '▶ 自动演示'; return; }
+
+  document.getElementById('auto-btn').textContent = '⏹ 停止';
+  let idx = 0;
+  const times = schedule.map(s => s.time);
+
+  autoTimer = setInterval(() => {
+    const t = times[idx % times.length];
+    document.getElementById('time-select').value = t;
+    const sched = schedule.find(s => s.time === t);
+    if (sched) applyState(sched.zone, t);
+    idx++;
+  }, 2500);
+}
+
+// ======================== 初始化 ========================
+document.addEventListener('DOMContentLoaded', () => {
+  // 加载图片 - 使用用户发送的图片作为模型底图
+  const img = document.getElementById('model-img');
+
+  // 先尝试从本地加载（需要把图片放在同目录）
+  // 这里用data url方式嵌入用户发的图片，但图片太大无法内嵌
+  // 实际使用：用户把图片放到和html同目录，命名为 home-model.jpg
+  img.src = 'home-model.jpg';
+  img.onerror = () => {
+    // 兜底：如果没有本地图片，显示一个提示
+    img.style.display = 'none';
+    document.getElementById('model-wrap').style.minHeight = '400px';
+    document.getElementById('model-wrap').innerHTML = `
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:400px;color:var(--dim);padding:40px;text-align:center">
+        <div style="font-size:48px;margin-bottom:16px">🏠</div>
+        <div style="font-size:16px;margin-bottom:8px">请将你的SU模型截图命名为 <code style="background:#333;padding:2px 8px;border-radius:4px">home-model.jpg</code></div>
+        <div style="font-size:13px">放在本HTML文件同目录下即可显示</div>
+        <div style="margin-top:20px;padding:16px;background:rgba(255,255,255,.05);border-radius:12px;text-align:left;font-size:13px;line-height:1.8">
+          💡 临时演示模式（热区依然可用）
+        </div>
+      </div>
+    `;
+  };
+
+  render();
+
+  // 默认选中当前时间最近的时段
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  const nowStr = `${hh}:${mm}`;
+
+  // 找最近的时段
+  let closest = schedule[0];
+  for (const s of schedule) {
+    if (s.time <= nowStr) closest = s;
+  }
+
+  document.getElementById('time-select').value = closest.time;
+  applyState(closest.zone, closest.time);
+
+  // 绑定按钮
+  document.getElementById('apply-btn').addEventListener('click', () => {
+    const time = document.getElementById('time-select').value;
+    const sched = schedule.find(s => s.time === time);
+    if (sched) applyState(sched.zone, time);
+  });
+
+  document.getElementById('auto-btn').addEventListener('click', startAutoDemo);
+
+  // 实时时钟更新
+  setInterval(() => {
+    const n = new Date();
+    const h = String(n.getHours()).padStart(2,'0');
+    const m = String(n.getMinutes()).padStart(2,'0');
+    document.querySelector('.time-status').innerHTML =
+      `<span class="dot online"></span>
+       <span>🕐 ${h}:${m}</span>
+       <span class="status-badge">👀 有人在家</span>`;
+  }, 10000);
+});
+
+// 确保等轴测图的图片加载完成后，热区坐标才对齐
+window.addEventListener('load', () => {
+  const img = document.getElementById('model-img');
+  if (img.complete && img.naturalWidth > 0) {
+    console.log(`图片已加载: ${img.naturalWidth}x${img.naturalHeight}`);
+  }
+});
+</script>
+</body>
+</html>
