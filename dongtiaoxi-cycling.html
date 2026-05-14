@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>东苕溪绿道 · 周日骑行计划 🚴</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#faf8f5;
+  --card:#fff;
+  --green:#3a7d5c;
+  --green-light:#e8f3ed;
+  --orange:#e67e22;
+  --text:#2d3436;
+  --text-dim:#85929e;
+  --bd:#e8e0d4;
+  --river:#5b9bd5;
+  --warm:#fef9f0;
+}
+body{font-family:'Noto Sans SC','PingFang SC','Helvetica Neue',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;height:100vh}
+#app{display:grid;grid-template-columns:1fr 380px;height:100vh}
+#map-wrap{position:relative;overflow:hidden}
+#map{height:100vh;width:100%}
+#side{overflow-y:auto;background:var(--warm);border-left:1px solid var(--bd);padding:0}
+.side-header{
+  padding:32px 28px 20px;
+  background:linear-gradient(135deg,#3a7d5c,#2d6a4f);
+  color:#fff;
+}
+.side-header h1{font-size:22px;font-weight:700;letter-spacing:1px}
+.side-header .sub{font-size:13px;opacity:.85;margin-top:6px;display:flex;flex-wrap:wrap;gap:6px 14px}
+.side-header .badge{
+  display:inline-block;background:rgba(255,255,255,.2);border-radius:20px;
+  padding:2px 12px;font-size:12px;margin-top:8px;border:1px solid rgba(255,255,255,.3)
+}
+.weather-card{
+  margin:16px 20px;padding:16px 20px;background:#fff;border-radius:14px;
+  border-left:4px solid var(--green);box-shadow:0 2px 8px rgba(0,0,0,.06);
+  display:flex;align-items:center;gap:14px;
+}
+.weather-card .w-icon{font-size:36px}
+.weather-card .w-info{font-size:14px;line-height:1.6}
+.weather-card .w-info .hi{color:var(--orange);font-weight:600}
+.weather-card .w-info .lo{color:var(--river)}
+
+.timeline{padding:8px 20px 24px}
+.tl-section{margin-bottom:8px}
+.tl-section-title{font-size:13px;font-weight:600;color:var(--green);padding:10px 0 6px;border-bottom:2px solid var(--green-light);display:flex;align-items:center;gap:6px}
+.tl-item{
+  display:flex;gap:14px;padding:12px 10px;border-radius:12px;cursor:pointer;
+  transition:all .2s;border-left:3px solid transparent;margin:2px 0;
+}
+.tl-item:hover{background:var(--green-light);border-left-color:var(--green)}
+.tl-item .tl-icon{font-size:22px;flex-shrink:0;width:30px;text-align:center}
+.tl-item .tl-body{flex:1}
+.tl-item .tl-body .name{font-size:15px;font-weight:600}
+.tl-item .tl-body .desc{font-size:12px;color:var(--text-dim);margin-top:2px;line-height:1.5}
+.tl-item .tl-body .extra{font-size:11px;color:var(--text-dim);margin-top:4px;display:flex;gap:8px;flex-wrap:wrap}
+.tl-item .tl-body .extra span{background:var(--bg);padding:1px 8px;border-radius:10px}
+
+/* 图例 */
+.legend{display:flex;flex-wrap:wrap;gap:6px;padding:10px 20px 6px}
+.legend span{font-size:11px;background:#fff;padding:2px 10px;border-radius:10px;border:1px solid var(--bd)}
+
+/* InfoWindow 自定义 */
+.iw{padding:12px 8px;min-width:200px;max-width:280px;line-height:1.5}
+.iw .iw-title{font-size:16px;font-weight:600;color:var(--green)}
+.iw .iw-desc{font-size:13px;color:var(--text-dim);margin-top:4px}
+.iw .iw-tips{margin-top:8px;font-size:12px}
+
+/* 移动端适配 */
+@media(max-width:768px){
+  #app{grid-template-columns:1fr}
+  #side{position:fixed;left:0;right:0;bottom:0;height:70vh;border-radius:18px 18px 0 0;z-index:500;border-left:none;box-shadow:0 -4px 20px rgba(0,0,0,.12);transform:translateY(calc(70vh - 64px));transition:transform .38s cubic-bezier(.32,0,.15,1);overflow-y:auto}
+  #side[data-state="half"]{transform:translateY(calc(70vh - 40vh))}
+  #side[data-state="full"]{transform:translateY(0)}
+  .side-header{padding:20px 20px 14px}
+  .side-header h1{font-size:18px}
+  .weather-card{margin:12px 14px;padding:12px 14px}
+  .timeline{padding:4px 14px 20px}
+  .tl-item{padding:10px 8px}
+  .drawer-handle{width:40px;height:4px;background:#ddd;border-radius:4px;margin:8px auto 0}
+  #timeline-tab{display:flex;justify-content:center;position:sticky;top:0;background:var(--warm);z-index:2;border-bottom:1px solid var(--bd)}
+  #timeline-tab button{flex:1;padding:10px;border:none;background:transparent;font-size:13px;font-weight:500;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+  #timeline-tab button.active{color:var(--green);border-bottom-color:var(--green);font-weight:600}
+}
+@media(min-width:769px){.drawer-handle,#timeline-tab{display:none}}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div id="map-wrap">
+    <div id="map"></div>
+  </div>
+
+  <div id="side" data-state="full">
+    <div class="drawer-handle"></div>
+
+    <div class="side-header">
+      <h1>🚴 东苕溪绿道 · 周日骑游</h1>
+      <div class="sub">
+        <span>📅 2026.5.17（周日）</span>
+        <span>📍 杭州余杭·瓶窑</span>
+        <span>🚗 自驾+骑行</span>
+      </div>
+      <div class="badge">🌿 沿溪绿道 · 全程平路 · 周末悠骑</div>
+    </div>
+
+    <div class="weather-card">
+      <div class="w-icon">☀️</div>
+      <div class="w-info">
+        <strong>5月17日 周日 天气极好</strong><br>
+        🌡️ <span class="hi">30°</span> / <span class="lo">18°</span> &nbsp;·&nbsp; 降水概率 4% &nbsp;·&nbsp; 微风 21km/h
+        <div style="font-size:11px;color:var(--river);margin-top:2px">☀️ 晴转多云，骑行黄金天气</div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <span>🅿️ 停车点</span>
+      <span>🚴 骑行</span>
+      <span>🍜 美食</span>
+      <span>📍 途经点</span>
+      <span>🏁 终点</span>
+    </div>
+
+    <div class="timeline" id="timeline-items"></div>
+  </div>
+</div>
+
+<script>
+// ===================== DATA =====================
+const stops = [
+  {
+    id:"start",
+    name:"瓶窑老街",
+    lat:30.39465, lng:119.96798,
+    icon:"🅿️",
+    title:"起点 · 停车出发",
+    desc:"开车到瓶窑老街地下停车场停车，取车出发。瓶窑老街本身就是个不错的历史街区，可以顺便逛一下。",
+    tips:["瓶窑老街瓶窑中学地下停车场可停车","建议9:30左右到，停车后整理装备出发"]
+  },
+  {
+    id:"dongtiao1",
+    name:"东苕溪绿道南段",
+    lat:30.39837, lng:119.98521,
+    icon:"🚴",
+    title:"沿苕溪北路骑行",
+    desc:"从瓶窑老街沿苕溪北路一路往东，左侧就是东苕溪，路面平整，车辆少。骑行约3公里到达东苕溪绿道正式入口。这里是余杭最美的一段沿溪绿道，溪面开阔，两岸绿树成荫。",
+    tips:["全程柏油路，无坡","路边有柳树遮阴","溪边可能有人钓鱼"]
+  },
+  {
+    id:"dongtiao2",
+    name:"东苕溪绿道 · 湿地段",
+    lat:30.40726, lng:119.99653,
+    icon:"🌿",
+    title:"绿道核心段",
+    desc:"东苕溪绿道核心区域，溪面宽阔，两岸芦苇丛生。骑行道沿着堤坝延伸，远处可见山峦起伏。途经多处亲水平台，适合停下来拍照。这一带是东苕溪与中苕溪交汇处，生态非常好。",
+    tips:["适合拍照打卡","绿道两侧有座椅可休息","5月芦苇已绿，风景不错"]
+  },
+  {
+    id:"dongtiao3",
+    name:"安溪古渡 · 折返点",
+    lat:30.40878, lng:120.01363,
+    icon:"📍",
+    title:"最远点 · 折返",
+    desc:"骑到安溪路附近，可远眺良渚遗址方向。这里有一个小停车场，可以作为折返点。继续往东会进入村庄道路，建议在此折返，原路返回瓶窑老街。",
+    tips:["单程约5-6公里","往返总共约10-12公里","适合休闲骑，1-1.5小时轻松完成"]
+  },
+  {
+    id:"lunch",
+    name:"瓶窑老街 · 午饭",
+    lat:30.39465, lng:119.96798,
+    icon:"🍜",
+    title:"返回老街吃午饭",
+    desc:"骑回起点瓶窑老街，在老街解决午饭。瓶窑老街有不少本地小吃和餐馆，推荐尝试余杭本地菜。饭后可以在老街散步消食。",
+    tips:["瓶窑老街有面馆、小吃、茶馆","推荐：余杭羊肉面、仓前羊肉","饭后可以去旁边的瓶窑古镇逛逛"]
+  }
+];
+
+const weather = {
+  "5月17日": { icon:"☀️", desc:"晴转多云", hi:30, lo:18, rain:0, wind:"微风" }
+};
+
+// ===================== MAP =====================
+const AMAP_KEY = '45cbf43f4675e9b9377fa955a6b1e996';
+const AMAP_SECRET = '830b90a26c3b039ba69daccced906ba1';
+window._AMapSecurityConfig = { securityJsCode: AMAP_SECRET };
+
+function initMap(map) {
+  // 标记
+  stops.forEach((s, i) => {
+    const color = s.icon === '🅿️' ? '#e67e22' : s.icon === '🍜' ? '#e74c3c' : s.icon === '📍' ? '#9b59b6' : '#3a7d5c';
+    const marker = new AMap.Marker({
+      position: [s.lng, s.lat],
+      title: s.name,
+      map: map,
+      label: { content: `<div style="background:${color};color:#fff;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap">${s.icon} ${s.name}</div>`, offset: new AMap.Pixel(0, -28), direction: 'top' }
+    });
+
+    marker.on('click', () => {
+      openInfoWindow(i, map);
+    });
+  });
+
+  // 路线（用折线模拟骑行路线）
+  const routeCoords = [
+    [119.96798,30.39465],
+    [119.96850,30.39550],
+    [119.97500,30.39680],
+    [119.98521,30.39837],
+    [119.99000,30.40100],
+    [119.99653,30.40726],
+    [120.00200,30.40800],
+    [120.00800,30.40850],
+    [120.01363,30.40878]
+  ];
+  const routeLine = new AMap.Polyline({
+    path: routeCoords,
+    strokeColor: '#3a7d5c',
+    strokeWeight: 5,
+    strokeOpacity: 0.8,
+    strokeStyle: 'solid',
+    map: map
+  });
+
+  // 返回路线（虚线）
+  const returnCoords = [...routeCoords].reverse();
+  const returnLine = new AMap.Polyline({
+    path: returnCoords,
+    strokeColor: '#e67e22',
+    strokeWeight: 4,
+    strokeOpacity: 0.5,
+    strokeStyle: 'dashed',
+    dashArray: [10, 8],
+    map: map
+  });
+
+  // 适配视野
+  map.setFitView(null, false, [40,40,40,40]);
+
+  // 渲染时间轴
+  renderTimeline(map);
+
+  // InfoWindow默认打开第一个
+  openInfoWindow(0, map);
+}
+
+function buildInfoHtml(s) {
+  const tips = s.tips ? s.tips.map(t => `<div style="padding:2px 0;font-size:12px">• ${t}</div>`).join('') : '';
+  return `
+    <div class="iw">
+      <div class="iw-title">${s.icon} ${s.title}</div>
+      <div class="iw-desc">${s.desc}</div>
+      ${tips ? `<div class="iw-tips" style="margin-top:8px;border-top:1px solid #eee;padding-top:6px"><strong>💡 小贴士</strong>${tips}</div>` : ''}
+    </div>`;
+}
+
+function openInfoWindow(i, map) {
+  const s = stops[i];
+  const zoomLevel = map.getZoom();
+  const latShift = zoomLevel >= 13 ? 0.015 : 0.05;
+  map.setZoomAndCenter(zoomLevel < 13 ? 13 : zoomLevel, [s.lng, s.lat + latShift], false, 400);
+
+  const info = new AMap.InfoWindow({
+    content: buildInfoHtml(s),
+    offset: new AMap.Pixel(0, -35),
+    autoMove: false,
+    closeWhenClickMap: true
+  });
+  info.open(map, [s.lng, s.lat]);
+}
+
+// ===================== TIMELINE =====================
+function renderTimeline(map) {
+  const container = document.getElementById('timeline-items');
+  container.innerHTML = stops.map((s, i) => `
+    <div class="tl-section">
+      ${s.id === 'start' || s.id === 'lunch' ? `<div class="tl-section-title">${s.id === 'start' ? '🚗 上午 — 出发骑行' : '🍽️ 中午 — 午饭休憩'}</div>` : ''}
+      <div class="tl-item" onclick="openInfoWindow(${i}, window.mapInstance)">
+        <div class="tl-icon">${s.icon}</div>
+        <div class="tl-body">
+          <div class="name">${s.name}</div>
+          <div class="desc">${s.title}</div>
+          ${s.tips ? `<div class="extra">${s.tips.slice(0,2).map(t => `<span>${t}</span>`).join('')}</div>` : ''}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ===================== LOAD MAP =====================
+const sc = document.createElement('script');
+sc.src = `https://webapi.amap.com/maps?v=2.0&key=${AMAP_KEY}&plugin=AMap.InfoWindow`;
+sc.onload = () => {
+  const map = new AMap.Map('map', {
+    zoom: 13,
+    center: [119.990, 30.402],
+    mapStyle: 'amap://styles/freshturquoise',
+    features: ['bg','road','building','point']
+  });
+  window.mapInstance = map;
+  initMap(map);
+};
+document.head.appendChild(sc);
+
+// ===================== MOBILE DRAWER =====================
+document.addEventListener('DOMContentLoaded', () => {
+  const side = document.getElementById('side');
+  let state = 'full';
+
+  // 触摸拖动
+  let startY = 0, currentY = 0, isDragging = false;
+  const drawerHandle = document.querySelector('.drawer-handle');
+  if (drawerHandle) {
+    drawerHandle.addEventListener('touchstart', e => {
+      startY = e.touches[0].clientY;
+      isDragging = true;
+    });
+    drawerHandle.addEventListener('touchmove', e => {
+      if (!isDragging) return;
+      currentY = e.touches[0].clientY;
+    });
+    drawerHandle.addEventListener('touchend', () => {
+      if (!isDragging) return;
+      isDragging = false;
+      const diff = currentY - startY;
+      if (diff > 30) state = 'half';
+      else if (diff < -30) state = 'full';
+      side.dataset.state = state;
+    });
+  }
+
+  // 点击切换状态（桌面端点击侧边toggle，移动端tap handle）
+  if (drawerHandle) {
+    drawerHandle.addEventListener('click', () => {
+      state = state === 'full' ? 'half' : 'full';
+      side.dataset.state = state;
+    });
+  }
+});
+</script>
+</body>
+</html>
