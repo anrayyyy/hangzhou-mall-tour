@@ -52,87 +52,44 @@ var SEGS = [
 ];
 </script>
 
-<script src="https://api.map.baidu.com/api?v=3.0&ak=wt52eaTW8v0GYGc99j74WpjtJBErzIqi&s=1"></script>
+<script src="https://api.map.baidu.com/api?v=3.0&ak=SFiEC9kmMkJ8YWU8HDIX0CzJw41xQbUj&s=1"></script>
 <script>
-var map = new BMap.Map('container');
-map.centerAndZoom(new BMap.Point(120.15, 30.28), 12);
-map.enableScrollWheelZoom();
-map.setMapStyleV2({ styleJson: [
-  {featureType: 'water', elementType: 'geometry', stylers: {color: '#0f3460'} },
-  {featureType: 'land', elementType: 'geometry', stylers: {color: '#16213e'} },
-  {featureType: 'highway', elementType: 'geometry', stylers: {color: '#1a3a5c'} },
-  {featureType: 'green', elementType: 'geometry', stylers: {color: '#1a3a2e'} },
-  {featureType: 'road', elementType: 'geometry', stylers: {color: '#1a2a4a'} },
-  {featureType: 'road', elementType: 'labels.text', stylers: {color: '#6688aa', visibility: 'on'} },
-]});
-
-var allOverlays = [];
-var startPt = null;
-var endPt = null;
-
-SEGS.forEach(function(seg) {
-  var bPoints = seg.pts.map(function(p) { return new BMap.Point(p[0], p[1]); });
+try {
+  var map = new BMap.Map('container');
+  map.centerAndZoom(new BMap.Point(120.15, 30.28), 12);
+  map.enableScrollWheelZoom();
   
-  var polyline = new BMap.Polyline(bPoints, {
-    strokeColor: seg.color,
-    strokeWeight: 4,
-    strokeOpacity: 0.9,
-    strokeStyle: 'solid',
-    enableEditing: false,
-  });
-  map.addOverlay(polyline);
-  allOverlays.push(polyline);
-  
-  // 文字标签在路径中间
-  var midIdx = Math.floor(bPoints.length / 2);
-  if (bPoints[midIdx]) {
-    var lbl = new BMap.Label(seg.name, {
-      position: bPoints[midIdx],
-      offset: new BMap.Size(-30, -10),
-      styles: {
-        color: seg.color,
-        backgroundColor: 'rgba(22,33,62,0.90)',
-        border: '1px solid ' + seg.color,
-        borderRadius: '10px',
-        padding: '2px 8px',
-        fontSize: '11px',
-        fontWeight: 'bold',
-      }
+  SEGS.forEach(function(seg) {
+    var bPoints = seg.pts.map(function(p) { return new BMap.Point(p[0], p[1]); });
+    var polyline = new BMap.Polyline(bPoints, {
+      strokeColor: seg.color,
+      strokeWeight: 4,
+      strokeOpacity: 0.9,
     });
-    map.addOverlay(lbl);
-    allOverlays.push(lbl);
-  }
-});
-
-// 起点终点标记
-var home = new BMap.Point(120.164353, 30.337044);
-var markerHome = new BMap.Marker(home);
-map.addOverlay(markerHome);
-allOverlays.push(markerHome);
-
-var labelHome = new BMap.Label('🏠 和旭晶悦府', {
-  position: home,
-  offset: new BMap.Size(-36, -22),
-  styles: { color: '#e94560', backgroundColor: 'rgba(22,33,62,0.95)', border: '1px solid #e94560', borderRadius: '4px', padding: '3px 8px', fontSize: '12px', fontWeight: 'bold' }
-});
-map.addOverlay(labelHome);
-allOverlays.push(labelHome);
-
-// 途经点
-var via1 = new BMap.Point(120.132720, 30.239869);
-var via2 = new BMap.Point(120.147631, 30.229388);
-
-var ptStyle = function(text) {
-  return new BMap.Label('📍 ' + text, {
-    position: text === '杨公堤' ? via1 : via2,
-    offset: new BMap.Size(-24, -10),
-    styles: { color: '#f5a623', backgroundColor: 'rgba(22,33,62,0.95)', border: '1px solid #f5a623', borderRadius: '4px', padding: '2px 6px', fontSize: '11px' }
+    map.addOverlay(polyline);
   });
-};
-map.addOverlay(ptStyle('杨公堤'));
-map.addOverlay(ptStyle('南山路'));
-
-map.setViewport(allOverlays.filter(function(o) { return o instanceof BMap.Polyline; }));
+  
+  var home = new BMap.Point(120.164353, 30.337044);
+  new BMap.Marker(home).setMap(map);
+  new BMap.Label('🏠 和旭晶悦府', {
+    position: home, offset: new BMap.Size(-36, -22),
+    styles: { color: '#e94560', background: 'rgba(22,33,62,0.95)', border: '1px solid #e94560', borderRadius: '4px', padding: '3px 8px', fontSize: '12px', fontWeight: 'bold' }
+  }).setMap(map);
+  
+  var via1 = new BMap.Point(120.132720, 30.239869);
+  var via2 = new BMap.Point(120.147631, 30.229388);
+  new BMap.Label('📍 杨公堤', {
+    position: via1, offset: new BMap.Size(-24, -10),
+    styles: { color: '#f5a623', background: 'rgba(22,33,62,0.95)', border: '1px solid #f5a623', borderRadius: '4px', padding: '2px 6px', fontSize: '11px' }
+  }).setMap(map);
+  new BMap.Label('📍 南山路', {
+    position: via2, offset: new BMap.Size(-24, -10),
+    styles: { color: '#2ecc71', background: 'rgba(22,33,62,0.95)', border: '1px solid #2ecc71', borderRadius: '4px', padding: '2px 6px', fontSize: '11px' }
+  }).setMap(map);
+  
+} catch(e) {
+  document.getElementById('container').innerHTML = '<div style="padding:40px;text-align:center;color:#e94560;font-size:16px;">地图加载失败: ' + e.message + '</div>';
+}
 </script>
 </body>
 </html>
