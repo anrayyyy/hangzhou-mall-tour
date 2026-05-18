@@ -3,21 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
-<title>骑行测试：晶悦府→杨公堤→南山路→回家</title>
+<title>骑行验证：晶悦府⇄西湖</title>
 <style>
-  html,body,#container{width:100%;height:100%;margin:0;padding:0;}
-  #panel{position:fixed;background-color:white;max-height:90%;overflow-y:auto;top:10px;right:10px;width:280px;border-radius:4px;overflow:hidden;z-index:1000;display:none;}
-  .info{position:absolute;top:10px;left:10px;z-index:1000;background:white;padding:8px 14px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.15);font-size:13px;max-width:200px;}
+  html,body,#container{width:100%;height:100%;margin:0;padding:0;font-family:-apple-system,sans-serif;}
+  #panel{position:fixed;background:white;max-height:90%;overflow-y:auto;top:10px;right:10px;width:280px;border-radius:4px;z-index:1000;display:none;}
+  .info{position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:1000;background:white;padding:8px 16px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.2);font-size:13px;white-space:nowrap;text-align:center;}
+  .info b{color:#2d8a4e;}
+  .compare-btn{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);z-index:1000;background:#fff;border:1px solid #ddd;border-radius:20px;padding:6px 16px;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,0.15);cursor:pointer;text-decoration:none;color:#333;display:inline-flex;align-items:center;gap:6px;}
+  .compare-btn:hover{background:#f5f5f5;}
 </style>
 </head>
 <body>
 <div id="container"></div>
 <div id="panel"></div>
 <div class="info">
-  <b>🚴 测试路线</b><br>
-  晶悦府→杨公堤→南山路→回家<br>
-  <span style="color:#888;font-size:11px;">对比高德App骑行路线</span>
+  <b>🚴 高德骑行路线</b> 晶悦府→杨公堤→南山路→回家 · <span style="color:#e74c3c;">~30.8km</span>
 </div>
+<a class="compare-btn" href="https://uri.amap.com/route?from=和旭晶悦府(120.164353,30.337044)&to=和旭晶悦府(120.164353,30.337044)&via1=杨公堤(120.132720,30.239869)&via2=南山路(120.147631,30.229388)&mode=cycling&policy=1" target="_blank">
+  📱 在高德App中打开对比
+</a>
 
 <script src="https://webapi.amap.com/maps?v=2.0&key=45cbf43f4675e9b9377fa955a6b1e996&plugin=AMap.Riding&securityJsCode=830b90a26c3b039ba69daccced906ba1"></script>
 <script>
@@ -28,35 +32,36 @@ var map = new AMap.Map("container", {
   mapStyle: 'amap://styles/fresh'
 });
 
-// 路线：晶悦府→杨公堤→南山路→晶悦府
-var segs = [
-  { from: [120.164353, 30.337044], to: [120.132720, 30.239869], label: '家→杨公堤' },  // 晶悦府到杨公堤
-  { from: [120.132720, 30.239869], to: [120.147631, 30.229393], label: '杨公堤→南山路' }, // 杨公堤到南山路
-  { from: [120.147631, 30.229393], to: [120.164353, 30.337044], label: '南山路→家' },    // 南山路回家
-];
-
-// Start marker
+// 起点：和旭晶悦府
 new AMap.Marker({
   position: [120.164353, 30.337044],
-  label: { content: '<div style="background:#2d8a4e;color:white;padding:2px 8px;border-radius:4px;font-size:12px;">🏠 晶悦府</div>', direction: 'top', offset: new AMap.Pixel(-30, 0) }
+  label: { content: '<div style="background:#2d8a4e;color:white;padding:2px 6px;border-radius:4px;font-size:11px;">🏠 晶悦府</div>', direction: 'top', offset: new AMap.Pixel(-24, 0) }
 }).setMap(map);
 
-// End marker
+// 途经点
 new AMap.Marker({
   position: [120.132720, 30.239869],
-  label: { content: '<div style="background:#e74c3c;color:white;padding:2px 8px;border-radius:4px;font-size:12px;">📍 杨公堤</div>', direction: 'top', offset: new AMap.Pixel(-30, 0) }
+  label: { content: '<div style="background:#e67e22;color:white;padding:2px 6px;border-radius:4px;font-size:11px;">📍 杨公堤</div>', direction: 'top', offset: new AMap.Pixel(-24, 0) }
 }).setMap(map);
 
 new AMap.Marker({
-  position: [120.147631, 30.229393],
-  label: { content: '<div style="background:#3498db;color:white;padding:2px 8px;border-radius:4px;font-size:12px;">📍 南山路</div>', direction: 'top', offset: new AMap.Pixel(-30, 0) }
+  position: [120.147631, 30.229388],
+  label: { content: '<div style="background:#e67e22;color:white;padding:2px 6px;border-radius:4px;font-size:11px;">📍 南山路</div>', direction: 'top', offset: new AMap.Pixel(-24, 0) }
 }).setMap(map);
 
+// 用高德骑行路线规划 + 途经点
 var riding = new AMap.Riding({
   map: map,
   panel: 'panel',
   policy: AMap.RidingPolicy.RECOMMENDED,
 });
+
+// 分三段规划，跟高德App一致
+var segs = [
+  { from: [120.164353, 30.337044], to: [120.132720, 30.239869] },
+  { from: [120.132720, 30.239869], to: [120.147631, 30.229388] },
+  { from: [120.147631, 30.229388], to: [120.164353, 30.337044] },
+];
 
 var idx = 0;
 function nextSeg() {
@@ -64,14 +69,9 @@ function nextSeg() {
     map.setFitView(null, false, [30,30,30,30]);
     return;
   }
-  var seg = segs[idx];
-  idx++;
+  var seg = segs[idx++];
   riding.search(seg.from, seg.to, function(status, result) {
-    if (status === 'complete') {
-      console.log('✓ ' + seg.label);
-    } else {
-      console.log('✗ ' + seg.label + ': ' + status);
-    }
+    console.log('Seg ' + idx + ': ' + status);
     setTimeout(nextSeg, 500);
   });
 }
