@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>骑行测试v3 - 直接REST API</title>
+<style>
+  html, body, #container { width: 100%; height: 100%; margin: 0; padding: 0; }
+  #log { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.8); color: #0f0; padding: 8px; font-size: 12px; font-family: monospace; max-height: 150px; overflow-y: auto; z-index: 9999; }
+</style>
+</head>
+<body>
+<div id="container"></div>
+<div id="log">[log] 页面加载 v3...</div>
+
+<script src="https://webapi.amap.com/maps?v=2.0&key=45cbf43f4675e9b9377fa955a6b1e996&plugin=AMap.Polyline&securityJsCode=830b90a26c3b039ba69daccced906ba1"></script>
+<script>
+function log(msg) { document.getElementById('log').innerHTML += '<br>[log] ' + msg; }
+
+log('AMap版本: ' + AMap.v);
+
+var map = new AMap.Map('container', {
+  resizeEnable: true,
+  center: [120.15, 30.28],
+  zoom: 12
+});
+log('地图已创建');
+
+// 用 JSONP 直接调高德骑行 REST API
+var from = '120.164353,30.337044';
+var to = '120.132720,30.239869';
+var cb = 'cb_' + Date.now();
+
+window[cb] = function(data) {
+  log('API返回, status=' + data.status);
+  if (data.status === '1' && data.route && data.route.paths) {
+    var path = [];
+    data.route.paths[0].steps.forEach(function(step) {
+      step.polyline.split(';').forEach(function(pt) {
+        var parts = pt.split(',');
+        path.push([parseFloat(parts[0]), parseFloat(parts[1])]);
+      });
+    });
+    log('路径点: ' + path.length);
+    var poly = new AMap.Polyline({ path: path, strokeColor: '#e74c3c', strokeWeight: 5, strokeOpacity: 0.9, showDir: true });
+    poly.setMap(map);
+    map.setFitView([poly]);
+    log('✅ 成功！');
+  } else {
+    log('❌ 失败: ' + JSON.stringify(data).slice(0, 200));
+  }
+};
+
+var s = document.createElement('script');
+s.src = 'https://restapi.amap.com/v3/direction/cycling?key=45cbf43f4675e9b9377fa955a6b1e996&origin=' + from + '&destination=' + to + '&output=json&callback=' + cb;
+document.body.appendChild(s);
+log('请求已发送...');
+</script>
+</body>
+</html>
