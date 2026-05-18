@@ -1,144 +1,81 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>测试路线：晶悦府→西湖→回家</title>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+<title>骑行测试：晶悦府→杨公堤→南山路→回家</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-  
-  .header {
-    background: linear-gradient(135deg, #c0392b, #e74c3c);
-    color: white;
-    padding: 16px;
-    text-align: center;
-  }
-  .header h1 { font-size: 20px; }
-  .header p { font-size: 13px; opacity: 0.85; margin-top: 4px; }
-
-  #map { width: 100%; height: calc(100vh - 120px); }
-
-  .stats {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    padding: 8px;
-    background: #fafafa;
-    font-size: 13px;
-    color: #666;
-    border-bottom: 1px solid #eee;
-  }
-
-  .compare-note {
-    background: #fff8e1;
-    border: 1px solid #ffe082;
-    padding: 10px 14px;
-    margin: 8px;
-    border-radius: 8px;
-    font-size: 12px;
-    line-height: 1.6;
-    color: #795548;
-  }
+  html,body,#container{width:100%;height:100%;margin:0;padding:0;}
+  #panel{position:fixed;background-color:white;max-height:90%;overflow-y:auto;top:10px;right:10px;width:280px;border-radius:4px;overflow:hidden;z-index:1000;display:none;}
+  .info{position:absolute;top:10px;left:10px;z-index:1000;background:white;padding:8px 14px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.15);font-size:13px;max-width:200px;}
 </style>
 </head>
 <body>
-
-<div class="header">
-  <h1>🚴 测试路线：晶悦府→西湖→回家</h1>
-  <p>对比高德 App 骑行路线的精确度</p>
+<div id="container"></div>
+<div id="panel"></div>
+<div class="info">
+  <b>🚴 测试路线</b><br>
+  晶悦府→杨公堤→南山路→回家<br>
+  <span style="color:#888;font-size:11px;">对比高德App骑行路线</span>
 </div>
 
-<div class="stats">
-  <span>📍 晶悦府 → 西湖 → 晶悦府</span>
-  <span>📏 约 15-20km</span>
-</div>
-
-<div class="compare-note">
-  <strong>📌 怎么验证：</strong>在高德 App 搜索"晶悦府→西湖"骑行路线，跟下面地图上的路线对比——<br>
-  路线应该沿上塘路→文一路→保俶路（或莫干山路→北山街）到西湖，环湖后原路返回。<br>
-  如果路线跟高德 App 显示的基本一致，说明数据源是准的；如果差异大，那我需要换方案。
-</div>
-
-<div id="map"></div>
-
-<link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"/>
-<script src="https://webapi.amap.com/maps?v=2.0&key=45cbf43f4675e9b9377fa955a6b1e996&plugin=AMap.Polyline&securityJsCode=830b90a26c3b039ba69daccced906ba1"></script>
+<script src="https://webapi.amap.com/maps?v=2.0&key=45cbf43f4675e9b9377fa955a6b1e996&plugin=AMap.Riding&securityJsCode=830b90a26c3b039ba69daccced906ba1"></script>
 <script>
-const ROUTE = [{"name": "晶悦府→西湖→回家", "color": "#e74c3c", "paths": [[[120.164273, 30.336941], [120.164835, 30.33662], [120.164331, 30.336223], [120.164074, 30.336432], [120.163763, 30.336046], [120.162835, 30.33662], [120.160656, 30.333638], [120.160013, 30.332688], [120.15931, 30.332629], [120.158457, 30.332667], [120.156381, 30.332661], [120.153903, 30.332656], [120.153039, 30.332506], [120.147541, 30.332415], [120.147186, 30.3325], [120.146811, 30.332656], [120.14658, 30.332897], [120.146473, 30.333021], [120.146253, 30.333385], [120.145953, 30.333616], [120.145502, 30.333718], [120.145078, 30.333638], [120.14474, 30.333396], [120.144601, 30.333171], [120.144547, 30.332833], [120.144837, 30.331202], [120.144923, 30.331057], [120.145089, 30.329765], [120.14636, 30.319653], [120.146634, 30.317496], [120.147058, 30.314127], [120.147428, 30.310511], [120.147825, 30.30747], [120.148249, 30.306644], [120.149086, 30.305721], [120.152959, 30.301961], [120.155217, 30.299761], [120.159852, 30.295196], [120.161333, 30.293141], [120.161971, 30.292203], [120.163945, 30.289306], [120.165291, 30.287321], [120.167357, 30.284317], [120.168467, 30.28267], [120.169191, 30.281131], [120.169438, 30.28016], [120.170023, 30.27729], [120.1702, 30.276394], [120.170345, 30.275557], [120.170484, 30.274516], [120.170613, 30.273379], [120.170661, 30.272977], [120.170801, 30.27229], [120.170876, 30.271072], [120.170817, 30.27082], [120.170672, 30.269839], [120.170817, 30.268846], [120.170886, 30.268342], [120.170967, 30.267446], [120.17101, 30.266641], [120.171053, 30.264662], [120.169889, 30.264646], [120.168456, 30.264565], [120.167469, 30.264436], [120.166144, 30.264281], [120.164615, 30.264083], [120.162716, 30.263836], [120.161901, 30.263723], [120.160072, 30.26345], [120.159063, 30.26331], [120.15732, 30.26302], [120.157803, 30.261304], [120.157095, 30.261036], [120.156923, 30.261111], [120.156789, 30.26176], [120.155528, 30.261293], [120.155432, 30.261148], [120.155233, 30.261186]], [[120.15495, 30.261098], [120.153785, 30.260633], [120.15283, 30.261315], [120.15209, 30.262296], [120.152846, 30.262607], [120.154203, 30.26316], [120.154713, 30.263203], [120.155973, 30.263095], [120.156783, 30.263058], [120.157535, 30.262291], [120.15784, 30.26118], [120.158114, 30.260236], [120.158301, 30.259507], [120.158489, 30.258654], [120.158565, 30.25691], [120.158656, 30.256127], [120.160914, 30.252549], [120.161338, 30.251728], [120.161515, 30.250843], [120.161322, 30.249652], [120.160807, 30.248671], [120.16071, 30.248279], [120.161257, 30.247839], [120.162566, 30.247764], [120.163768, 30.247667], [120.164406, 30.247592], [120.164315, 30.249143], [120.164288, 30.250435], [120.164353, 30.251648], [120.164927, 30.251675], [120.165155, 30.252006]], [[120.165155, 30.252006], [120.165071, 30.253606], [120.165125, 30.254024], [120.165956, 30.254046], [120.167196, 30.254073], [120.168762, 30.254131], [120.170018, 30.254175], [120.171605, 30.25418], [120.171718, 30.255827], [120.171702, 30.256631], [120.17167, 30.257897], [120.171643, 30.259228], [120.171627, 30.260644], [120.171552, 30.262436], [120.171326, 30.264667], [120.171257, 30.266008], [120.171203, 30.267333], [120.171096, 30.26839], [120.170988, 30.269828], [120.170892, 30.270611], [120.170849, 30.272295], [120.170881, 30.272714], [120.170661, 30.274742], [120.170339, 30.276431], [120.170195, 30.277097], [120.169937, 30.27832], [120.16954, 30.28024], [120.169116, 30.281635], [120.168456, 30.282896], [120.166536, 30.285723], [120.163097, 30.290786], [120.162051, 30.292305], [120.16167, 30.292873], [120.160458, 30.294649], [120.159551, 30.295706], [120.15534, 30.299799], [120.152513, 30.30254], [120.15202, 30.303007], [120.149155, 30.305786], [120.148393, 30.306617], [120.148007, 30.307293], [120.147793, 30.308023], [120.147283, 30.313076], [120.146966, 30.315924], [120.146355, 30.32079], [120.145293, 30.329078], [120.14532, 30.329357], [120.145341, 30.330215], [120.145363, 30.331374], [120.145438, 30.331856], [120.145599, 30.332034], [120.145894, 30.332168], [120.146484, 30.332243], [120.14746, 30.332307], [120.152776, 30.332355], [120.153388, 30.332248], [120.154981, 30.332275], [120.156461, 30.33235], [120.158023, 30.332371], [120.159111, 30.332323], [120.159938, 30.332248], [120.160281, 30.332811], [120.160807, 30.333546], [120.161965, 30.335236], [120.16292, 30.336572], [120.163763, 30.336046], [120.164074, 30.336432], [120.164331, 30.336223], [120.164835, 30.33662], [120.164273, 30.336941]]]}];
-
-const map = new AMap.Map('map', {
-  zoom: 12,
-  center: [120.16, 30.28],
-  mapStyle: 'amap://styles/fresh',
+var map = new AMap.Map("container", {
   resizeEnable: true,
+  center: [120.15, 30.28],
+  zoom: 12,
+  mapStyle: 'amap://styles/fresh'
 });
 
-const colors = ['#e74c3c', '#e67e22', '#c0392b'];
-const segLabels = ['家→西湖', '环湖', '西湖→家'];
-const segDistances = ['~8km', '~5km', '~8km'];
-
-// Draw each segment
-ROUTE[0].paths.forEach((points, i) => {
-  if (!points || points.length < 2) return;
-  
-  const polyline = new AMap.Polyline({
-    path: points,
-    strokeColor: colors[i % 3],
-    strokeWeight: 5,
-    strokeOpacity: 0.85,
-    lineJoin: 'round',
-    lineCap: 'round',
-    showDir: true,
-    dirColor: colors[i % 3],
-  });
-  polyline.setMap(map);
-
-  // Label at midpoint
-  const midIdx = Math.floor(points.length / 2);
-  const midPos = points[midIdx];
-  if (midPos) {
-    new AMap.Marker({
-      position: midPos,
-      label: {
-        content: `<div style="background:${colors[i % 3]};color:white;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,0.2);">${segLabels[i]} ${segDistances[i]}</div>`,
-        offset: new AMap.Pixel(-30, -12),
-        direction: 'top',
-      },
-    }).setMap(map);
-  }
-});
-
-// Markers
-const markers = [
-  { pos: [120.164353, 30.337044], title: '🏠 晶悦府', desc: '家', color: '#2d8a4e', type: 'start' },
-  { pos: [120.155, 30.261], title: '🏔️ 西湖（北线）', desc: '环湖入口', color: '#3498db' },
-  { pos: [120.165, 30.252], title: '🏔️ 西湖（湖滨）', desc: '环湖出口', color: '#3498db' },
+// 路线：晶悦府→杨公堤→南山路→晶悦府
+var segs = [
+  { from: [120.164353, 30.337044], to: [120.132720, 30.239869], label: '家→杨公堤' },  // 晶悦府到杨公堤
+  { from: [120.132720, 30.239869], to: [120.147631, 30.229393], label: '杨公堤→南山路' }, // 杨公堤到南山路
+  { from: [120.147631, 30.229393], to: [120.164353, 30.337044], label: '南山路→家' },    // 南山路回家
 ];
 
-markers.forEach((m, i) => {
-  let icon = null;
-  if (m.type === 'start') {
-    const svg = `data:image/svg+xml;base64,${btoa('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="#2d8a4e" stroke="white" stroke-width="3"/><text x="16" y="21" text-anchor="middle" fill="white" font-size="14" font-weight="bold">S</text></svg>')}`;
-    icon = new AMap.Icon({ size: new AMap.Size(32, 32), image: svg, imageOffset: new AMap.Pixel(0, 0) });
-  }
+// Start marker
+new AMap.Marker({
+  position: [120.164353, 30.337044],
+  label: { content: '<div style="background:#2d8a4e;color:white;padding:2px 8px;border-radius:4px;font-size:12px;">🏠 晶悦府</div>', direction: 'top', offset: new AMap.Pixel(-30, 0) }
+}).setMap(map);
 
-  const marker = new AMap.Marker({
-    position: m.pos,
-    icon: icon,
-    offset: icon ? new AMap.Pixel(-16, -16) : new AMap.Pixel(-8, -8),
-  });
-  marker.setMap(map);
+// End marker
+new AMap.Marker({
+  position: [120.132720, 30.239869],
+  label: { content: '<div style="background:#e74c3c;color:white;padding:2px 8px;border-radius:4px;font-size:12px;">📍 杨公堤</div>', direction: 'top', offset: new AMap.Pixel(-30, 0) }
+}).setMap(map);
 
-  const content = `<div style="padding:6px 10px;font-size:13px;"><b>${m.title}</b><br>${m.desc}</div>`;
-  marker.on('click', function() {
-    const info = new AMap.InfoWindow({ content, offset: new AMap.Pixel(0, -28) });
-    info.open(map, this.getPosition());
-  });
+new AMap.Marker({
+  position: [120.147631, 30.229393],
+  label: { content: '<div style="background:#3498db;color:white;padding:2px 8px;border-radius:4px;font-size:12px;">📍 南山路</div>', direction: 'top', offset: new AMap.Pixel(-30, 0) }
+}).setMap(map);
+
+var riding = new AMap.Riding({
+  map: map,
+  panel: 'panel',
+  policy: AMap.RidingPolicy.RECOMMENDED,
 });
 
-// Fit
-map.setFitView(null, false, [30, 30, 30, 30]);
+var idx = 0;
+function nextSeg() {
+  if (idx >= segs.length) {
+    map.setFitView(null, false, [30,30,30,30]);
+    return;
+  }
+  var seg = segs[idx];
+  idx++;
+  riding.search(seg.from, seg.to, function(status, result) {
+    if (status === 'complete') {
+      console.log('✓ ' + seg.label);
+    } else {
+      console.log('✗ ' + seg.label + ': ' + status);
+    }
+    setTimeout(nextSeg, 500);
+  });
+}
+setTimeout(nextSeg, 500);
 </script>
 </body>
 </html>
