@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>骑行测试</title>
+<style>
+  html, body, #container { width: 100%; height: 100%; margin: 0; padding: 0; }
+  #log { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.8); color: #0f0; padding: 8px; font-size: 12px; font-family: monospace; max-height: 120px; overflow-y: auto; z-index: 9999; }
+</style>
+</head>
+<body>
+<div id="container"></div>
+<div id="log">[log] 页面加载...</div>
+
+<script src="https://webapi.amap.com/maps?v=2.0&key=45cbf43f4675e9b9377fa955a6b1e996&plugin=AMap.Riding&securityJsCode=830b90a26c3b039ba69daccced906ba1"></script>
+<script>
+function log(msg) { document.getElementById('log').innerHTML += '<br>[log] ' + msg; }
+
+log('AMap版本: ' + (window.AMap ? AMap.v || 'loaded' : 'NOT loaded'));
+
+var map = new AMap.Map('container', {
+  resizeEnable: true,
+  center: [120.15, 30.28],
+  zoom: 12
+});
+log('地图已创建');
+
+// 最简单的单段骑行路线：晶悦府→杨公堤
+var from = [120.164353, 30.337044];
+var to = [120.132720, 30.239869];
+
+// 按官方示例写法
+var riding = new AMap.Riding({
+  map: map,
+  policy: AMap.RidingPolicy.RECOMMENDED
+});
+log('Riding实例已创建');
+
+riding.search(from, to, function(status, result) {
+  log('回调触发, status=' + status);
+  if (status === 'complete') {
+    log('路线规划成功!');
+    log('路线数: ' + (result.routes ? result.routes.length : 0));
+    if (result.routes && result.routes[0]) {
+      log('距离: ' + (result.routes[0].distance / 1000).toFixed(1) + 'km');
+      log('步数: ' + result.routes[0].steps.length);
+      var totalPts = 0;
+      result.routes[0].steps.forEach(function(s) { totalPts += (s.path ? s.path.length : 0); });
+      log('总路径点: ' + totalPts);
+    }
+    map.setFitView(null, false, [30,30,30,30]);
+  } else {
+    log('路线规划失败: ' + result);
+    log('完整result: ' + JSON.stringify(result).slice(0, 200));
+  }
+});
+</script>
+</body>
+</html>
