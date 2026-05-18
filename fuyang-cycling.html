@@ -399,18 +399,19 @@
 <div class="footer">🚴 富阳骑行 · 祝你和老婆周末玩得开心！</div>
 
 <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"/>
-<script src="https://webapi.amap.com/maps?v=2.0&key=45cbf43f4675e9b9377fa955a6b1e996&plugin=AMap.Polyline,AMap.Riding&securityJsCode=830b90a26c3b039ba69daccced906ba1"></script>
+<script src="https://webapi.amap.com/maps?v=2.0&key=45cbf43f4675e9b9377fa955a6b1e996&plugin=AMap.Riding&securityJsCode=830b90a26c3b039ba69daccced906ba1"></script>
+<div id="panel" style="display:none;"></div>
 <script>
-// ===== Route waypoints (start/end pairs for each segment) =====
+// ===== Route waypoints =====
 const routes = [
   {
     name: '富春江绿道',
     key: 'route1',
     color: '#e74c3c',
     segments: [
-      { from: [120.123131, 30.117267], to: [120.015889, 30.077381] },
-      { from: [120.015889, 30.077381], to: [120.011553, 30.087764] },
-      { from: [120.011553, 30.087764], to: [119.969775, 30.043659] },
+      [120.123131, 30.117267, 120.015889, 30.077381],
+      [120.015889, 30.077381, 120.011553, 30.087764],
+      [120.011553, 30.087764, 119.969775, 30.043659],
     ],
   },
   {
@@ -418,11 +419,11 @@ const routes = [
     key: 'route2',
     color: '#3498db',
     segments: [
-      { from: [119.936694, 30.025655], to: [119.822829, 29.912274] },
-      { from: [119.822829, 29.912274], to: [119.802977, 29.883983] },
-      { from: [119.802977, 29.883983], to: [119.822374, 29.886231] },
-      { from: [119.822374, 29.886231], to: [119.950754, 29.900962] },
-      { from: [119.950754, 29.900962], to: [119.936694, 30.025655] },
+      [119.936694, 30.025655, 119.822829, 29.912274],
+      [119.822829, 29.912274, 119.802977, 29.883983],
+      [119.802977, 29.883983, 119.822374, 29.886231],
+      [119.822374, 29.886231, 119.950754, 29.900962],
+      [119.950754, 29.900962, 119.936694, 30.025655],
     ],
   },
   {
@@ -430,146 +431,128 @@ const routes = [
     key: 'route3',
     color: '#e67e22',
     segments: [
-      { from: [119.971338, 30.049688], to: [119.984939, 30.046813] },
-      { from: [119.984939, 30.046813], to: [119.975, 30.038] },
-      { from: [119.975, 30.038], to: [119.969, 30.036] },
-      { from: [119.969, 30.036], to: [119.965, 30.041] },
-      { from: [119.965, 30.041], to: [119.971338, 30.049688] },
+      [119.971338, 30.049688, 119.984939, 30.046813],
+      [119.984939, 30.046813, 119.975, 30.038],
+      [119.975, 30.038, 119.969, 30.036],
+      [119.969, 30.036, 119.965, 30.041],
+      [119.965, 30.041, 119.971338, 30.049688],
     ],
   }
 ];
 
 const routeMarkers = {
   'route1': [
-    { pos: [120.123131, 30.117267], title: '🚗 袁富路起点', desc: '开车到起点，停车', type: 'start' },
-    { pos: [120.015889, 30.077381], title: '🏔️ 黄公望景区', desc: '富春山居图实景地' },
-    { pos: [120.011553, 30.087764], title: '🏘️ 黄公望村', desc: '驿站休息补水' },
-    { pos: [119.969775, 30.043659], title: '🌉 富春江第一大桥', desc: '终点·折返', type: 'end' },
+    [120.123131, 30.117267, '🚗 袁富路起点', '开车到起点，停车', 'start'],
+    [120.015889, 30.077381, '🏔️ 黄公望景区', '富春山居图实景地'],
+    [120.011553, 30.087764, '🏘️ 黄公望村', '驿站休息补水'],
+    [119.969775, 30.043659, '🌉 富春江第一大桥', '终点·折返', 'end'],
   ],
   'route2': [
-    { pos: [119.936694, 30.025655], title: '🚗 东吴文化公园', desc: '起点·停车', type: 'start' },
-    { pos: [119.822829, 29.912274], title: '🌾 新桐乡', desc: '田园风光' },
-    { pos: [119.802977, 29.883983], title: '🏝️ 桐洲岛', desc: '富春江心小岛' },
-    { pos: [119.822374, 29.886231], title: '🏘️ 东梓关', desc: '网红杭派民居' },
-    { pos: [119.950754, 29.900962], title: '🏯 龙门古镇', desc: '孙权故里·午餐' },
+    [119.936694, 30.025655, '🚗 东吴文化公园', '起点·停车', 'start'],
+    [119.822829, 29.912274, '🌾 新桐乡', '田园风光'],
+    [119.802977, 29.883983, '🏝️ 桐洲岛', '富春江心小岛'],
+    [119.822374, 29.886231, '🏘️ 东梓关', '网红杭派民居'],
+    [119.950754, 29.900962, '🏯 龙门古镇', '孙权故里·午餐'],
   ],
   'route3': [
-    { pos: [119.971338, 30.049688], title: '⛴️ 轮渡码头', desc: '开车到码头，轮渡上岛', type: 'start' },
-    { pos: [119.984939, 30.046813], title: '🏝️ 新沙岛', desc: '环岛骑行，林桑成荫' },
+    [119.971338, 30.049688, '⛴️ 轮渡码头', '开车到码头，轮渡上岛', 'start'],
+    [119.984939, 30.046813, '🏝️ 新沙岛', '环岛骑行，林桑成荫'],
   ],
 };
 
-// ===== Map Init =====
 const map = new AMap.Map('map', {
-  zoom: 11,
-  center: [119.95, 30.05],
-  mapStyle: 'amap://styles/fresh',
   resizeEnable: true,
+  center: [119.95, 30.05],
+  zoom: 11,
+  mapStyle: 'amap://styles/fresh',
 });
 
-const allPolylines = [];
-const allMarkers = [];
 let currentRoute = 0;
-let routeRequestCount = 0;
-let routeRequestComplete = 0;
+let currentRiding = null;
+let allMarkers = [];
+let currentPolylines = [];
 
 function createIconSvg(color, label) {
   return 'data:image/svg+xml;base64,' + btoa(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="${color}" stroke="white" stroke-width="3"/><text x="16" y="21" text-anchor="middle" fill="white" font-size="14" font-weight="bold">${label}</text></svg>`);
 }
 
 function clearRoute() {
-  allPolylines.forEach(p => map.remove(p));
+  // Clear polylines created by Riding
+  if (currentPolylines.length > 0) {
+    currentPolylines.forEach(p => map.remove(p));
+    currentPolylines = [];
+  }
+  // Clear markers
   allMarkers.forEach(m => map.remove(m));
-  allPolylines.length = 0;
-  allMarkers.length = 0;
-}
-
-function addStaticMarkers(routeKey, color) {
-  const markers = routeMarkers[routeKey];
-  if (!markers) return;
-
-  markers.forEach((m, i) => {
-    let icon = null;
-    if (m.type === 'start') {
-      icon = new AMap.Icon({ size: new AMap.Size(32, 32), image: createIconSvg(color, 'S'), imageOffset: new AMap.Pixel(0, 0) });
-    } else if (m.type === 'end') {
-      icon = new AMap.Icon({ size: new AMap.Size(32, 32), image: createIconSvg(color, 'E'), imageOffset: new AMap.Pixel(0, 0) });
-    }
-
-    const marker = new AMap.Marker({
-      position: m.pos,
-      icon: icon,
-      offset: icon ? new AMap.Pixel(-16, -16) : new AMap.Pixel(-8, -8),
-      label: icon ? undefined : {
-        content: `<div style="background:${color};color:white;padding:2px 6px;border-radius:4px;font-size:11px;white-space:nowrap;">${m.title.slice(0,6)}</div>`,
-        offset: new AMap.Pixel(-16, -28),
-        direction: 'top',
-      },
-    });
-    marker.setMap(map);
-    allMarkers.push(marker);
-
-    const content = `<div style="padding:6px 10px;font-size:13px;"><b>${m.title}</b><br>${m.desc}</div>`;
-    marker.on('click', function() {
-      const info = new AMap.InfoWindow({ content, offset: new AMap.Pixel(0, -28) });
-      info.open(map, this.getPosition());
-    });
-  });
+  allMarkers = [];
+  // Clear any existing routes on the map
+  map.clearMap();
 }
 
 function drawRoute(index) {
   clearRoute();
   document.getElementById('loadingOverlay').style.display = 'block';
-
+  
   const route = routes[index];
-  addStaticMarkers(route.key, route.color);
-
-  const riding = new AMap.Riding({
-    policy: AMap.RidingPolicy.RECOMMENDED,
-    extensions: 'all',
-  });
-
-  routeRequestCount = route.segments.length;
-  routeRequestComplete = 0;
-
-  route.segments.forEach((seg, segIdx) => {
-    const from = new AMap.LngLat(seg.from[0], seg.from[1]);
-    const to = new AMap.LngLat(seg.to[0], seg.to[1]);
-
-    riding.search(from, to, function(status, result) {
-      routeRequestComplete++;
-      
-      if (status === 'complete' && result.routes && result.routes[0]) {
-        const path = [];
-        result.routes[0].steps.forEach(function(step) {
-          path.push.apply(path, step.path);
-        });
-
-        if (path.length > 0) {
-          const polyline = new AMap.Polyline({
-            path: path,
-            strokeColor: route.color,
-            strokeWeight: 5,
-            strokeOpacity: 0.9,
-            lineJoin: 'round',
-            lineCap: 'round',
-            showDir: true,
-            dirColor: route.color,
-          });
-          polyline.setMap(map);
-          allPolylines.push(polyline);
-        }
-      }
-
-      // Check if all segments done
-      if (routeRequestComplete === routeRequestCount) {
-        document.getElementById('loadingOverlay').style.display = 'none';
-        if (allPolylines.length > 0 || allMarkers.length > 0) {
-          map.setFitView([...allPolylines, ...allMarkers], false, [40, 40, 40, 40]);
-        }
-      }
+  const color = route.color;
+  const segs = route.segments;
+  const markers = routeMarkers[route.key];
+  
+  // Add markers first
+  markers.forEach((m, i) => {
+    const lng = m[0], lat = m[1], title = m[2], desc = m[3], type = m[4];
+    let icon = null;
+    if (type === 'start') {
+      icon = new AMap.Icon({ size: new AMap.Size(32, 32), image: createIconSvg(color, 'S'), imageOffset: new AMap.Pixel(0, 0) });
+    } else if (type === 'end') {
+      icon = new AMap.Icon({ size: new AMap.Size(32, 32), image: createIconSvg(color, 'E'), imageOffset: new AMap.Pixel(0, 0) });
+    }
+    const marker = new AMap.Marker({
+      position: [lng, lat],
+      icon: icon,
+      offset: icon ? new AMap.Pixel(-16, -16) : new AMap.Pixel(-8, -8),
+    });
+    marker.setMap(map);
+    allMarkers.push(marker);
+    const content = `<div style="padding:6px 10px;font-size:13px;"><b>${title}</b><br>${desc}</div>`;
+    marker.on('click', function() {
+      const info = new AMap.InfoWindow({ content, offset: new AMap.Pixel(0, -28) });
+      info.open(map, this.getPosition());
     });
   });
+
+  // Create Riding instance — exactly like official API example
+  var riding = new AMap.Riding({
+    map: map,        // Auto-draw on map
+    panel: "panel",  // Route info panel (hidden)
+    policy: AMap.RidingPolicy.RECOMMENDED,
+  });
+  currentRiding = riding;
+
+  // Search segments sequentially
+  let segIdx = 0;
+  function searchNext() {
+    if (segIdx >= segs.length) {
+      document.getElementById('loadingOverlay').style.display = 'none';
+      // Fit view
+      map.setFitView(null, false, [40, 40, 40, 40]);
+      return;
+    }
+    const seg = segs[segIdx];
+    // Use array format [lng, lat] as in official example
+    const from = [seg[0], seg[1]];
+    const to = [seg[2], seg[3]];
+    
+    riding.search(from, to, function(status, result) {
+      segIdx++;
+      if (status === 'error' || status === 'no_data') {
+        console.log('Segment failed:', segIdx);
+      }
+      // Small delay to avoid rate limiting, then next segment
+      setTimeout(searchNext, 300);
+    });
+  }
+  searchNext();
 }
 
 function switchRoute(index) {
@@ -579,7 +562,6 @@ function switchRoute(index) {
   drawRoute(index);
 }
 
-// Init
 map.on('complete', () => drawRoute(0));
 </script>
 </body>
