@@ -3,119 +3,113 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
-<title>骑行验证：晶悦府⇄西湖</title>
+<title>骑行路线：晶悦府→杨公堤→南山路→回家</title>
 <style>
-  html,body,#container{width:100%;height:100%;margin:0;padding:0;font-family:-apple-system,sans-serif;}
-  .info{position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:1000;background:white;padding:8px 16px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.2);font-size:13px;white-space:nowrap;text-align:center;max-width:90vw;}
-  .info b{color:#2d8a4e;}
-  .compare-btn{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);z-index:1000;background:#fff;border:1px solid #ddd;border-radius:20px;padding:8px 18px;font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,0.15);cursor:pointer;text-decoration:none;color:#333;display:inline-flex;align-items:center;gap:6px;}
-  .compare-btn:hover{background:#f5f5f5;}
-  .distance-label{position:absolute;bottom:80px;left:50%;transform:translateX(-50%);z-index:1000;background:rgba(255,255,255,0.9);border-radius:8px;padding:4px 12px;font-size:12px;color:#666;}
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; }
+  .header {
+    background: linear-gradient(135deg, #1a6b3a, #2d8a4e);
+    color: white;
+    padding: 16px;
+    text-align: center;
+  }
+  .header h1 { font-size: 18px; margin-bottom: 2px; }
+  .header p { font-size: 12px; opacity: 0.85; }
+
+  .route-info {
+    background: white;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-around;
+    font-size: 13px;
+    border-bottom: 1px solid #eee;
+  }
+  .route-info span { text-align: center; }
+  .route-info .num { font-weight: 700; color: #2d8a4e; font-size: 15px; }
+  .route-info .label { color: #888; font-size: 11px; }
+
+  .map-container {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 75%; /* 4:3 aspect ratio */
+  }
+  .map-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  .note {
+    padding: 12px 16px;
+    background: #fff8e1;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #795548;
+  }
+  .note a { color: #2d8a4e; }
+
+  .btn-open {
+    display: block;
+    margin: 16px auto;
+    background: #2d8a4e;
+    color: white;
+    border: none;
+    border-radius: 24px;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    width: 80%;
+    max-width: 300px;
+  }
+  .btn-open:active { background: #1a6b3a; }
 </style>
 </head>
 <body>
-<div id="container"></div>
-<div class="info">
-  <b>🚴 你的骑行路线</b><br>
-  <span style="font-size:12px;color:#888;">和旭晶悦府 → 杨公堤 → 南山路 → 和旭晶悦府 · 31km / 3h6min</span>
+
+<div class="header">
+  <h1>🚴 骑行路线验证</h1>
+  <p>和旭晶悦府 → 杨公堤 → 南山路 → 回家</p>
 </div>
-<div class="distance-label">🌳 林荫路段39% · 77个红绿灯</div>
-<a class="compare-btn" href="https://uri.amap.com/route?from=和旭晶悦府(120.164353,30.337044)&to=和旭晶悦府(120.164353,30.337044)&via1=杨公堤(120.132720,30.239869)&via2=南山路(120.147631,30.229388)&mode=cycling&policy=1" target="_blank">
-  📱 在高德App中打开
+
+<div class="route-info">
+  <span>
+    <div class="num">31 km</div>
+    <div class="label">总距离</div>
+  </span>
+  <span>
+    <div class="num">3h 6min</div>
+    <div class="label">预计时间</div>
+  </span>
+  <span>
+    <div class="num">39%</div>
+    <div class="label">林荫路段</div>
+  </span>
+  <span>
+    <div class="num">77</div>
+    <div class="label">红绿灯</div>
+  </span>
+</div>
+
+<div class="map-container">
+  <iframe src="https://uri.amap.com/route?from=和旭晶悦府(120.164353,30.337044)&to=和旭晶悦府(120.164353,30.337044)&via1=杨公堤(120.132720,30.239869)&via2=南山路(120.147631,30.229388)&mode=cycling&policy=1" allowfullscreen>
+  </iframe>
+</div>
+
+<div class="note">
+  <b>📌 如果显示"请在高德App中打开"</b><br>
+  说明当前页面直接 iframe 高德路线暂不支持。<br>
+  请点击下方按钮在高德App中查看完整骑行路线 👇
+</div>
+
+<a class="btn-open" href="https://uri.amap.com/route?from=和旭晶悦府(120.164353,30.337044)&to=和旭晶悦府(120.164353,30.337044)&via1=杨公堤(120.132720,30.239869)&via2=南山路(120.147631,30.229388)&mode=cycling&policy=1" target="_blank">
+  📱 在高德App中查看路线
 </a>
 
-<script src="https://webapi.amap.com/maps?v=2.0&key=45cbf43f4675e9b9377fa955a6b1e996&plugin=AMap.Riding&securityJsCode=830b90a26c3b039ba69daccced906ba1"></script>
-<script>
-var map = new AMap.Map("container", {
-  resizeEnable: true,
-  center: [120.15, 30.28],
-  zoom: 12,
-  mapStyle: 'amap://styles/fresh'
-});
-
-// 起点 & 终点（同一个位置）
-new AMap.Marker({
-  position: [120.164353, 30.337044],
-  label: { content: '<div style="background:#2d8a4e;color:white;padding:3px 8px;border-radius:4px;font-size:12px;font-weight:600;">🏠 和旭晶悦府</div>', direction: 'top', offset: new AMap.Pixel(-36, 0) }
-}).setMap(map);
-
-// 途经点1: 杨公堤
-new AMap.Marker({
-  position: [120.132720, 30.239869],
-  label: { content: '<div style="background:#e67e22;color:white;padding:2px 6px;border-radius:4px;font-size:11px;">📍 杨公堤</div>', direction: 'top', offset: new AMap.Pixel(-24, 0) }
-}).setMap(map);
-
-// 途经点2: 南山路
-new AMap.Marker({
-  position: [120.147631, 30.229388],
-  label: { content: '<div style="background:#e67e22;color:white;padding:2px 6px;border-radius:4px;font-size:11px;">📍 南山路</div>', direction: 'top', offset: new AMap.Pixel(-24, 0) }
-}).setMap(map);
-
-// 三段路线用三个独立的Riding实例
-var segs = [
-  { from: [120.164353, 30.337044], to: [120.132720, 30.239869] },
-  { from: [120.132720, 30.239869], to: [120.147631, 30.229388] },
-  { from: [120.147631, 30.229388], to: [120.164353, 30.337044] },
-];
-
-var idx = 0;
-var allPaths = [];
-
-function searchNext() {
-  if (idx >= segs.length) {
-    // All done — draw collected paths
-    drawAllPaths();
-    return;
-  }
-  var seg = segs[idx];
-  var r = new AMap.Riding({ policy: AMap.RidingPolicy.RECOMMENDED });
-  idx++;
-  r.search(seg.from, seg.to, function(status, result) {
-    if (status === 'complete' && result.routes && result.routes[0]) {
-      var path = [];
-      result.routes[0].steps.forEach(function(s) { path.push.apply(path, s.path); });
-      if (path.length > 0) allPaths.push(path);
-      console.log('Seg ' + idx + ': ' + path.length + ' pts');
-    } else {
-      console.log('Seg ' + idx + ': ' + status);
-    }
-    setTimeout(searchNext, 500);
-  });
-}
-
-function drawAllPaths() {
-  var colors = ['#e74c3c', '#e67e22', '#3498db'];
-  var labels = ['家→杨公堤', '杨公堤→南山路', '南山路→家'];
-  allPaths.forEach(function(path, i) {
-    if (path.length < 2) return;
-    var poly = new AMap.Polyline({
-      path: path,
-      strokeColor: colors[i],
-      strokeWeight: 5,
-      strokeOpacity: 0.9,
-      lineJoin: 'round',
-      lineCap: 'round',
-      showDir: true,
-      dirColor: colors[i],
-    });
-    poly.setMap(map);
-
-    // Label
-    var mid = path[Math.floor(path.length / 2)];
-    if (mid) {
-      new AMap.Marker({
-        position: mid,
-        label: {
-          content: '<div style="background:' + colors[i] + ';color:white;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,0.2);">' + labels[i] + '</div>',
-          offset: new AMap.Pixel(-30, -12), direction: 'top'
-        }
-      }).setMap(map);
-    }
-  });
-  map.setFitView(null, false, [30,30,30,30]);
-}
-
-setTimeout(searchNext, 500);
-</script>
 </body>
 </html>
