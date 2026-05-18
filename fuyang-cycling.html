@@ -366,73 +366,58 @@
 
 <!-- AMap -->
 <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"/>
-<script src="https://webapi.amap.com/maps?v=2.0&key=45cbf43f4675e9b9377fa955a6b1e996&plugin=AMap.Polyline&securityJsCode=830b90a26c3b039ba69daccced906ba1"></script>
+<script src="https://webapi.amap.com/maps?v=2.0&key=45cbf43f4675e9b9377fa955a6b1e996&plugin=AMap.Polyline,AMap.PlaceSearch,AMap.Riding&securityJsCode=830b90a26c3b039ba69daccced906ba1"></script>
 <script>
 // ===== Routes Data =====
-// Format: [lng, lat] - AMap uses GCJ-02
+// Each route has waypoint pairs for Riding route planning
 const routes = [
   {
-    // Route 0: 富春江绿道
     name: '富春江绿道',
     color: '#e74c3c',
-    opacity: 0.7,
-    weight: 4,
-    path: [
-      [120.123131, 30.117267],  // 袁富路
-      [120.015889, 30.077381],  // 黄公望景区
-      [120.018080, 30.077591],  // 黄公望村驿站
-      [120.011553, 30.087764],  // 黄公望村
-      [119.969775, 30.043659],  // 富春江第一大桥
+    // Segments: each is [start, end] — will use AMap Riding API for real road path
+    segments: [
+      { from: [120.123131, 30.117267], to: [120.015889, 30.077381], label: '袁富路→黄公望景区' },
+      { from: [120.015889, 30.077381], to: [120.011553, 30.087764], label: '黄公望景区→黄公望村' },
+      { from: [120.011553, 30.087764], to: [119.969775, 30.043659], label: '黄公望村→富春江第一大桥' },
     ],
     markers: [
-      { pos: [120.123131, 30.117267], title: '🚗 袁富路起点', desc: '开车到起点，停车' },
-      { pos: [120.015889, 30.077381], title: '🏔️ 黄公望景区', desc: '富春山居图实景地' },
-      { pos: [120.018080, 30.077591], title: '🏘️ 黄公望村驿站', desc: '休息补水' },
-      { pos: [119.969775, 30.043659], title: '🌉 富春江第一大桥', desc: '终点·折返' },
+      { pos: [120.123131, 30.117267], title: '🚗 袁富路起点', desc: '开车到起点，停车', type: 'start' },
+      { pos: [120.015889, 30.077381], title: '🏔️ 黄公望景区', desc: '富春山居图实景地', type: 'waypoint' },
+      { pos: [120.011553, 30.087764], title: '🏘️ 黄公望村', desc: '驿站休息补水', type: 'waypoint' },
+      { pos: [119.969775, 30.043659], title: '🌉 富春江第一大桥', desc: '终点·折返', type: 'end' },
     ]
   },
   {
-    // Route 1: 环线精华
     name: '富春山居环线',
     color: '#3498db',
-    opacity: 0.7,
-    weight: 4,
-    path: [
-      [119.936694, 30.025655],  // 东吴文化公园
-      [119.822829, 29.912274],  // 新桐乡
-      [119.802977, 29.883983],  // 桐洲岛
-      [119.822374, 29.886231],  // 东梓关
-      [119.950754, 29.900962],  // 龙门古镇
-      [120.010405, 30.000959],  // 大源镇
-      [119.957433, 30.033457],  // 春江南大道
-      [119.941364, 30.012119],  // 富阳大桥
-      [119.936694, 30.025655],  // 东吴文化公园
+    segments: [
+      { from: [119.936694, 30.025655], to: [119.822829, 29.912274], label: '东吴文化公园→新桐乡' },
+      { from: [119.822829, 29.912274], to: [119.802977, 29.883983], label: '新桐乡→桐洲岛' },
+      { from: [119.802977, 29.883983], to: [119.822374, 29.886231], label: '桐洲岛→东梓关' },
+      { from: [119.822374, 29.886231], to: [119.950754, 29.900962], label: '东梓关→龙门古镇' },
+      { from: [119.950754, 29.900962], to: [119.936694, 30.025655], label: '龙门古镇→东吴文化公园' },
     ],
     markers: [
-      { pos: [119.936694, 30.025655], title: '🚗 东吴文化公园', desc: '起点·停车' },
-      { pos: [119.822829, 29.912274], title: '🌾 新桐乡', desc: '田园风光' },
-      { pos: [119.802977, 29.883983], title: '🏝️ 桐洲岛', desc: '富春江心小岛' },
-      { pos: [119.822374, 29.886231], title: '🏘️ 东梓关', desc: '网红杭派民居' },
-      { pos: [119.950754, 29.900962], title: '🏯 龙门古镇', desc: '孙权故里·午餐' },
+      { pos: [119.936694, 30.025655], title: '🚗 东吴文化公园', desc: '起点·停车', type: 'start' },
+      { pos: [119.822829, 29.912274], title: '🌾 新桐乡', desc: '田园风光', type: 'waypoint' },
+      { pos: [119.802977, 29.883983], title: '🏝️ 桐洲岛', desc: '富春江心小岛', type: 'waypoint' },
+      { pos: [119.822374, 29.886231], title: '🏘️ 东梓关', desc: '网红杭派民居', type: 'waypoint' },
+      { pos: [119.950754, 29.900962], title: '🏯 龙门古镇', desc: '孙权故里·午餐', type: 'waypoint' },
     ]
   },
   {
-    // Route 2: 新沙岛
     name: '新沙岛环岛',
     color: '#e67e22',
-    opacity: 0.7,
-    weight: 4,
-    path: [
-      [119.971338, 30.049688],  // 轮渡码头
-      [119.984939, 30.046813],  // 新沙岛
-      [119.975, 30.038],       // 环岛东
-      [119.969, 30.036],       // 环岛南
-      [119.965, 30.041],       // 环岛西
-      [119.971338, 30.049688], // 回到码头
+    segments: [
+      { from: [119.971338, 30.049688], to: [119.984939, 30.046813], label: '轮渡码头→新沙岛' },
+      { from: [119.984939, 30.046813], to: [119.975, 30.038], label: '新沙岛→环岛东' },
+      { from: [119.975, 30.038], to: [119.969, 30.036], label: '环岛东→环岛南' },
+      { from: [119.969, 30.036], to: [119.965, 30.041], label: '环岛南→环岛西' },
+      { from: [119.965, 30.041], to: [119.971338, 30.049688], label: '环岛西→码头' },
     ],
     markers: [
-      { pos: [119.971338, 30.049688], title: '⛴️ 轮渡码头', desc: '开车到码头，轮渡上岛' },
-      { pos: [119.984939, 30.046813], title: '🏝️ 新沙岛', desc: '环岛骑行，林桑成荫' },
+      { pos: [119.971338, 30.049688], title: '⛴️ 轮渡码头', desc: '开车到码头，轮渡上岛', type: 'start' },
+      { pos: [119.984939, 30.046813], title: '🏝️ 新沙岛', desc: '环岛骑行，林桑成荫', type: 'waypoint' },
     ]
   }
 ];
@@ -445,52 +430,32 @@ const map = new AMap.Map('map', {
   resizeEnable: true,
 });
 
-// Route layers
-const polylines = [];
-const markers = [];
+const allPolylines = [];
+const allMarkers = [];
+const markerGroups = []; // keep references per route
 let currentRoute = 0;
+let loadingRoute = false;
 
-function clearRoute() {
-  polylines.forEach(p => map.remove(p));
-  markers.forEach(m => map.remove(m));
-  polylines.length = 0;
-  markers.length = 0;
+function createIconSvg(color, label) {
+  return 'data:image/svg+xml;base64,' + btoa(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="${color}" stroke="white" stroke-width="3"/><text x="16" y="21" text-anchor="middle" fill="white" font-size="14" font-weight="bold">${label}</text></svg>`);
 }
 
-function drawRoute(index) {
-  clearRoute();
-  const route = routes[index];
+function clearRoute() {
+  allPolylines.forEach(p => map.remove(p));
+  allMarkers.forEach(m => map.remove(m));
+  allPolylines.length = 0;
+  allMarkers.length = 0;
+  loadingRoute = false;
+}
 
-  // Polyline
-  const polyline = new AMap.Polyline({
-    path: route.path,
-    strokeColor: route.color,
-    strokeWeight: route.weight,
-    strokeOpacity: route.opacity,
-    lineJoin: 'round',
-    lineCap: 'round',
-    showDir: true,
-  });
-  polyline.setMap(map);
-  polylines.push(polyline);
-
-  // Start/End markers
-  const startIcon = new AMap.Icon({
-    size: new AMap.Size(32, 32),
-    image: 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="' + route.color + '" stroke="white" stroke-width="3"/><text x="16" y="21" text-anchor="middle" fill="white" font-size="16" font-weight="bold">S</text></svg>'),
-    imageOffset: new AMap.Pixel(0, 0),
-  });
-  const endIcon = new AMap.Icon({
-    size: new AMap.Size(32, 32),
-    image: 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="' + route.color + '" stroke="white" stroke-width="3"/><text x="16" y="21" text-anchor="middle" fill="white" font-size="16" font-weight="bold">E</text></svg>'),
-    imageOffset: new AMap.Pixel(0, 0),
-  });
-
-  // Waypoint markers
+function addMarkers(route) {
   route.markers.forEach((m, i) => {
     let icon = null;
-    if (i === 0) icon = startIcon;
-    else if (i === route.markers.length - 1) icon = endIcon;
+    if (m.type === 'start') {
+      icon = new AMap.Icon({ size: new AMap.Size(32, 32), image: createIconSvg(route.color, 'S'), imageOffset: new AMap.Pixel(0, 0) });
+    } else if (m.type === 'end') {
+      icon = new AMap.Icon({ size: new AMap.Size(32, 32), image: createIconSvg(route.color, 'E'), imageOffset: new AMap.Pixel(0, 0) });
+    }
 
     const marker = new AMap.Marker({
       position: m.pos,
@@ -503,34 +468,113 @@ function drawRoute(index) {
       },
     });
     marker.setMap(map);
-    markers.push(marker);
+    allMarkers.push(marker);
 
-    // Info window
-    marker.content = `<div style="padding:6px 10px;font-size:13px;"><b>${m.title}</b><br>${m.desc}</div>`;
+    const content = `<div style="padding:6px 10px;font-size:13px;"><b>${m.title}</b><br>${m.desc}</div>`;
     marker.on('click', function() {
-      const info = new AMap.InfoWindow({ content: this.content, offset: new AMap.Pixel(0, -28) });
+      const info = new AMap.InfoWindow({ content, offset: new AMap.Pixel(0, -28) });
       info.open(map, this.getPosition());
     });
   });
+}
 
-  // Fit bounds
-  map.setFitView(polylines.concat(markers), false, [40, 40, 40, 40]);
+function fitAll() {
+  if (allPolylines.length > 0 || allMarkers.length > 0) {
+    map.setFitView([...allPolylines, ...allMarkers], false, [40, 40, 40, 40]);
+  }
+}
+
+function drawRoute(index) {
+  if (loadingRoute) return;
+  clearRoute();
+  loadingRoute = true;
+
+  const route = routes[index];
+  addMarkers(route);
+
+  // Use AMap.Riding to get real road path for each segment
+  const riding = new AMap.Riding({ policy: AMap.RidingPolicy.RECOMMENDED });
+  let completed = 0;
+  const total = route.segments.length;
+
+  route.segments.forEach((seg, segIdx) => {
+    riding.search(new AMap.LngLat(seg.from[0], seg.from[1]), new AMap.LngLat(seg.to[0], seg.to[1]), (status, result) => {
+      completed++;
+      if (status === 'complete') {
+        const routesData = result.routes;
+        if (routesData && routesData[0]) {
+          const path = routesData[0].steps.map(step => step.path).flat();
+          if (path.length > 0) {
+            const polyline = new AMap.Polyline({
+              path: path,
+              strokeColor: route.color,
+              strokeWeight: segIdx === 0 ? 5 : 4,
+              strokeOpacity: 0.8,
+              lineJoin: 'round',
+              lineCap: 'round',
+              showDir: true,
+              dirColor: route.color,
+            });
+            polyline.setMap(map);
+            allPolylines.push(polyline);
+
+            // Label on first segment
+            if (segIdx === 0) {
+              const midIdx = Math.floor(path.length / 2);
+              const midPos = path[midIdx];
+              const labelMarker = new AMap.Marker({
+                position: midPos,
+                label: {
+                  content: `<div style="background:${route.color};color:white;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,0.2);">${route.name}</div>`,
+                  offset: new AMap.Pixel(-40, -15),
+                  direction: 'top',
+                },
+              });
+              labelMarker.setMap(map);
+              allMarkers.push(labelMarker);
+            }
+          }
+        }
+      }
+      // Even if search fails, we still continue
+      if (completed === total) {
+        loadingRoute = false;
+        fitAll();
+      }
+    });
+  });
+}
+
+// Fallback: if Riding API fails, use Polyline with direct points
+function drawFallback(index) {
+  const route = routes[index];
+  const path = route.segments.map(s => [s.from, s.to]).flat();
+  const polyline = new AMap.Polyline({
+    path: path,
+    strokeColor: route.color,
+    strokeWeight: 4,
+    strokeOpacity: 0.6,
+    lineJoin: 'round',
+    lineCap: 'round',
+    showDir: true,
+  });
+  polyline.setMap(map);
+  allPolylines.push(polyline);
+  loadingRoute = false;
+  fitAll();
 }
 
 // ===== Tab Switching =====
 function switchRoute(index) {
+  if (loadingRoute) return;
   currentRoute = index;
-  document.querySelectorAll('.tab').forEach((t, i) => {
-    t.classList.toggle('active', i === index);
-  });
-  document.querySelectorAll('.route-panel').forEach((p, i) => {
-    p.classList.toggle('active', i === index);
-  });
+  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === index));
+  document.querySelectorAll('.route-panel').forEach((p, i) => p.classList.toggle('active', i === index));
   drawRoute(index);
 }
 
 // Init
-drawRoute(0);
+map.on('complete', () => drawRoute(0));
 </script>
 </body>
 </html>
