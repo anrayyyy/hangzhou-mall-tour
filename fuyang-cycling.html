@@ -1,568 +1,137 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>富阳骑行路线图 🚴</title>
+<title>富阳骑行路线</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; }
-  
-  .header {
-    background: linear-gradient(135deg, #2d8a4e, #1a6b3a);
-    color: white;
-    padding: 20px 16px;
-    text-align: center;
-  }
-  .header h1 { font-size: 22px; margin-bottom: 4px; }
-  .header p { font-size: 13px; opacity: 0.85; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; padding: 16px; }
+  .header { text-align: center; margin-bottom: 20px; }
+  .header h1 { font-size: 22px; color: #2d8a4e; }
+  .header p { font-size: 13px; color: #888; margin-top: 4px; }
 
-  .tabs {
-    display: flex;
+  .route-card {
     background: white;
-    border-bottom: 1px solid #e0e0e0;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
-  .tab {
-    flex: 1;
-    padding: 12px 4px;
-    text-align: center;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    border-bottom: 3px solid transparent;
-    transition: all 0.2s;
-    color: #666;
-  }
-  .tab.active {
-    color: #2d8a4e;
-    border-bottom-color: #2d8a4e;
-    background: #f0faf3;
-  }
-  .tab .badge {
-    display: inline-block;
-    background: #2d8a4e;
-    color: white;
-    border-radius: 10px;
-    padding: 1px 6px;
-    font-size: 11px;
-    margin-left: 3px;
-  }
-  .tab .loading-dot {
-    display: none;
-    width: 8px;
-    height: 8px;
-    background: #2d8a4e;
-    border-radius: 50%;
-    margin-left: 4px;
-    animation: pulse 1s infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { opacity: 0.3; }
-    50% { opacity: 1; }
-  }
-
-  #map { width: 100%; height: 50vh; min-height: 320px; }
-
-  .route-panel {
-    background: white;
-    padding: 16px;
-    display: none;
-  }
-  .route-panel.active { display: block; }
-
-  .route-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-  }
-  .route-title { font-size: 18px; font-weight: 700; }
-  .route-stats {
-    display: flex;
-    gap: 12px;
-    font-size: 13px;
-    color: #666;
-  }
-  .route-stats span {
-    display: flex;
-    align-items: center;
-    gap: 3px;
-  }
-
-  .route-desc {
-    background: #f8fff8;
-    border-left: 4px solid #2d8a4e;
-    padding: 10px 14px;
-    border-radius: 0 8px 8px 0;
-    font-size: 14px;
-    line-height: 1.6;
-    color: #333;
-    margin-bottom: 14px;
-  }
-
-  .stop-list { list-style: none; }
-  .stop-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 10px 0;
-    border-bottom: 1px dashed #e8e8e8;
-    position: relative;
-  }
-  .stop-item:last-child { border-bottom: none; }
-
-  .stop-dot {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    margin-top: 3px;
-    border: 2px solid;
-    position: relative;
-    z-index: 1;
-    background: white;
-  }
-  .stop-item .line {
-    position: absolute;
-    left: 6px;
-    top: 20px;
-    width: 2px;
-    height: calc(100% - 10px);
-    z-index: 0;
-  }
-  .stop-item:last-child .line { display: none; }
-
-  .stop-info h3 { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
-  .stop-info p { font-size: 13px; color: #888; }
-  .stop-tag {
-    display: inline-block;
-    font-size: 11px;
-    padding: 1px 6px;
-    border-radius: 4px;
-    margin-top: 4px;
-  }
-
-  .route1 .stop-dot { border-color: #e74c3c; }
-  .route1 .line { background: #e74c3c33; }
-  .route1 .stop-tag { background: #fde8e8; color: #c0392b; }
-
-  .route2 .stop-dot { border-color: #3498db; }
-  .route2 .line { background: #3498db33; }
-  .route2 .stop-tag { background: #e8f4fd; color: #2980b9; }
-
-  .route3 .stop-dot { border-color: #e67e22; }
-  .route3 .line { background: #e67e2233; }
-  .route3 .stop-tag { background: #fef0e0; color: #d35400; }
-
-  .tips {
-    background: #fffbe6;
-    border: 1px solid #ffe58f;
-    border-radius: 8px;
-    padding: 12px 14px;
-    margin: 12px 0;
-    font-size: 13px;
-    line-height: 1.6;
-    color: #8c6e00;
-  }
-  .tips strong { color: #614700; }
-
-  .loading-overlay {
-    display: none;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(255,255,255,0.95);
-    padding: 16px 24px;
     border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
-    z-index: 1000;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  .route-card h2 { font-size: 17px; margin-bottom: 4px; }
+  .route-card .meta { font-size: 12px; color: #888; margin-bottom: 10px; }
+  .route-card .desc { font-size: 14px; line-height: 1.6; color: #333; margin-bottom: 12px; }
+  
+  .btn-group { display: flex; flex-direction: column; gap: 8px; }
+  .btn {
+    display: block;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: none;
+    font-size: 15px;
+    font-weight: 600;
     text-align: center;
-    font-size: 14px;
+    text-decoration: none;
+    cursor: pointer;
   }
-  .loading-overlay .spinner {
-    width: 24px;
-    height: 24px;
-    border: 3px solid #e0e0e0;
-    border-top-color: #2d8a4e;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin: 0 auto 8px;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  .btn-driving { background: #2d8a4e; color: white; }
+  .btn-cycling { background: #3498db; color: white; }
+  .btn:active { opacity: 0.8; }
 
-  .footer {
-    text-align: center;
-    padding: 20px;
-    font-size: 12px;
-    color: #999;
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    margin-right: 4px;
   }
+  .tag-green { background: #e8f5e9; color: #2d8a4e; }
+  .tag-blue { background: #e3f2fd; color: #1976d2; }
+  .tag-orange { background: #fff3e0; color: #e65100; }
+
+  .footer { text-align: center; font-size: 12px; color: #999; margin-top: 20px; }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <h1>🚴 富阳周末骑行路线图</h1>
-  <p>和老婆一起，骑车去看富春山居</p>
+  <h1>🚴 富阳周末骑行</h1>
+  <p>开车到富阳 → 停车 → 骑行 → 回家</p>
 </div>
 
-<div class="tabs">
-  <div class="tab active" onclick="switchRoute(0)" id="tab0">
-    🌿 富春江绿道 <span class="badge">~20km</span>
+<div class="route-card">
+  <h2>🌿 路线一：富春江绿道</h2>
+  <div class="meta">
+    <span class="tag tag-green">轻松 ~20km</span>
+    <span class="tag tag-blue">1.5-2h</span>
   </div>
-  <div class="tab" onclick="switchRoute(1)" id="tab1">
-    🏯 环线精华 <span class="badge">~50km</span>
+  <div class="desc">
+    <b>停车：</b>黄公望景区停车场<br>
+    <b>骑行：</b>沿富春江绿道 → 富春江第一大桥折返<br>
+    <b>亮点：</b>《富春山居图》实景地，全程平路
   </div>
-  <div class="tab" onclick="switchRoute(2)" id="tab2">
-    🏝️ 新沙岛 <span class="badge">~15km</span>
-  </div>
-</div>
-
-<div style="position:relative;">
-  <div id="map"></div>
-  <div class="loading-overlay" id="loadingOverlay">
-    <div class="spinner"></div>
-    <div>正在规划骑行路线...</div>
+  <div class="btn-group">
+    <a class="btn btn-driving" href="amapuri://route/plan/?sid=B0FFF5VZ36&slat=30.337044&slon=120.164353&sname=和旭晶悦府&did=B0FFF5VZ36&dlat=30.085567&dlon=120.011890&dname=黄公望景区停车场&dev=0&m=0&t=0">🚗 开车到停车场</a>
+    <a class="btn btn-cycling" href="amapuri://route/plan/?sid=B0FFF5VZ36&slat=30.085567&slon=120.011890&sname=黄公望景区&did=B0FFF5VZ36&dlat=30.043659&dlon=119.969775&dname=富春江第一大桥&dev=0&m=0&t=3">🚴 骑行路线</a>
   </div>
 </div>
 
-<!-- Route 1: 富春江绿道 -->
-<div class="route-panel active route1" id="panel0">
-  <div class="route-header">
-    <div class="route-title">🌿 富春江绿道</div>
-    <div class="route-stats">
-      <span>📏 ~20km</span>
-      <span>⏱ 1.5-2h</span>
-      <span>⭐ 轻松</span>
-    </div>
+<div class="route-card">
+  <h2>🏝️ 路线二：新沙岛环岛</h2>
+  <div class="meta">
+    <span class="tag tag-orange">超轻松 ~15km</span>
+    <span class="tag tag-blue">1-2h</span>
+    <span class="tag tag-green" style="background:#fce4ec;color:#c0392b;">❤️ 推荐</span>
   </div>
-  <div class="route-desc">
-    《富春山居图》实景骑行道，沿富春江岸的专用绿道，平缓无坡。
-    开车到袁富路/黄公望景区附近停车，骑完去富阳城区吃饭。
+  <div class="desc">
+    <b>停车：</b>新沙岛轮渡码头（可渡车上岛）<br>
+    <b>骑行：</b>轮渡上岛 → 环岛骑行 → 农家乐午餐<br>
+    <b>亮点：</b>岛上无机动车，两人世界最佳选择
   </div>
-  <ul class="stop-list">
-    <li class="stop-item">
-      <div class="stop-dot"></div><div class="line"></div>
-      <div class="stop-info">
-        <h3>🚗 袁富路（起点/停车）</h3>
-        <p>开车到起点，附近可停车。整备出发</p>
-        <span class="stop-tag">📍 120.12, 30.12</span>
-      </div>
-    </li>
-    <li class="stop-item">
-      <div class="stop-dot"></div><div class="line"></div>
-      <div class="stop-info">
-        <h3>🏔️ 黄公望景区</h3>
-        <p>路过黄公望风情小镇，找找《富春山居图》的实景感</p>
-        <span class="stop-tag">📸 打卡点</span>
-      </div>
-    </li>
-    <li class="stop-item">
-      <div class="stop-dot"></div><div class="line"></div>
-      <div class="stop-info">
-        <h3>🏘️ 黄公望村 / 驿站</h3>
-        <p>可以在驿站休息补水，骑经黄公望村、新民村</p>
-        <span class="stop-tag">☕ 休息点</span>
-      </div>
-    </li>
-    <li class="stop-item">
-      <div class="stop-dot"></div><div class="line"></div>
-      <div class="stop-info">
-        <h3>🌉 富春江第一大桥（终点）</h3>
-        <p>折返点。附近就是富阳城区，骑完吃中饭 🍜</p>
-        <span class="stop-tag">🍜 终点·午餐</span>
-      </div>
-    </li>
-  </ul>
-  <div class="tips">
-    💡 <strong>建议行程：</strong>上午9点到起点 → 骑行约1.5h → 富阳城区午餐 → 下午回家。<br>
-    💡 全程铺装绿道，共享单车都能骑。
+  <div class="btn-group">
+    <a class="btn btn-driving" href="amapuri://route/plan/?sid=B0FFF5VZ36&slat=30.337044&slon=120.164353&sname=和旭晶悦府&did=B0FFF5VZ36&dlat=30.056226&dlon=119.989115&dname=新沙岛轮渡码头&dev=0&m=0&t=0">🚗 开车到码头</a>
   </div>
 </div>
 
-<!-- Route 2: 环线精华 -->
-<div class="route-panel route2" id="panel1">
-  <div class="route-header">
-    <div class="route-title">🏯 富春山居环线</div>
-    <div class="route-stats">
-      <span>📏 ~50km</span>
-      <span>⏱ 3-4h</span>
-      <span>⭐ 中等</span>
-    </div>
+<div class="route-card">
+  <h2>🏯 路线三：桐洲岛→东梓关</h2>
+  <div class="meta">
+    <span class="tag tag-green">中等 ~25km</span>
+    <span class="tag tag-blue">2-3h</span>
   </div>
-  <div class="route-desc">
-    如果你俩体力好，走这条精华环线——一路串起桐洲岛、东梓关、龙门古镇。<br>
-    <strong>也可以只骑精华段：</strong>开车到桐洲岛→环岛（8km）→骑去东梓关（5km）→折返。
+  <div class="desc">
+    <b>停车：</b>桐洲岛附近<br>
+    <b>骑行：</b>桐洲岛环岛 → 东梓关（打卡网红民居）→ 折返<br>
+    <b>亮点：</b>田园风光+杭派民居打卡
   </div>
-  <ul class="stop-list">
-    <li class="stop-item">
-      <div class="stop-dot"></div><div class="line"></div>
-      <div class="stop-info">
-        <h3>🚗 东吴文化公园（起点/停车）</h3>
-        <p>富阳城区边上的起点，停车方便。</p>
-        <span class="stop-tag">📍 119.94, 30.03</span>
-      </div>
-    </li>
-    <li class="stop-item">
-      <div class="stop-dot"></div><div class="line"></div>
-      <div class="stop-info">
-        <h3>🌾 新桐乡 / 桐洲岛</h3>
-        <p>富春江心小岛，骑行幽静，遍野田园风光</p>
-        <span class="stop-tag">📸 精华段</span>
-      </div>
-    </li>
-    <li class="stop-item">
-      <div class="stop-dot"></div><div class="line"></div>
-      <div class="stop-info">
-        <h3>🏘️ 东梓关</h3>
-        <p>网红杭派民居打卡地，白墙黛瓦超出片</p>
-        <span class="stop-tag">📸 打卡点</span>
-      </div>
-    </li>
-    <li class="stop-item">
-      <div class="stop-dot"></div><div class="line"></div>
-      <div class="stop-info">
-        <h3>🏯 龙门古镇</h3>
-        <p>孙权故里，江南古镇风情，可以进去吃个午饭</p>
-        <span class="stop-tag">🍜 午餐</span>
-      </div>
-    </li>
-    <li class="stop-item">
-      <div class="stop-dot"></div><div class="line"></div>
-      <div class="stop-info">
-        <h3>🌉 返回起点</h3>
-        <p>经大源、春江南大道回东吴文化公园</p>
-      </div>
-    </li>
-  </ul>
-  <div class="tips">
-    💡 <strong>精华截取版：</strong>开车到桐洲岛+环岛+骑到东梓关折返=来回不到20km。
+  <div class="btn-group">
+    <a class="btn btn-driving" href="amapuri://route/plan/?sid=B0FFF5VZ36&slat=30.337044&slon=120.164353&sname=和旭晶悦府&did=B0FFF5VZ36&dlat=29.883983&dlon=119.802977&dname=桐洲岛&dev=0&m=0&t=0">🚗 开车到桐洲岛</a>
+    <a class="btn btn-cycling" href="amapuri://route/plan/?sid=B0FFF5VZ36&slat=29.883983&slon=119.802977&sname=桐洲岛&did=B0FFF5VZ36&dlat=29.886231&dlon=119.822374&dname=东梓关&dev=0&m=0&t=3">🚴 骑行到东梓关</a>
   </div>
 </div>
 
-<!-- Route 3: 新沙岛 -->
-<div class="route-panel route3" id="panel2">
-  <div class="route-header">
-    <div class="route-title">🏝️ 新沙岛环岛</div>
-    <div class="route-stats">
-      <span>📏 ~15km</span>
-      <span>⏱ 1-1.5h</span>
-      <span>⭐ 超轻松</span>
-    </div>
-  </div>
-  <div class="route-desc">
-    富春江心小岛，四面环水，岛上几乎没有机动车。<br>
-    最有"两人世界"氛围的路线，骑完岛上农家乐吃饭。
-  </div>
-  <ul class="stop-list">
-    <li class="stop-item">
-      <div class="stop-dot"></div><div class="line"></div>
-      <div class="stop-info">
-        <h3>🚗 开车到码头</h3>
-        <p>导航到"富阳新沙岛轮渡"</p>
-        <span class="stop-tag">📍 119.97, 30.05</span>
-      </div>
-    </li>
-    <li class="stop-item">
-      <div class="stop-dot"></div><div class="line"></div>
-      <div class="stop-info">
-        <h3>⛴️ 轮渡上岛</h3>
-        <p>人+自行车上轮渡，岛上可租自行车</p>
-        <span class="stop-tag">🚲 可租车</span>
-      </div>
-    </li>
-    <li class="stop-item">
-      <div class="stop-dot"></div><div class="line"></div>
-      <div class="stop-info">
-        <h3>🌳 环岛骑行</h3>
-        <p>环岛约10-15km，林桑成荫，江风习习</p>
-        <span class="stop-tag">🏝️ 精华</span>
-      </div>
-    </li>
-    <li class="stop-item">
-      <div class="stop-dot"></div><div class="line"></div>
-      <div class="stop-info">
-        <h3>🍜 农家乐午餐</h3>
-        <p>岛上农家乐，富春江鲜、土鸡</p>
-        <span class="stop-tag">🍜 午餐</span>
-      </div>
-    </li>
-  </ul>
-  <div class="tips">
-    💡 <strong>最推荐两人的路线！</strong>岛上几乎没有汽车，安静悠闲。
-  </div>
+<div class="footer">
+  点击按钮自动跳转到高德App导航<br>
+  如果没反应，请确认已安装高德地图App
 </div>
 
-<div class="footer">🚴 富阳骑行 · 祝你和老婆周末玩得开心！</div>
-
-<link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"/>
-<script src="https://webapi.amap.com/maps?v=2.0&key=45cbf43f4675e9b9377fa955a6b1e996&plugin=AMap.Riding&securityJsCode=830b90a26c3b039ba69daccced906ba1"></script>
-<div id="panel" style="display:none;"></div>
 <script>
-// ===== Route waypoints =====
-const routes = [
-  {
-    name: '富春江绿道',
-    key: 'route1',
-    color: '#e74c3c',
-    segments: [
-      [120.123131, 30.117267, 120.015889, 30.077381],
-      [120.015889, 30.077381, 120.011553, 30.087764],
-      [120.011553, 30.087764, 119.969775, 30.043659],
-    ],
-  },
-  {
-    name: '富春山居环线',
-    key: 'route2',
-    color: '#3498db',
-    segments: [
-      [119.936694, 30.025655, 119.822829, 29.912274],
-      [119.822829, 29.912274, 119.802977, 29.883983],
-      [119.802977, 29.883983, 119.822374, 29.886231],
-      [119.822374, 29.886231, 119.950754, 29.900962],
-      [119.950754, 29.900962, 119.936694, 30.025655],
-    ],
-  },
-  {
-    name: '新沙岛环岛',
-    key: 'route3',
-    color: '#e67e22',
-    segments: [
-      [119.971338, 30.049688, 119.984939, 30.046813],
-      [119.984939, 30.046813, 119.975, 30.038],
-      [119.975, 30.038, 119.969, 30.036],
-      [119.969, 30.036, 119.965, 30.041],
-      [119.965, 30.041, 119.971338, 30.049688],
-    ],
-  }
-];
-
-const routeMarkers = {
-  'route1': [
-    [120.123131, 30.117267, '🚗 袁富路起点', '开车到起点，停车', 'start'],
-    [120.015889, 30.077381, '🏔️ 黄公望景区', '富春山居图实景地'],
-    [120.011553, 30.087764, '🏘️ 黄公望村', '驿站休息补水'],
-    [119.969775, 30.043659, '🌉 富春江第一大桥', '终点·折返', 'end'],
-  ],
-  'route2': [
-    [119.936694, 30.025655, '🚗 东吴文化公园', '起点·停车', 'start'],
-    [119.822829, 29.912274, '🌾 新桐乡', '田园风光'],
-    [119.802977, 29.883983, '🏝️ 桐洲岛', '富春江心小岛'],
-    [119.822374, 29.886231, '🏘️ 东梓关', '网红杭派民居'],
-    [119.950754, 29.900962, '🏯 龙门古镇', '孙权故里·午餐'],
-  ],
-  'route3': [
-    [119.971338, 30.049688, '⛴️ 轮渡码头', '开车到码头，轮渡上岛', 'start'],
-    [119.984939, 30.046813, '🏝️ 新沙岛', '环岛骑行，林桑成荫'],
-  ],
-};
-
-const map = new AMap.Map('map', {
-  resizeEnable: true,
-  center: [119.95, 30.05],
-  zoom: 11,
-  mapStyle: 'amap://styles/fresh',
-});
-
-let currentRoute = 0;
-let currentRiding = null;
-let allMarkers = [];
-let currentPolylines = [];
-
-function createIconSvg(color, label) {
-  return 'data:image/svg+xml;base64,' + btoa(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="${color}" stroke="white" stroke-width="3"/><text x="16" y="21" text-anchor="middle" fill="white" font-size="14" font-weight="bold">${label}</text></svg>`);
-}
-
-function clearRoute() {
-  // Clear polylines created by Riding
-  if (currentPolylines.length > 0) {
-    currentPolylines.forEach(p => map.remove(p));
-    currentPolylines = [];
-  }
-  // Clear markers
-  allMarkers.forEach(m => map.remove(m));
-  allMarkers = [];
-  // Clear any existing routes on the map
-  map.clearMap();
-}
-
-function drawRoute(index) {
-  clearRoute();
-  document.getElementById('loadingOverlay').style.display = 'block';
-  
-  const route = routes[index];
-  const color = route.color;
-  const segs = route.segments;
-  const markers = routeMarkers[route.key];
-  
-  // Add markers first
-  markers.forEach((m, i) => {
-    const lng = m[0], lat = m[1], title = m[2], desc = m[3], type = m[4];
-    let icon = null;
-    if (type === 'start') {
-      icon = new AMap.Icon({ size: new AMap.Size(32, 32), image: createIconSvg(color, 'S'), imageOffset: new AMap.Pixel(0, 0) });
-    } else if (type === 'end') {
-      icon = new AMap.Icon({ size: new AMap.Size(32, 32), image: createIconSvg(color, 'E'), imageOffset: new AMap.Pixel(0, 0) });
-    }
-    const marker = new AMap.Marker({
-      position: [lng, lat],
-      icon: icon,
-      offset: icon ? new AMap.Pixel(-16, -16) : new AMap.Pixel(-8, -8),
-    });
-    marker.setMap(map);
-    allMarkers.push(marker);
-    const content = `<div style="padding:6px 10px;font-size:13px;"><b>${title}</b><br>${desc}</div>`;
-    marker.on('click', function() {
-      const info = new AMap.InfoWindow({ content, offset: new AMap.Pixel(0, -28) });
-      info.open(map, this.getPosition());
-    });
-  });
-
-  // Create Riding instance — exactly like official API example
-  var riding = new AMap.Riding({
-    map: map,        // Auto-draw on map
-    panel: "panel",  // Route info panel (hidden)
-    policy: AMap.RidingPolicy.RECOMMENDED,
-  });
-  currentRiding = riding;
-
-  // Search segments sequentially
-  let segIdx = 0;
-  function searchNext() {
-    if (segIdx >= segs.length) {
-      document.getElementById('loadingOverlay').style.display = 'none';
-      // Fit view
-      map.setFitView(null, false, [40, 40, 40, 40]);
+// 如果 amapuri 协议没反应，fallback 到 https 链接
+document.querySelectorAll('a[href^="amapuri"]').forEach(function(a) {
+  a.addEventListener('click', function(e) {
+    var confirmed = confirm('要打开高德地图App吗？');
+    if (!confirmed) {
+      e.preventDefault();
       return;
     }
-    const seg = segs[segIdx];
-    // Use array format [lng, lat] as in official example
-    const from = [seg[0], seg[1]];
-    const to = [seg[2], seg[3]];
-    
-    riding.search(from, to, function(status, result) {
-      segIdx++;
-      if (status === 'error' || status === 'no_data') {
-        console.log('Segment failed:', segIdx);
-      }
-      // Small delay to avoid rate limiting, then next segment
-      setTimeout(searchNext, 300);
-    });
-  }
-  searchNext();
-}
-
-function switchRoute(index) {
-  currentRoute = index;
-  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === index));
-  document.querySelectorAll('.route-panel').forEach((p, i) => p.classList.toggle('active', i === index));
-  drawRoute(index);
-}
-
-map.on('complete', () => drawRoute(0));
+    // 尝试 amapuri 协议
+    window.location.href = this.href;
+    // 如果3秒后没跳转（没装高德App），fallback到网页版
+    setTimeout(function() {
+      // 不做额外操作，让用户自己知道需要装App
+    }, 3000);
+  });
+});
 </script>
 </body>
 </html>
