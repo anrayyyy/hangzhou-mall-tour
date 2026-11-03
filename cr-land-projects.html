@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>杭州 · 华润置地润系项目分布</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--accent:#c8102e;--bg:#f5f5f7;--text:#1d1d1f;--text2:#6e6e73}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--text);overflow:hidden;height:100vh}
+#app{display:grid;grid-template-columns:320px 1fr;height:100vh;overflow:hidden}
+#list{overflow-y:auto;background:#fff;border-right:1px solid #e5e5ea;padding:0}
+#list h1{padding:20px 20px 8px;font-size:19px;font-weight:700}
+#list .sub{padding:0 20px 16px;font-size:12px;color:var(--text2)}
+.card{padding:16px 20px;border-bottom:1px solid #f0f0f2;cursor:pointer;transition:background .15s}
+.card:hover,.card.active{background:#fafafa}
+.card .tag{display:inline-block;font-size:11px;font-weight:600;color:#fff;background:var(--accent);border-radius:4px;padding:1px 7px;margin-right:6px}
+.card .nm{font-size:16px;font-weight:700;margin:4px 0 2px}
+.card .pos{font-size:12px;color:var(--accent);font-weight:600;margin-bottom:3px}
+.card .ad{font-size:12px;color:var(--text2);line-height:1.5}
+.card .tel{font-size:12px;color:var(--text2);margin-top:4px}
+#map-wrap{position:relative}
+#map{width:100%;height:100vh}
+.amap-info-content{border-radius:12px!important;padding:0!important;box-shadow:0 4px 20px rgba(0,0,0,.15)!important}
+.amap-info-sharp{display:none!important}
+.iw{padding:12px 14px;font-size:13px;line-height:1.55}
+.iw .iw-nm{font-size:16px;font-weight:700}
+.iw .iw-pos{color:var(--accent);font-weight:600;margin:2px 0}
+.iw .iw-ad{color:#6e6e73;font-size:12px}
+@media(max-width:767px){
+  #app{grid-template-columns:1fr}
+  #list{position:fixed;left:0;right:0;bottom:0;height:44vh;z-index:500;border-radius:18px 18px 0 0;border-right:none;box-shadow:0 -4px 20px rgba(0,0,0,.10);padding:0}
+  #list h1{padding:16px 18px 6px;font-size:17px}
+  #list .sub{padding:0 18px 12px;font-size:11px}
+  .card{padding:12px 18px}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="list">
+    <h1>杭州 · 华润置地润系项目</h1>
+    <div class="sub">5 个项目 · 点击卡片定位</div>
+  </div>
+  <div id="map-wrap"><div id="map"></div></div>
+</div>
+
+<script>
+window._AMapSecurityConfig={securityJsCode:'830b90a26c3b039ba69daccced906ba1'};
+</script>
+<script src="https://webapi.amap.com/maps?v=2.0&key=45cbf43f4675e9b9377fa955a6b1e996"></script>
+<script>
+var projects=[
+  {n:1,name:"润启未来之城",pos:"西湖主城 · 滨水公园 · 超核POD城市综合体",ad:"西湖区 4号线莲池路地铁站(在建)\n观音漾弄与庄墩路交叉口",tel:"0571-2886 8888",lng:120.057588,lat:30.325274},
+  {n:2,name:"望云润玺院",pos:"云城芯上 · 第三中心壹号墅品",ad:"余杭区景腾北路\n龙舟北路与云门大街交叉口",tel:"0571-2627 0888",lng:119.981925,lat:30.292925},
+  {n:3,name:"瑞玺",pos:"万象定中心",ad:"未来科技城绿汀路地铁站B口\n华润置地·杭珹未来中心",tel:"0571-2621 6888",lng:119.993425,lat:30.259402},
+  {n:4,name:"沄璟文华轩",pos:"一江三中心 · 人文雅奢藏品",ad:"西湖区转塘街道文景路36号\n枫桦路与文景路交叉口",tel:"0571-2823 9888",lng:120.106429,lat:30.162769},
+  {n:5,name:"元起观潮府",pos:"中心壹号作品",ad:"上城区运台山巷和闸弄街交叉口\n天台山路",tel:"0571-2629 9888",lng:120.203756,lat:30.279470}
+];
+
+var map=new AMap.Map('map',{zoom:11,center:[120.09,30.28],mapStyle:'amap://styles/whitesmoke'});
+var markers=[];
+var listEl=document.getElementById('list');
+
+projects.forEach(function(p){
+  // 侧边卡片
+  var c=document.createElement('div');
+  c.className='card'; c.setAttribute('data-i',p.n-1);
+  c.innerHTML='<span class="tag">'+p.n+'</span><div class="nm">'+p.name+'</div><div class="pos">'+p.pos+'</div><div class="ad">'+p.ad.replace(/\n/g,'<br>')+'</div><div class="tel">☎ '+p.tel+'</div>';
+  c.onclick=function(){
+    markers.forEach(function(m,i){ if(i===p.n-1){m.emit('click');} });
+    map.setZoomAndCenter(14,[p.lng,p.lat]);
+  };
+  listEl.appendChild(c);
+
+  // 地图标记
+  var m=new AMap.Marker({
+    position:[p.lng,p.lat],
+    content:'<div style="width:26px;height:26px;border-radius:50%;background:#c8102e;color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(200,16,46,.4);border:2px solid #fff">'+p.n+'</div>',
+    offset:new AMap.Pixel(-13,-13),
+    map:map
+  });
+  m.on('click',function(){
+    var iw=new AMap.InfoWindow({
+      content:'<div class="iw"><div class="iw-nm">'+p.name+'</div><div class="iw-pos">'+p.pos+'</div><div class="iw-ad">'+p.ad.replace(/\n/g,'<br>')+'</div><div class="iw-ad" style="margin-top:3px">☎ '+p.tel+'</div></div>',
+      offset:new AMap.Pixel(0,-32),autoMove:true,closeWhenClickMap:true
+    });
+    iw.open(map,m.getPosition());
+    map.setZoomAndCenter(14,[p.lng,p.lat]);
+  });
+  markers.push(m);
+});
+</script>
+</body>
+</html>
