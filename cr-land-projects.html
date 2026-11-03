@@ -14,11 +14,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 #list .sub{padding:0 20px 16px;font-size:12px;color:var(--text2)}
 .card{padding:16px 20px;border-bottom:1px solid #f0f0f2;cursor:pointer;transition:background .15s}
 .card:hover,.card.active{background:#fafafa}
+.card .row{display:flex;align-items:flex-start;gap:8px}
 .card .tag{display:inline-block;font-size:11px;font-weight:600;color:#fff;background:var(--accent);border-radius:4px;padding:1px 7px;margin-right:6px}
 .card .nm{font-size:16px;font-weight:700;margin:4px 0 2px}
 .card .pos{font-size:12px;color:var(--accent);font-weight:600;margin-bottom:3px}
 .card .ad{font-size:12px;color:var(--text2);line-height:1.5}
 .card .tel{font-size:12px;color:var(--text2);margin-top:4px}
+.nav-btn{display:inline-block;margin-top:8px;padding:6px 14px;border-radius:18px;background:var(--accent);color:#fff;font-size:13px;font-weight:600;text-decoration:none}
+.nav-btn:active{opacity:.8}
 #map-wrap{position:relative}
 #map{width:100%;height:100vh}
 .amap-info-content{border-radius:12px!important;padding:0!important;box-shadow:0 4px 20px rgba(0,0,0,.15)!important}
@@ -27,9 +30,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 .iw .iw-nm{font-size:16px;font-weight:700}
 .iw .iw-pos{color:var(--accent);font-weight:600;margin:2px 0}
 .iw .iw-ad{color:#6e6e73;font-size:12px}
+.iw .nav-btn{display:inline-block;margin-top:8px}
 @media(max-width:767px){
   #app{grid-template-columns:1fr}
-  #list{position:fixed;left:0;right:0;bottom:0;height:44vh;z-index:500;border-radius:18px 18px 0 0;border-right:none;box-shadow:0 -4px 20px rgba(0,0,0,.10);padding:0}
+  #list{position:fixed;left:0;right:0;bottom:0;height:46vh;z-index:500;border-radius:18px 18px 0 0;border-right:none;box-shadow:0 -4px 20px rgba(0,0,0,.10);padding:0}
   #list h1{padding:16px 18px 6px;font-size:17px}
   #list .sub{padding:0 18px 12px;font-size:11px}
   .card{padding:12px 18px}
@@ -40,7 +44,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue"
 <div id="app">
   <div id="list">
     <h1>杭州 · 华润置地润系项目</h1>
-    <div class="sub">5 个项目 · 点击卡片定位</div>
+    <div class="sub">5 个项目 · 点击卡片定位 · 🚗 一键导航</div>
   </div>
   <div id="map-wrap"><div id="map"></div></div>
 </div>
@@ -58,6 +62,10 @@ var projects=[
   {n:5,name:"元起观潮府",pos:"中心壹号作品",ad:"上城区运台山巷和闸弄街交叉口\n天台山路",tel:"0571-2629 9888",lng:120.203756,lat:30.279470}
 ];
 
+function navUrl(p){
+  return 'https://uri.amap.com/navigation?to='+p.lng+','+p.lat+','+encodeURIComponent(p.name)+'&mode=car&coordinate=gaode';
+}
+
 var map=new AMap.Map('map',{zoom:11,center:[120.09,30.28],mapStyle:'amap://styles/whitesmoke'});
 var markers=[];
 var listEl=document.getElementById('list');
@@ -66,8 +74,9 @@ projects.forEach(function(p){
   // 侧边卡片
   var c=document.createElement('div');
   c.className='card'; c.setAttribute('data-i',p.n-1);
-  c.innerHTML='<span class="tag">'+p.n+'</span><div class="nm">'+p.name+'</div><div class="pos">'+p.pos+'</div><div class="ad">'+p.ad.replace(/\n/g,'<br>')+'</div><div class="tel">☎ '+p.tel+'</div>';
-  c.onclick=function(){
+  c.innerHTML='<div class="row"><div><span class="tag">'+p.n+'</span></div><div><div class="nm">'+p.name+'</div><div class="pos">'+p.pos+'</div><div class="ad">'+p.ad.replace(/\n/g,'<br>')+'</div><div class="tel">☎ '+p.tel+'</div><a class="nav-btn" href="'+navUrl(p)+'" target="_blank">🚗 一键导航</a></div></div>';
+  c.onclick=function(e){
+    if(e.target.tagName==='A') return;
     markers.forEach(function(m,i){ if(i===p.n-1){m.emit('click');} });
     map.setZoomAndCenter(14,[p.lng,p.lat]);
   };
@@ -82,7 +91,7 @@ projects.forEach(function(p){
   });
   m.on('click',function(){
     var iw=new AMap.InfoWindow({
-      content:'<div class="iw"><div class="iw-nm">'+p.name+'</div><div class="iw-pos">'+p.pos+'</div><div class="iw-ad">'+p.ad.replace(/\n/g,'<br>')+'</div><div class="iw-ad" style="margin-top:3px">☎ '+p.tel+'</div></div>',
+      content:'<div class="iw"><div class="iw-nm">'+p.name+'</div><div class="iw-pos">'+p.pos+'</div><div class="iw-ad">'+p.ad.replace(/\n/g,'<br>')+'</div><div class="iw-ad" style="margin-top:3px">☎ '+p.tel+'</div><a class="nav-btn" href="'+navUrl(p)+'" target="_blank">🚗 一键导航</a></div>',
       offset:new AMap.Pixel(0,-32),autoMove:true,closeWhenClickMap:true
     });
     iw.open(map,m.getPosition());
